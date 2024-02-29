@@ -22,13 +22,14 @@ public:
 	[[nodiscard]] static bool isValidHour(const int) noexcept;
 	[[nodiscard]] static bool isValidMinute(const int) noexcept;
 	[[nodiscard]] static bool isValidSecond(const int) noexcept;
-	static void convertExtraSecondsMinutes(int&, int&, int&) noexcept;
+	
+	void convertExtraSecondsMinutes() noexcept;
 	
 	void setHours(const int);
 	void setMinutes(const int);
 	void setSeconds(const int);
 
-	void setAll(int, int, int);
+	void setAll(const int, const int, const int);
 	void setAll(const TimeDuringDay&);
 
 	[[nodiscard]] int getHours() const noexcept;
@@ -135,14 +136,14 @@ bool TimeDuringDay::isValidSecond(const int seconds) noexcept {
 	return seconds >= 0;
 }
 
-void TimeDuringDay::convertExtraSecondsMinutes(int& hours, int& minutes, int& seconds) noexcept {
-	minutes += seconds / 60;
-	seconds %= 60;
+void TimeDuringDay::convertExtraSecondsMinutes() noexcept {
+	*this->_minutes += *this->_seconds / 60;
+	*this->_seconds %= 60;
 
-	hours += minutes / 60;
-	minutes %= 60;
+	*this->_hours += *this->_minutes / 60;
+	*this->_minutes %= 60;
 
-	hours %= 24;
+	*this->_hours %= 24;
 }
 
 void TimeDuringDay::setHours(const int hours) {
@@ -169,19 +170,20 @@ void TimeDuringDay::setSeconds(const int seconds) {
 	*this->_seconds = seconds;
 }
 
-void TimeDuringDay::setAll(int hours, int minutes, int seconds) {
-	TimeDuringDay::convertExtraSecondsMinutes(hours, minutes, seconds);
-
+void TimeDuringDay::setAll(const int hours, const int minutes, const int seconds) {
 	this->setSeconds(seconds);
 	this->setMinutes(minutes);
 	this->setHours(hours);
-}
 
+	this->convertExtraSecondsMinutes();
+}
 
 void TimeDuringDay::setAll(const TimeDuringDay& timeDuringDay) {
 	this->setSeconds(timeDuringDay.getSeconds());
 	this->setMinutes(timeDuringDay.getMinutes());
 	this->setHours(timeDuringDay.getHours());
+	
+	this->convertExtraSecondsMinutes();
 }
 
 int TimeDuringDay::getHours() const noexcept {
