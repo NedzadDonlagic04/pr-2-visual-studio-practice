@@ -43,6 +43,9 @@ public:
 	TimeDuringDay& operator++() noexcept;
 	TimeDuringDay operator++(int) noexcept;
 
+	TimeDuringDay& operator--() noexcept;
+	TimeDuringDay operator--(int) noexcept;
+
 	friend std::ostream& operator<<(std::ostream&, const TimeDuringDay&);
 };
 
@@ -53,7 +56,7 @@ namespace utils {
 
 	void clearBuffer();
 
-	template<typename NumberType, typename Callback>
+	template<typename NumberType, typename Callback = bool(const int)>
 	void enterNum(NumberType&, const char* const, Callback = [](const int) { return true; });
 }
 
@@ -64,9 +67,9 @@ int main() {
 	TimeDuringDay timeDuringDayEnd{};
 
 	enterTimeDuringDay(timeDuringDayStart, "Enter the starting time for the timer\n");
-	std::cout << std::endl;
+	std::cout << '\n';
 	enterTimeDuringDay(timeDuringDayEnd, "Enter the ending time for the timer\n");
-	std::cout << std::endl;
+	std::cout << '\n';
 
 	// This is done so that in the for loop we print the ending time as well
 	timeDuringDayEnd++;
@@ -240,6 +243,34 @@ TimeDuringDay TimeDuringDay::operator++(int) noexcept {
 	return temp;
 }
 
+TimeDuringDay& TimeDuringDay::operator--() noexcept {
+	int seconds{ this->getSeconds() - 1 };
+	int minutes{ this->getMinutes() - (seconds < 0) };
+	int hours{ this->getHours() - (minutes < 0) };
+
+	if (seconds < 0) {
+		seconds = 59;
+	}
+	if (minutes < 0) {
+		minutes = 59;
+	}
+	if (hours < 0) {
+		hours = 23;
+	}
+
+	this->setAll(hours, minutes, seconds);
+
+	return *this;
+}
+
+TimeDuringDay TimeDuringDay::operator--(int) noexcept {
+	TimeDuringDay temp{ *this };
+
+	--*this;
+
+	return temp;
+}
+
 // --------------------------------------
 // Global functions definition
 // --------------------------------------
@@ -278,7 +309,7 @@ namespace utils {
 			if (std::cin.fail()) {
 				repeatLoop = true;
 				clearBuffer();
-				printErrorMsg("Unos nije validan broj\n");
+				printErrorMsg("Input isn't a valid number\n");
 			}
 			else if (!isValidNumber(num)) {
 				repeatLoop = true;
