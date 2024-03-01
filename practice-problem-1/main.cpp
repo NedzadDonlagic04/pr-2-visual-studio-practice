@@ -8,9 +8,9 @@
 #include<limits>
 
 class TimeDuringDay {
-	std::unique_ptr<int> _hours{};
-	std::unique_ptr<int> _minutes{};
-	std::unique_ptr<int> _seconds{};
+	const std::unique_ptr<int> _hours{};
+	const std::unique_ptr<int> _minutes{};
+	const std::unique_ptr<int> _seconds{};
 
 public:
 	TimeDuringDay();
@@ -119,10 +119,6 @@ TimeDuringDay::TimeDuringDay(const int hours, const int minutes, const int secon
 TimeDuringDay::~TimeDuringDay() {
 	// Debugging
 	// std::cout << "Destructor\n";
-
-	this->_seconds = nullptr;
-	this->_minutes = nullptr;
-	this->_hours = nullptr;
 }
 
 bool TimeDuringDay::isValidHour(const int hours) noexcept {
