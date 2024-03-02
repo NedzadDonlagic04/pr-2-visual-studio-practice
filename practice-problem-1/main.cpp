@@ -8,9 +8,9 @@
 #include<limits>
 
 class TimeDuringDay {
-	const std::unique_ptr<int> _hours{};
-	const std::unique_ptr<int> _minutes{};
-	const std::unique_ptr<int> _seconds{};
+	const std::unique_ptr<int> m_hours{};
+	const std::unique_ptr<int> m_minutes{};
+	const std::unique_ptr<int> m_seconds{};
 
 public:
 	TimeDuringDay();
@@ -95,25 +95,25 @@ int main() {
 // public members
 
 TimeDuringDay::TimeDuringDay()
-	: _hours{ new int{0} }
-	, _minutes{ new int{0} }
-	, _seconds{ new int{0} }
+	: m_hours{ new int{0} }
+	, m_minutes{ new int{0} }
+	, m_seconds{ new int{0} }
 {}
 
 TimeDuringDay::TimeDuringDay(const TimeDuringDay& timeDuringDay) 
-	: _hours{ new int{0} }
-	, _minutes{ new int{0} }
-	, _seconds{ new int{0} }
+	: m_hours{ new int{0} }
+	, m_minutes{ new int{0} }
+	, m_seconds{ new int{0} }
 {
-	this->setAll(timeDuringDay);
+	setAll(timeDuringDay);
 }
 
 TimeDuringDay::TimeDuringDay(const int hours, const int minutes, const int seconds)
-	: _hours{ new int{0} }
-	, _minutes{ new int{0} }
-	, _seconds{ new int{0} }
+	: m_hours{ new int{0} }
+	, m_minutes{ new int{0} }
+	, m_seconds{ new int{0} }
 {
-	this->setAll(hours, minutes, seconds);
+	setAll(hours, minutes, seconds);
 }
 
 TimeDuringDay::~TimeDuringDay() {
@@ -138,7 +138,7 @@ void TimeDuringDay::setHours(const int hours) {
 		throw std::invalid_argument("Hours can't be a negative number\n");
 	}
 
-	*this->_hours = hours;
+	*m_hours = hours;
 }
 
 void TimeDuringDay::setMinutes(const int minutes) {
@@ -146,7 +146,7 @@ void TimeDuringDay::setMinutes(const int minutes) {
 		throw std::invalid_argument("Minutes can't be a negative number\n");
 	}
 
-	*this->_minutes = minutes;
+	*m_minutes = minutes;
 }
 
 void TimeDuringDay::setSeconds(const int seconds) {
@@ -154,53 +154,53 @@ void TimeDuringDay::setSeconds(const int seconds) {
 		throw std::invalid_argument("Seconds can't be a negative number\n");
 	}
 
-	*this->_seconds = seconds;
+	*m_seconds = seconds;
 }
 
 void TimeDuringDay::setAll(const int hours, const int minutes, const int seconds) {
-	this->setSeconds(seconds);
-	this->setMinutes(minutes);
-	this->setHours(hours);
+	setSeconds(seconds);
+	setMinutes(minutes);
+	setHours(hours);
 }
 
 void TimeDuringDay::setAll(const TimeDuringDay& timeDuringDay) {
-	this->setSeconds(timeDuringDay.getSeconds());
-	this->setMinutes(timeDuringDay.getMinutes());
-	this->setHours(timeDuringDay.getHours());
+	setSeconds(timeDuringDay.getSeconds());
+	setMinutes(timeDuringDay.getMinutes());
+	setHours(timeDuringDay.getHours());
 }
 
 int TimeDuringDay::getHours() const noexcept {
-	return *this->_hours;
+	return *m_hours;
 }
 
 int TimeDuringDay::getMinutes() const noexcept {
-	return *this->_minutes;
+	return *m_minutes;
 }
 
 int TimeDuringDay::getSeconds() const noexcept {
-	return *this->_seconds;
+	return *m_seconds;
 }
 
 std::string TimeDuringDay::getFormattedTime() const {
 	std::ostringstream formattedTime{};
 
-	formattedTime << std::setw(2) << std::setfill('0') << this->getHours() << ":";
-	formattedTime << std::setw(2) << std::setfill('0') << this->getMinutes() << ":";
-	formattedTime << std::setw(2) << std::setfill('0') << this->getSeconds();
+	formattedTime << std::setw(2) << std::setfill('0') << getHours() << ":";
+	formattedTime << std::setw(2) << std::setfill('0') << getMinutes() << ":";
+	formattedTime << std::setw(2) << std::setfill('0') << getSeconds();
 
 	return formattedTime.str();
 }
 
 TimeDuringDay& TimeDuringDay::operator=(const TimeDuringDay& rhs) {
-	this->setAll(rhs);
+	setAll(rhs);
 
 	return *this;
 }
 
 bool TimeDuringDay::operator==(const TimeDuringDay& rhs) const noexcept {
-	return	this->getHours() == rhs.getHours()
-			&& this->getMinutes() == rhs.getMinutes() 
-			&& this->getSeconds() == rhs.getSeconds();
+	return	getHours() == rhs.getHours()
+			&& getMinutes() == rhs.getMinutes() 
+			&& getSeconds() == rhs.getSeconds();
 }
 
 bool TimeDuringDay::operator!=(const TimeDuringDay& rhs) const noexcept {
@@ -209,24 +209,24 @@ bool TimeDuringDay::operator!=(const TimeDuringDay& rhs) const noexcept {
 
 TimeDuringDay TimeDuringDay::operator+(const TimeDuringDay& rhs) const {
 	const TimeDuringDay temp{ 
-		this->getHours() + rhs.getHours(), 
-		this->getMinutes() + rhs.getMinutes(), 
-		this->getSeconds() + rhs.getSeconds() 
+		getHours() + rhs.getHours(), 
+		getMinutes() + rhs.getMinutes(), 
+		getSeconds() + rhs.getSeconds() 
 	};
 
 	return temp;
 }
 
 TimeDuringDay& TimeDuringDay::operator++() noexcept {
-	int seconds{ this->getSeconds() + 1};
-	int minutes{ this->getMinutes() + seconds / 60 };
-	int hours{ this->getHours() + minutes / 60 };
+	int seconds{ getSeconds() + 1};
+	int minutes{ getMinutes() + seconds / 60 };
+	int hours{ getHours() + minutes / 60 };
 
 	seconds %= 60;
 	minutes %= 60;
 	hours %= 24;
 
-	this->setAll(hours, minutes, seconds);
+	setAll(hours, minutes, seconds);
 
 	return *this;
 }
@@ -240,9 +240,9 @@ TimeDuringDay TimeDuringDay::operator++(int) noexcept {
 }
 
 TimeDuringDay& TimeDuringDay::operator--() noexcept {
-	int seconds{ this->getSeconds() - 1 };
-	int minutes{ this->getMinutes() - (seconds < 0) };
-	int hours{ this->getHours() - (minutes < 0) };
+	int seconds{ getSeconds() - 1 };
+	int minutes{ getMinutes() - (seconds < 0) };
+	int hours{ getHours() - (minutes < 0) };
 
 	if (seconds < 0) {
 		seconds = 59;
@@ -254,7 +254,7 @@ TimeDuringDay& TimeDuringDay::operator--() noexcept {
 		hours = 23;
 	}
 
-	this->setAll(hours, minutes, seconds);
+	setAll(hours, minutes, seconds);
 
 	return *this;
 }
