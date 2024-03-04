@@ -13,6 +13,8 @@ namespace utils {
 	void enterText(std::string&, std::string_view);
 	void toLower(std::string&);
 
+	[[nodiscard]] float roundToNDecimals(const float, const int);
+
 	template<typename NumberType, typename Callback = bool(const int)>
 	void enterNum(NumberType& num, std::string_view outputMsg, Callback isNumberValid = [](const int) { return true; }) {
 		bool repeatLoop{};

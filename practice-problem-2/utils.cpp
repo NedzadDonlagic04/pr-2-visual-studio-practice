@@ -1,5 +1,6 @@
 #include"utils.hpp"
 #include<limits>
+#include<cmath>
 #include<algorithm>
 
 namespace utils {
@@ -32,5 +33,11 @@ namespace utils {
 
 	void toLower(std::string& str) {
 		std::for_each(str.begin(), str.end(), [](char& c) { c = std::tolower(c); });
+	}
+
+	float roundToNDecimals(const float num, const int precision) {
+		const double powOf10{ std::pow(10, std::max(0, precision)) };
+
+		return static_cast<float>(std::round(num * powOf10) / powOf10);
 	}
 }

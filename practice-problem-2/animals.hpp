@@ -4,17 +4,10 @@
 #include<string>
 #include<string_view>
 #include<unordered_map>
+#include<functional>
+#include<random>
 
 namespace animal {
-	// -----------------------
-	// constants definition
-	// -----------------------
-	inline const std::unordered_map<std::string, std::string> ANIMAL_TYPES {
-		{"chicken", "chicken"},
-		{"cow", "cow"},
-		{"sheep", "sheep"},
-	};
-
 	// -----------------------
 	// Animal class declaration
 	// -----------------------
@@ -25,6 +18,9 @@ namespace animal {
 
 		[[nodiscard]] virtual float getAnimalPerformance() const = 0;
 		[[nodiscard]] virtual std::string_view getAnimalName() const noexcept = 0;
+		
+		virtual void handleUserInput() = 0;
+		virtual void generateData(std::mt19937&) = 0;
 	private:
 	};
 
@@ -34,11 +30,18 @@ namespace animal {
 	// -----------------------
 	class Chicken : public Animal {
 	public:
+		Chicken() = default;
 		Chicken(const float);
 		~Chicken() override;
 
+		[[nodiscard]] float getEggsProducedPerDay() const noexcept;
+		void setEggsProducedPerDay(const float) noexcept;
+
 		[[nodiscard]] float getAnimalPerformance() const override;
 		[[nodiscard]] std::string_view getAnimalName() const noexcept override;
+
+		void handleUserInput() override;
+		void generateData(std::mt19937&) override;
 
 		constexpr static float CHICKEN_FACTOR{ 2.1f };
 	private:
@@ -51,11 +54,18 @@ namespace animal {
 	// -----------------------
 	class Cow : public Animal {
 	public:
+		Cow() = default;
 		Cow(const float);
 		~Cow() override;
 
+		[[nodiscard]] float getLitersOfMilkMadePerDay() const noexcept;
+		void setLitersOfMilkMadePerDay(const float) noexcept;
+
 		[[nodiscard]] float getAnimalPerformance() const override;
 		[[nodiscard]] std::string_view getAnimalName() const noexcept override;
+
+		void handleUserInput() override;
+		void generateData(std::mt19937&) override;
 
 		constexpr static float COW_FACTOR{ 1.2f };
 	private:
@@ -68,15 +78,31 @@ namespace animal {
 	// -----------------------
 	class Sheep : public Animal {
 	public:
+		Sheep() = default;
 		Sheep(const float);
 		~Sheep() override;
+
+		[[nodiscard]] float getGramsOfWoolMadePerDay() const noexcept;
+		void setGramsOfWoolMadePerDay(const float) noexcept;
 
 		[[nodiscard]] float getAnimalPerformance() const override;
 		[[nodiscard]] std::string_view getAnimalName() const noexcept override;
 
+		void handleUserInput() override;
+		void generateData(std::mt19937&) override;
+
 		constexpr static float SHEEP_FACTOR{ 1.7f };
 	private:
 		float m_gramsOfWoolMadePerDay{};
+	};
+
+	// -----------------------
+	// constants definition
+	// -----------------------
+	inline const std::unordered_map<std::string, std::function<Animal*()>> ANIMAL_TYPES{
+		{"chicken", []() { return new Chicken(); }},
+		{"cow", []() { return new Cow(); }},
+		{"sheep", []() { return new Sheep(); }},
 	};
 
 	// -----------------------
@@ -89,13 +115,12 @@ namespace animal {
 	void deallocateArrayOfAnimals(Animal**&, const std::size_t);
 
 	void enterAnimalType(std::string&);
-
-	[[nodiscard]] Chicken* createChicken();
-	[[nodiscard]] Cow* createCow();
-	[[nodiscard]] Sheep* createSheep();
 	
 	void enterAnimalsArray(Animal** const, const std::size_t);
-	void enterAnimalsArray(Animal*&);
+	void enterAnimal(Animal*&);
+
+	[[nodiscard]] Animal* generateRandomAnimal(std::mt19937&);
+	void generateAnimalsArrayData(Animal** const, const std::size_t);
 
 	void printAnimalsArray(const Animal* const * const, const std::size_t);
 

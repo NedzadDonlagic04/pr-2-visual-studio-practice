@@ -25,12 +25,45 @@ namespace animal {
 		// std::cout << "Chicken destructor called\n";
 	}
 
+	float Chicken::getEggsProducedPerDay() const noexcept {
+		return m_eggsProducedPerDay;
+	}
+
+	void Chicken::setEggsProducedPerDay(const float eggsProducedPerDay) noexcept {
+		m_eggsProducedPerDay = eggsProducedPerDay;
+	}
+
 	float Chicken::getAnimalPerformance() const {
 		return m_eggsProducedPerDay * CHICKEN_FACTOR;
 	}
 
 	std::string_view Chicken::getAnimalName() const noexcept {
-		return ANIMAL_TYPES.at("chicken");
+		return "chicken";
+	}
+
+
+	void Chicken::handleUserInput() {
+		float eggsProducedPerDay{};
+
+		utils::enterNum(eggsProducedPerDay, "Enter eggs made per day by the chicken: ",
+			[](const float num) {
+				if (num < 0 || num > 8) {
+					utils::printErrorMsg("Entered amount has to be between 0 and 8\n");
+					return false;
+				}
+				return true;
+			}
+		);
+
+		setEggsProducedPerDay(eggsProducedPerDay);
+	}
+
+	void Chicken::generateData(std::mt19937& rng) {
+		std::uniform_real_distribution<float> eggsProducedPerDayDist(0, 8);
+
+		const float eggsProducedPerDay{ eggsProducedPerDayDist(rng) };
+
+		setEggsProducedPerDay(utils::roundToNDecimals(eggsProducedPerDay, 2));
 	}
 
 	// -----------------------
@@ -45,12 +78,44 @@ namespace animal {
 		// std::cout << "Cow destructor called\n";
 	}
 
+	float Cow::getLitersOfMilkMadePerDay() const noexcept {
+		return m_litersOfMilkMadePerDay;
+	}
+
+	void Cow::setLitersOfMilkMadePerDay(const float litersOfMilkMadePerDay) noexcept {
+		m_litersOfMilkMadePerDay = litersOfMilkMadePerDay;
+	}
+
 	float Cow::getAnimalPerformance() const {
 		return m_litersOfMilkMadePerDay * COW_FACTOR;
 	}
 
 	std::string_view Cow::getAnimalName() const noexcept {
-		return ANIMAL_TYPES.at("cow");
+		return "cow";
+	}
+
+	void Cow::handleUserInput() {
+		float litersOfMilkMadePerDay{};
+
+		utils::enterNum(litersOfMilkMadePerDay, "Enter liters of milk made per day by the cow: ",
+			[](const float num) {
+				if (num < 0 || num > 80) {
+					utils::printErrorMsg("Entered amount has to be between 0 and 80\n");
+					return false;
+				}
+				return true;
+			}
+		);
+
+		setLitersOfMilkMadePerDay(litersOfMilkMadePerDay);
+	}
+
+	void Cow::generateData(std::mt19937& rng) {
+		std::uniform_real_distribution<float> litersOfMilkProducedPerDayDist(0, 80);
+
+		const float litersOfMilkMadePerDay{ litersOfMilkProducedPerDayDist(rng) };
+
+		setLitersOfMilkMadePerDay(utils::roundToNDecimals(litersOfMilkMadePerDay, 2));
 	}
 
 	// -----------------------
@@ -65,12 +130,44 @@ namespace animal {
 		// std::cout << "Sheep destructor called\n";
 	}
 
+	float Sheep::getGramsOfWoolMadePerDay() const noexcept {
+		return m_gramsOfWoolMadePerDay;
+	}
+
+	void Sheep::setGramsOfWoolMadePerDay(const float gramsOfWoolMadePerDay) noexcept {
+		m_gramsOfWoolMadePerDay = gramsOfWoolMadePerDay;
+	}
+
 	float Sheep::getAnimalPerformance() const {
 		return m_gramsOfWoolMadePerDay * SHEEP_FACTOR;
 	}
 
 	std::string_view Sheep::getAnimalName() const noexcept {
-		return ANIMAL_TYPES.at("sheep");
+		return "sheep";
+	}
+
+	void Sheep::handleUserInput() {
+		float gramsOfWoolMadePerDay{};
+
+		utils::enterNum(gramsOfWoolMadePerDay, "Enter liters of milk made per day by the cow: ",
+			[](const float num) {
+				if (num < 0 || num > 80) {
+					utils::printErrorMsg("Entered amount has to be between 0 and 80\n");
+					return false;
+				}
+				return true;
+			}
+		);
+
+		setGramsOfWoolMadePerDay(gramsOfWoolMadePerDay);
+	}
+
+	void Sheep::generateData(std::mt19937& rng) {
+		std::uniform_real_distribution<float> gramsOfWoolMadePerDayDist(0, 80);
+
+		const float gramsOfWoolMadePerDay{ gramsOfWoolMadePerDayDist(rng) };
+
+		setGramsOfWoolMadePerDay(utils::roundToNDecimals(gramsOfWoolMadePerDay, 2));
 	}
 
 	// -----------------------
@@ -78,7 +175,7 @@ namespace animal {
 	// -----------------------
 	bool isValidAnimalType(const std::string_view animalType) {
 		for (const auto& ANIMAL_TYPE : ANIMAL_TYPES) {
-			if (ANIMAL_TYPE.second == animalType) {
+			if (ANIMAL_TYPE.first == animalType) {
 				return true;
 			}
 		}
@@ -88,8 +185,8 @@ namespace animal {
 	void printAnimalTypes() {
 		std::cout << "Available animal types: ";
 		char space[]{ 0, 0, 0 };
-		for (const auto & ANIMAL_TYPE : ANIMAL_TYPES) {
-			std::cout << space << ANIMAL_TYPE.second;
+		for (const auto& ANIMAL_TYPE : ANIMAL_TYPES) {
+			std::cout << space << ANIMAL_TYPE.first;
 			space[0] = ',';
 			space[1] = ' ';
 		}
@@ -129,87 +226,79 @@ namespace animal {
 		for (std::size_t i = 0; i < size; i++) {
 			utils::printBreakLine();
 			std::cout << "Enter animal number " << i + 1 << " info\n";
-			enterAnimalsArray(animals[i]);
+			enterAnimal(animals[i]);
 			utils::printBreakLine();
 		}
 	}
 
-	Chicken* createChicken() {
-		float eggsProducedPerDay{};
-
-		utils::enterNum(eggsProducedPerDay, "Enter eggs made per day by the chicken: ",
-			[](const float num) {
-				if (num < 0 || num > 8) {
-					utils::printErrorMsg("Entered amount has to be between 0 and 8\n");
-					return false;
-				}
-				return true;
-			}
-		);
-
-		return new Chicken(eggsProducedPerDay);
-	}
-
-	Cow* createCow() {
-		float litersOfMilkMadePerDay{};
-
-		utils::enterNum(litersOfMilkMadePerDay, "Enter liters of milk made per day by the cow: ",
-			[](const float num) {
-				if (num < 0 || num > 80) {
-					utils::printErrorMsg("Entered amount has to be between 0 and 80\n");
-					return false;
-				}
-				return true;
-			}
-		);
-
-		return new Cow(litersOfMilkMadePerDay);
-	}
-
-	Sheep* createSheep() {
-		float gramsOfWoolMadePerDay{};
-
-		utils::enterNum(gramsOfWoolMadePerDay, "Enter wool made in grams per day by the sheep: ",
-			[](const float num) {
-				if (num < 0 || num > 1000) {
-					utils::printErrorMsg("Entered amount has to be between 0 and 1000\n");
-					return false;
-				}
-				return true;
-			}
-		);
-
-		return new Sheep(gramsOfWoolMadePerDay);
-	}
-
-	void enterAnimalsArray(Animal*& animal) {
+	void enterAnimal(Animal*& animal) {
 		std::string animalType{};
 		
 		enterAnimalType(animalType);
+
+		const auto createAnimal{ ANIMAL_TYPES.at(animalType) };
 		
-		if (animalType == ANIMAL_TYPES.at("chicken")) {
-			animal = createChicken();
+		animal = createAnimal();
+
+		animal->handleUserInput();
+	}
+
+	Animal* generateRandomAnimal(std::mt19937& rng) {
+		std::uniform_int_distribution<std::size_t> animalIndexDist(0, ANIMAL_TYPES.size() - 1);
+		std::size_t index{ 0 };
+		std::size_t indexToFind{ animalIndexDist(rng) };
+
+		for (const auto& ANIMAL_TYPE : ANIMAL_TYPES) {
+			if (index == indexToFind) {
+				return ANIMAL_TYPE.second();
+			}
+
+			index++;
 		}
-		else if (animalType == ANIMAL_TYPES.at("cow")) {
-			animal = createCow();
-		}	
-		else {
-			animal = createSheep();
+		return nullptr;
+	}
+
+	void generateAnimalsArrayData(Animal** const animals, const std::size_t size) {
+		std::random_device dev{};
+		std::mt19937 rng{ dev() };
+
+		for (std::size_t i = 0; i < size; i++) {
+			animals[i] = generateRandomAnimal(rng);
+			animals[i]->generateData(rng);
 		}
 	}
 
 	void printAnimalsArray(const Animal* const* const animals, const std::size_t size) {
+		utils::printBreakLine();
+		
+		const auto originalPrecision{ std::cout.precision() };
+		std::cout << std::setprecision(2) << std::fixed;
+
 		for (std::size_t i = 0; i < size; i++) {
-			utils::printBreakLine();
 			std::cout << "Animal number " << i + 1 << " info\n";
 			std::cout << "Animal type: " << std::quoted(animals[i]->getAnimalName()) << '\n';
 			std::cout << "Animal performance: " << animals[i]->getAnimalPerformance() << '\n';
-			utils::printBreakLine();
+			std::cout << '\n';
 		}
+
+		std::cout << std::setprecision(originalPrecision) << std::defaultfloat;
+
+		utils::printBreakLine();
 	}
 
-	// Implements merge sort
-	void sortAnimalArray(Animal** animals, const std::size_t size, const bool sortDesc) {
-
+	// Implements insertion sort
+	void sortAnimalArray(Animal** const animals, const std::size_t size, const bool sortDesc) {
+		for (std::size_t i = 1; i < size; i++) {
+			for (std::ptrdiff_t ii = i; ii >= 1; ii--) {
+				const float& currAnimalPerformance{ animals[ii]->getAnimalPerformance() };
+				const float& prevAnimalPerformance{ animals[ii - 1]->getAnimalPerformance() };
+				if (sortDesc && currAnimalPerformance > prevAnimalPerformance) {
+					std::swap(animals[ii], animals[ii - 1]);
+				}
+				else if (!sortDesc && currAnimalPerformance < prevAnimalPerformance) {
+					std::swap(animals[ii], animals[ii - 1]);
+				}
+			}
+		}
 	}
 }
