@@ -149,10 +149,10 @@ namespace animal {
 	void Sheep::handleUserInput() {
 		float gramsOfWoolMadePerDay{};
 
-		utils::enterNum(gramsOfWoolMadePerDay, "Enter liters of milk made per day by the cow: ",
+		utils::enterNum(gramsOfWoolMadePerDay, "Enter wool made in grams per day by the sheep: ",
 			[](const float num) {
-				if (num < 0 || num > 80) {
-					utils::printErrorMsg("Entered amount has to be between 0 and 80\n");
+				if (num < 0 || num > 1000) {
+					utils::printErrorMsg("Entered amount has to be between 0 and 1000\n");
 					return false;
 				}
 				return true;
@@ -223,12 +223,13 @@ namespace animal {
 	}
 
 	void enterAnimalsArray(Animal** const animals, const std::size_t size) {
+		utils::printBreakLine();
 		for (std::size_t i = 0; i < size; i++) {
-			utils::printBreakLine();
 			std::cout << "Enter animal number " << i + 1 << " info\n";
 			enterAnimal(animals[i]);
-			utils::printBreakLine();
+			std::cout << '\n';
 		}
+		utils::printBreakLine();
 	}
 
 	void enterAnimal(Animal*& animal) {
