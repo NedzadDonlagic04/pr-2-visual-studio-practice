@@ -19,10 +19,10 @@ int main() {
 	auto farmAnimals{ animal::allocateArrayOfAnimals(animalsSize) };
 
 	// Enable line below for random generation of data
-	// animal::generateAnimalsArrayData(farmAnimals, animalsSize);
+	animal::generateAnimalsArrayData(farmAnimals, animalsSize);
 
 	// Enable line below for manual input
-	animal::enterAnimalsArray(farmAnimals, animalsSize);
+	// animal::enterAnimalsArray(farmAnimals, animalsSize);
 	animal::printAnimalsArray(farmAnimals, animalsSize);
 
 	animal::sortAnimalArray(farmAnimals, animalsSize);
