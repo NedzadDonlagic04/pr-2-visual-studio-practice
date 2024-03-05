@@ -227,7 +227,10 @@ namespace animal {
 		for (std::size_t i = 0; i < size; i++) {
 			std::cout << "Enter animal number " << i + 1 << " info\n";
 			enterAnimal(animals[i]);
-			std::cout << '\n';
+			
+			if (i + 1 != size) {
+				std::cout << '\n';
+			}
 		}
 		utils::printBreakLine();
 	}
@@ -279,7 +282,10 @@ namespace animal {
 			std::cout << "Animal number " << i + 1 << " info\n";
 			std::cout << "Animal type: " << std::quoted(animals[i]->getAnimalName()) << '\n';
 			std::cout << "Animal performance: " << animals[i]->getAnimalPerformance() << '\n';
-			std::cout << '\n';
+			
+			if (i + 1 != size) {
+				std::cout << '\n';
+			}
 		}
 
 		std::cout << std::setprecision(originalPrecision) << std::defaultfloat;
