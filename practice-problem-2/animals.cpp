@@ -293,6 +293,7 @@ namespace animal {
 			for (std::ptrdiff_t ii = i; ii >= 1; ii--) {
 				const float& currAnimalPerformance{ animals[ii]->getAnimalPerformance() };
 				const float& prevAnimalPerformance{ animals[ii - 1]->getAnimalPerformance() };
+				
 				if (sortDesc && currAnimalPerformance > prevAnimalPerformance) {
 					std::swap(animals[ii], animals[ii - 1]);
 				}
