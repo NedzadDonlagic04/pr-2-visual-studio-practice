@@ -3,6 +3,13 @@
 #include<iostream>
 
 namespace tetromino {
+	// -------------------------------------
+	// Tetromino class implementation
+	// -------------------------------------
+	Tetromino::Tetromino(const std::vector<std::vector<terminalColors::BackgroundColors>>& shape)
+		: m_shape(shape)
+	{}
+
 	Tetromino::Tetromino(std::vector<std::vector<terminalColors::BackgroundColors>>&& shape)
 		: m_shape(shape)
 	{}
@@ -48,6 +55,10 @@ namespace tetromino {
 
 		return os;
 	}
+
+	// -------------------------------------
+	// functions and constants declaration / definitions
+	// -------------------------------------
 
 	void printAllRotationsOfATetromino(Tetromino& tetromino) {
 		for (int i = 0; i < 4; i++) {

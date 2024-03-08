@@ -17,8 +17,12 @@ using TerminalBgColor = terminalColors::BackgroundColors;
 */
 
 namespace tetromino {
+	// -------------------------------------
+	// Tetromino class declaration
+	// -------------------------------------
 	class Tetromino {
 	public:
+		Tetromino(const std::vector<std::vector<terminalColors::BackgroundColors>>&);
 		Tetromino(std::vector<std::vector<terminalColors::BackgroundColors>>&&);
 		Tetromino(std::initializer_list<std::initializer_list<terminalColors::BackgroundColors>>&&);
 
@@ -32,8 +36,16 @@ namespace tetromino {
 		std::vector<std::vector<terminalColors::BackgroundColors>> m_shape{};
 	};
 
+	// -------------------------------------
+	// functions and constants declaration / definitions
+	// -------------------------------------
+
 	void printAllRotationsOfATetromino(Tetromino&);
 
+	/*
+		Rotation and shapes with sizes were all decided after reading the page below
+		https://tetris.wiki/Super_Rotation_System
+	*/
 	constexpr std::size_t maxTetrominos{ 7 };
 	inline const std::array<Tetromino, maxTetrominos> tetrominos{
 		// I shape
