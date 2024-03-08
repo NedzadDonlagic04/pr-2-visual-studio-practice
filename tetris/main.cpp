@@ -1,17 +1,10 @@
 #include<iostream>
-#include<algorithm>
-#include"tetromino.hpp"
+#include"tetrisGame.hpp"
 
 int main() {
-	auto terminosCopy{ tetromino::tetrominos };
+	tetris::TetrisGame tetrisGame{};
 
-	std::for_each(
-		terminosCopy.begin(),
-		terminosCopy.end(),
-		[](auto& tetromino) {
-			tetromino::printAllRotationsOfATetromino(tetromino);
-		}
-	);
+	tetrisGame.run();
 
 	return 0;
 }
