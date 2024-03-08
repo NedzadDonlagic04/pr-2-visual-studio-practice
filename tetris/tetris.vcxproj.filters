@@ -24,12 +24,18 @@
     <ClCompile Include="terminalColors.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="tetromino.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="utils.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="terminalColors.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="tetromino.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
