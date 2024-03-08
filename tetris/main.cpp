@@ -1,31 +1,17 @@
 #include<iostream>
-#include<vector>
-#include"terminalColors.hpp"
-#include"utils.hpp"
+#include<algorithm>
 #include"tetromino.hpp"
 
-using TerminalBgColor = terminalColors::BackgroundColors;
-
 int main() {
-	tetromino::Tetromino tetromino{
-			{TerminalBgColor::grey, TerminalBgColor::green, TerminalBgColor::green},
-			{TerminalBgColor::green, TerminalBgColor::green, TerminalBgColor::grey},
-			{TerminalBgColor::grey, TerminalBgColor::grey, TerminalBgColor::grey},
-	};
+	auto terminosCopy{ tetromino::tetrominos };
 
-	std::cout << tetromino << '\n';
-	tetromino.rotate();
+	std::for_each(
+		terminosCopy.begin(),
+		terminosCopy.end(),
+		[](auto& tetromino) {
+			tetromino::printAllRotationsOfATetromino(tetromino);
+		}
+	);
 
-	std::cout << tetromino << '\n';
-	tetromino.rotate();
-
-	std::cout << tetromino << '\n';
-	tetromino.rotate();
-
-	std::cout << tetromino << '\n';
-	tetromino.rotate();
-
-	std::cout << tetromino << '\n';
-	
 	return 0;
 }
