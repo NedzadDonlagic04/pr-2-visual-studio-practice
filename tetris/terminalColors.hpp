@@ -51,7 +51,7 @@ namespace terminalColors {
 		{ BackgroundColors::black		, "\033[48;5;0m"sv   },
 		{ BackgroundColors::white		, "\033[48;5;255m"sv },
 		{ BackgroundColors::grey		, "\033[48;5;249m"sv },
-		{ BackgroundColors::Default     , "\033[48;5;249m"sv },
+		{ BackgroundColors::Default     , "\033[49m"sv       },
 	};
 
 	// Foreground colors / the color of symbols printed to the terminal
@@ -66,7 +66,7 @@ namespace terminalColors {
 		{ ForegroundColors::black		, "\033[38;5;0m"sv   },
 		{ ForegroundColors::white		, "\033[38;5;255m"sv },
 		{ ForegroundColors::grey		, "\033[38;5;249m"sv },
-		{ ForegroundColors::Default     , "\033[48;5;249m"sv },
+		{ ForegroundColors::Default     , "\033[39m"sv       },
 	};
 }
 #endif
