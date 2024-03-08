@@ -2,6 +2,8 @@
 #include"terminalColors.hpp"
 
 #include<iostream>
+#include<chrono>
+#include<thread>
 
 namespace utils {
 	void moveCursorToPosition(const int x, const int y) {
@@ -17,5 +19,13 @@ namespace utils {
 		const std::string_view defaultBgColor = terminalColors::backgroundColors.at(terminalColors::BackgroundColors::Default);
 
 		std::cout << bgColor << "  "  << defaultBgColor;
+	}
+
+	void clearScreen() noexcept {
+		std::cout << "\033[2J\033[H";
+	}
+
+	void delayMs(const int64_t miliseconds) {
+		std::this_thread::sleep_for(std::chrono::milliseconds(miliseconds));
 	}
 }

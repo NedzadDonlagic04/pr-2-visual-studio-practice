@@ -1,4 +1,5 @@
 #include"tetrisGame.hpp"
+#include"utils.hpp"
 #include<iostream>
 
 namespace tetris {
@@ -21,9 +22,11 @@ namespace tetris {
 		std::cout << "Space will move it down instantly down to the silhouette shown in white\n\n";
 		std::cout << "When you've read and understood all of this press any key to start the game...";
 		std::cin.get();
+
+		utils::clearScreen();
 	}
 
 	void TetrisGame::startMainGameLoop() {
-		std::cout << "Game started\n";
+		utils::delayMs(2000);
 	}
 }
