@@ -1,4 +1,5 @@
 #include"utils.hpp"
+#include"terminalColors.hpp"
 
 #include<iostream>
 
@@ -9,5 +10,12 @@ namespace utils {
 		}
 
 		std::cout << "\033[" << y << ";" << x << "H";
+	}
+
+	void colorSpaceInTerminal(TerminalBgColor terminalBgColor) {
+		const std::string_view bgColor = terminalColors::backgroundColors.at(terminalBgColor);
+		const std::string_view defaultBgColor = terminalColors::backgroundColors.at(terminalColors::BackgroundColors::Default);
+
+		std::cout << bgColor << "  "  << defaultBgColor;
 	}
 }

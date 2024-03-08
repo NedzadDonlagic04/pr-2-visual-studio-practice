@@ -1,5 +1,5 @@
-#ifndef _TETRIS_UTILS_HEADER
-#define _TETRIS_UTILS_HEADER
+#ifndef _TETRIS_UTILS_HPP
+#define _TETRIS_UTILS_HPP
 
 /*
 	A lot of the ANSI related stuff I found was from the link below
@@ -9,8 +9,13 @@
 	is better due to portability
 */
 
+#include"terminalColors.hpp"
+
+using TerminalBgColor = terminalColors::BackgroundColors;
+
 namespace utils {
 	void moveCursorToPosition(const int, const int);
+	void colorSpaceInTerminal(TerminalBgColor = TerminalBgColor::black);
 }
 
 #endif
