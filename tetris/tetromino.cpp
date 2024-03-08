@@ -38,7 +38,7 @@ namespace tetromino {
 		}
 	}
 
-	std::ostream& operator<<(std::ostream& os, const tetromino::Tetromino& tetromino) {
+	std::ostream& operator<<(std::ostream& os, const Tetromino& tetromino) {
 		for (const auto& bgColorRows : tetromino.m_shape) {
 			for (const auto& bgColor : bgColorRows) {
 				utils::colorSpaceInTerminal(bgColor);
@@ -47,5 +47,14 @@ namespace tetromino {
 		}
 
 		return os;
+	}
+
+	void printAllRotationsOfATetromino(Tetromino& tetromino) {
+		for (int i = 0; i < 4; i++) {
+			std::cout << tetromino << '\n';
+			tetromino.rotate();
+		}
+
+		std::cout << tetromino << '\n';
 	}
 }
