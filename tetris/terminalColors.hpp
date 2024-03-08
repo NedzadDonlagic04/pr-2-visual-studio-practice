@@ -6,8 +6,8 @@
 
 using namespace std::string_view_literals;
 
-namespace termColors {
-	enum class TerminalBgColors {
+namespace terminalColors {
+	enum class BackgroundColors {
 		lightBlue,
 		darkBlue,
 		orange,
@@ -18,9 +18,12 @@ namespace termColors {
 		black,
 		white,
 		grey,
+		// "Default" has the first letter capitalized due to
+		// "default" being a keyword
+		Default,
 	};
 
-	enum class TerminalFgColors {
+	enum class ForegroundColors {
 		lightBlue,
 		darkBlue,
 		orange,
@@ -31,34 +34,39 @@ namespace termColors {
 		black,
 		white,
 		grey,
+		// "Default" has the first letter capitalized due to
+		// "default" being a keyword
+		Default,
 	};
 
 	// Background colors
-	const inline std::unordered_map<TerminalBgColors, std::string_view> terminalBgColors{
-		{ TerminalBgColors::lightBlue, "\033[48;5;14m"sv  },
-		{ TerminalBgColors::darkBlue , "\033[48;5;21m"sv  },
-		{ TerminalBgColors::orange   , "\033[48;5;208m"sv },
-		{ TerminalBgColors::yellow   , "\033[48;5;226m"sv },
-		{ TerminalBgColors::green    , "\033[48;5;46m"sv  },
-		{ TerminalBgColors::red      , "\033[48;5;160m"sv },
-		{ TerminalBgColors::magenta  , "\033[48;5;129m"sv },
-		{ TerminalBgColors::black    , "\033[48;5;0m"sv   },
-		{ TerminalBgColors::white    , "\033[48;5;255m"sv },
-		{ TerminalBgColors::grey     , "\033[48;5;249m"sv },
+	const inline std::unordered_map<BackgroundColors, std::string_view> backgroundColors{
+		{ BackgroundColors::lightBlue	, "\033[48;5;14m"sv  },
+		{ BackgroundColors::darkBlue	, "\033[48;5;21m"sv  },
+		{ BackgroundColors::orange		, "\033[48;5;208m"sv },
+		{ BackgroundColors::yellow		, "\033[48;5;226m"sv },
+		{ BackgroundColors::green		, "\033[48;5;46m"sv  },
+		{ BackgroundColors::red			, "\033[48;5;160m"sv },
+		{ BackgroundColors::magenta		, "\033[48;5;129m"sv },
+		{ BackgroundColors::black		, "\033[48;5;0m"sv   },
+		{ BackgroundColors::white		, "\033[48;5;255m"sv },
+		{ BackgroundColors::grey		, "\033[48;5;249m"sv },
+		{ BackgroundColors::Default     , "\033[48;5;249m"sv },
 	};
 
 	// Foreground colors / the color of symbols printed to the terminal
-	const inline std::unordered_map<TerminalFgColors, std::string_view> terminalFgColors{
-		{ TerminalFgColors::lightBlue, "\033[38;5;14m"sv  },
-		{ TerminalFgColors::darkBlue , "\033[38;5;21m"sv  },
-		{ TerminalFgColors::orange   , "\033[38;5;208m"sv },
-		{ TerminalFgColors::yellow   , "\033[38;5;226m"sv },
-		{ TerminalFgColors::green    , "\033[38;5;46m"sv  },
-		{ TerminalFgColors::red      , "\033[38;5;160m"sv },
-		{ TerminalFgColors::magenta  , "\033[38;5;129m"sv },
-		{ TerminalFgColors::black    , "\033[38;5;0m"sv   },
-		{ TerminalFgColors::white    , "\033[38;5;255m"sv },
-		{ TerminalFgColors::grey     , "\033[38;5;249m"sv },
+	const inline std::unordered_map<ForegroundColors, std::string_view> foregroundColors{
+		{ ForegroundColors::lightBlue	, "\033[38;5;14m"sv  },
+		{ ForegroundColors::darkBlue	, "\033[38;5;21m"sv  },
+		{ ForegroundColors::orange		, "\033[38;5;208m"sv },
+		{ ForegroundColors::yellow		, "\033[38;5;226m"sv },
+		{ ForegroundColors::green		, "\033[38;5;46m"sv  },
+		{ ForegroundColors::red			, "\033[38;5;160m"sv },
+		{ ForegroundColors::magenta		, "\033[38;5;129m"sv },
+		{ ForegroundColors::black		, "\033[38;5;0m"sv   },
+		{ ForegroundColors::white		, "\033[38;5;255m"sv },
+		{ ForegroundColors::grey		, "\033[38;5;249m"sv },
+		{ BackgroundColors::Default     , "\033[48;5;249m"sv },
 	};
 }
 #endif
