@@ -7,6 +7,10 @@ namespace tetromino {
 		: m_shape(shape)
 	{}
 
+	Tetromino::Tetromino(std::initializer_list<std::initializer_list<terminalColors::BackgroundColors>>&& shape)
+		: m_shape(shape.begin(), shape.end())
+	{}
+
 	void Tetromino::rotate(const bool rotateRight) noexcept {
 		const std::size_t endIndex{ m_shape.size() - 1 };
 

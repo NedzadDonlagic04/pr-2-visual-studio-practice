@@ -19,6 +19,7 @@ namespace tetromino {
 	class Tetromino {
 	public:
 		Tetromino(std::vector<std::vector<terminalColors::BackgroundColors>>&&);
+		Tetromino(std::initializer_list<std::initializer_list<terminalColors::BackgroundColors>>&&);
 
 		void rotate(const bool = true) noexcept;
 

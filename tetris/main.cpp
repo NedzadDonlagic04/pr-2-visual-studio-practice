@@ -8,11 +8,9 @@ using TerminalBgColor = terminalColors::BackgroundColors;
 
 int main() {
 	tetromino::Tetromino tetromino{
-		std::vector<std::vector<TerminalBgColor>> {
 			{TerminalBgColor::grey, TerminalBgColor::green, TerminalBgColor::green},
 			{TerminalBgColor::green, TerminalBgColor::green, TerminalBgColor::grey},
 			{TerminalBgColor::grey, TerminalBgColor::grey, TerminalBgColor::grey},
-		}
 	};
 
 	std::cout << tetromino << '\n';
