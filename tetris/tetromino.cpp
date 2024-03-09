@@ -45,17 +45,6 @@ namespace tetromino {
 		}
 	}
 
-	std::ostream& operator<<(std::ostream& os, const Tetromino& tetromino) {
-		for (const auto& bgColorRows : tetromino.m_shape) {
-			for (const auto& bgColor : bgColorRows) {
-				utils::colorSpaceInTerminal(bgColor);
-			}
-			os << '\n';
-		}
-
-		return os;
-	}
-
 	// -------------------------------------
 	// functions and constants declaration / definitions
 	// -------------------------------------

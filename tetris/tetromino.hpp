@@ -30,8 +30,6 @@ namespace tetromino {
 		[[nodiscard]] std::size_t getShapeWidth() const noexcept;
 
 		void rotate(const bool = true) noexcept;
-
-		friend std::ostream& operator<<(std::ostream&, const Tetromino&);
 	private:
 		std::vector<std::vector<terminalColors::BackgroundColors>> m_shape{};
 	};
