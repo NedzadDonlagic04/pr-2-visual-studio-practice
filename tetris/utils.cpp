@@ -5,6 +5,11 @@
 #include<chrono>
 #include<thread>
 
+/*
+	Source for the various cursor movement ansi codes (and possibly others)
+	https://gist.github.com/fnky/458719343aabd01cfb17a3a4f7296797#cursor-controls
+*/
+
 namespace utils {
 	void moveCursorToPosition(const int x, const int y) {
 		if (x < 0 || y < 0) {

@@ -6,6 +6,11 @@
 
 using namespace std::string_view_literals;
 
+/*
+	Source for the color codes
+	https://gist.github.com/fnky/458719343aabd01cfb17a3a4f7296797#256-colors
+*/
+
 namespace terminalColors {
 	enum class BackgroundColors {
 		lightBlue,
