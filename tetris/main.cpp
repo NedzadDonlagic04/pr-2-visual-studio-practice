@@ -2,9 +2,9 @@
 #include"tetrisGame.hpp"
 
 int main() {
-	tetris::TetrisGame tetrisGame{};
+    tetris::TetrisGame tetrisGame{};
 
-	tetrisGame.run();
+    tetrisGame.run();
 
-	return 0;
+    return 0;
 }
