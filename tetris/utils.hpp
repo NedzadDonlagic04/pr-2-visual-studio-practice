@@ -15,7 +15,7 @@ using TerminalBgColor = terminalColors::BackgroundColors;
 
 namespace utils {
 	void moveCursorToPosition(const int, const int);
-	void colorSpaceInTerminal(TerminalBgColor = TerminalBgColor::black);
+	void printTextWithBgColor(const std::string_view, TerminalBgColor = TerminalBgColor::Default);
 
 	void clearScreen() noexcept;
 	void delayMs(const int64_t);
