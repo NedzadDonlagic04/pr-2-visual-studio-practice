@@ -83,7 +83,7 @@ namespace tetris {
 	void PlayField::printPlayFieldBorderLine() const noexcept {
 		// The + 2 in the condition is for it to take into account the sides
 		// you can remove it to see it's effects better
-		for (std::size_t i = 0; i < m_playField[0].size() + 2; i++) {
+		for (std::size_t i = 0; i < m_playField[0].size() + 2; ++i) {
 			utils::printTextWithBgColor(getPlayFieldBlock(), borberColor);
 		}
 		std::cout << '\n';
@@ -92,10 +92,10 @@ namespace tetris {
 	void PlayField::printChunkOfPlayField(const std::size_t start, const std::size_t end) const noexcept {
 		printPlayFieldBorderLine();
 
-		for (std::size_t i = start; i < end; i++) {
+		for (std::size_t i = start; i < end; ++i) {
 			utils::printTextWithBgColor(getPlayFieldBlock(), borberColor);
 
-			for (std::size_t ii = 0; ii < m_playField[i].size(); ii++) {
+			for (std::size_t ii = 0; ii < m_playField[i].size(); ++ii) {
 				utils::printTextWithBgColor(getPlayFieldBlock(), m_playField[i][ii]);
 			}
 
