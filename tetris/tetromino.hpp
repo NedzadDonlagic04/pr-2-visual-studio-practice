@@ -2,7 +2,6 @@
 #define _TETRIS_TETROMINO_HPP
 
 #include<vector>
-#include<array>
 #include"terminalColors.hpp"
 
 using TerminalBgColor = terminalColors::BackgroundColors;
@@ -38,32 +37,29 @@ namespace tetromino {
 	// functions and constants declaration / definitions
 	// -------------------------------------
 
-	void printAllRotationsOfATetromino(Tetromino&);
-
 	/*
 		Rotation and shapes with sizes were all decided after reading the page below
 		https://tetris.wiki/Super_Rotation_System
 	*/
-	constexpr std::size_t maxTetrominos{ 7 };
-	inline const std::array<Tetromino, maxTetrominos> tetrominos{
+	inline const std::vector<Tetromino> tetrominos{
 		// I shape
 		Tetromino{
-			{TerminalBgColor::grey,      TerminalBgColor::grey,      TerminalBgColor::grey,      TerminalBgColor::grey},
+			{TerminalBgColor::Default  , TerminalBgColor::Default  , TerminalBgColor::Default  , TerminalBgColor::Default},
 			{TerminalBgColor::lightBlue, TerminalBgColor::lightBlue, TerminalBgColor::lightBlue, TerminalBgColor::lightBlue},
-			{TerminalBgColor::grey,      TerminalBgColor::grey,      TerminalBgColor::grey,      TerminalBgColor::grey},
-			{TerminalBgColor::grey,      TerminalBgColor::grey,      TerminalBgColor::grey,      TerminalBgColor::grey},
+			{TerminalBgColor::Default  , TerminalBgColor::Default  , TerminalBgColor::Default  , TerminalBgColor::Default},
+			{TerminalBgColor::Default  , TerminalBgColor::Default  , TerminalBgColor::Default  , TerminalBgColor::Default},
 		},
 		// J shape
 		Tetromino{
-			{TerminalBgColor::darkBlue, TerminalBgColor::grey,     TerminalBgColor::grey},
+			{TerminalBgColor::darkBlue, TerminalBgColor::Default , TerminalBgColor::Default},
 			{TerminalBgColor::darkBlue, TerminalBgColor::darkBlue, TerminalBgColor::darkBlue},
-			{TerminalBgColor::grey,     TerminalBgColor::grey,     TerminalBgColor::grey},
+			{TerminalBgColor::Default , TerminalBgColor::Default , TerminalBgColor::Default},
 		},
 		// L shape
 		Tetromino{
-			{TerminalBgColor::grey,   TerminalBgColor::grey,   TerminalBgColor::orange},
-			{TerminalBgColor::orange, TerminalBgColor::orange, TerminalBgColor::orange},
-			{TerminalBgColor::grey,   TerminalBgColor::grey,   TerminalBgColor::grey},
+			{TerminalBgColor::Default, TerminalBgColor::Default, TerminalBgColor::orange},
+			{TerminalBgColor::orange , TerminalBgColor::orange , TerminalBgColor::orange},
+			{TerminalBgColor::Default, TerminalBgColor::Default, TerminalBgColor::Default},
 		},
 		// O shape
 		Tetromino{
@@ -72,21 +68,21 @@ namespace tetromino {
 		},
 		// S shape
 		Tetromino{
-			{TerminalBgColor::grey,  TerminalBgColor::green,  TerminalBgColor::green},
-			{TerminalBgColor::green, TerminalBgColor::green, TerminalBgColor::grey},
-			{TerminalBgColor::grey,  TerminalBgColor::grey,   TerminalBgColor::grey},
+			{TerminalBgColor::Default, TerminalBgColor::green  , TerminalBgColor::green},
+			{TerminalBgColor::green  , TerminalBgColor::green  , TerminalBgColor::Default},
+			{TerminalBgColor::Default, TerminalBgColor::Default, TerminalBgColor::Default},
 		},
 		// T shape
 		Tetromino{
-			{TerminalBgColor::grey,    TerminalBgColor::magenta, TerminalBgColor::grey},
+			{TerminalBgColor::Default, TerminalBgColor::magenta, TerminalBgColor::Default},
 			{TerminalBgColor::magenta, TerminalBgColor::magenta, TerminalBgColor::magenta},
-			{TerminalBgColor::grey,    TerminalBgColor::grey,    TerminalBgColor::grey},
+			{TerminalBgColor::Default, TerminalBgColor::Default, TerminalBgColor::Default},
 		},
 		// Z shape
 		Tetromino{
-			{TerminalBgColor::red,  TerminalBgColor::red,  TerminalBgColor::grey},
-			{TerminalBgColor::grey, TerminalBgColor::red,  TerminalBgColor::red},
-			{TerminalBgColor::grey, TerminalBgColor::grey, TerminalBgColor::grey},
+			{TerminalBgColor::red    , TerminalBgColor::red    , TerminalBgColor::Default},
+			{TerminalBgColor::Default, TerminalBgColor::red    , TerminalBgColor::red},
+			{TerminalBgColor::Default, TerminalBgColor::Default, TerminalBgColor::Default},
 		}
 	};
 }

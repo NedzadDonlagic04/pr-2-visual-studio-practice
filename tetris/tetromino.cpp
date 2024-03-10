@@ -48,13 +48,4 @@ namespace tetromino {
 	// -------------------------------------
 	// functions and constants declaration / definitions
 	// -------------------------------------
-
-	void printAllRotationsOfATetromino(Tetromino& tetromino) {
-		for (int i = 0; i < 4; i++) {
-			std::cout << tetromino << '\n';
-			tetromino.rotate();
-		}
-
-		std::cout << tetromino << '\n';
-	}
 }
