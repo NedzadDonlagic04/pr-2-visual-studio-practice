@@ -29,8 +29,8 @@ namespace tetromino {
 	void Tetromino::rotate(const bool rotateRight) noexcept {
 		const std::size_t endIndex{ m_shape.size() - 1 };
 
-		for (std::size_t i = 0; i < endIndex - i; i++) {
-			for (std::size_t ii = i; ii < endIndex - i; ii++) {
+		for (std::size_t i = 0; i < endIndex - i; ++i) {
+			for (std::size_t ii = i; ii < endIndex - i; ++ii) {
 				if (rotateRight) {
 					std::swap(m_shape[i][ii], m_shape[ii][endIndex - i]);
 					std::swap(m_shape[i][ii], m_shape[endIndex - i][endIndex - ii]);
