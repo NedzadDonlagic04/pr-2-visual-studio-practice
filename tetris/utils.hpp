@@ -17,6 +17,8 @@ namespace utils {
 	void moveCursorToPosition(const int, const int);
 	void printTextWithBgColor(const std::string_view, TerminalBgColor = TerminalBgColor::Default);
 
+	[[nodiscard]] std::streamsize getDigitWidth(const int);
+
 	void clearScreen() noexcept;
 	void delayMs(const int64_t);
 }

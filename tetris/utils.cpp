@@ -4,6 +4,7 @@
 #include<iostream>
 #include<chrono>
 #include<thread>
+#include<cmath>
 
 /*
 	Source for the various cursor movement ansi codes (and possibly others)
@@ -24,6 +25,13 @@ namespace utils {
 		const std::string_view defaultBgColor = terminalColors::backgroundColors.at(terminalColors::BackgroundColors::Default);
 
 		std::cout << bgColor << text << defaultBgColor;
+	}
+
+	std::streamsize getDigitWidth(const int num) {
+		const bool isNeg{ num < 0 };
+
+		// uint64_t is here because I expect only integers here
+		return static_cast<uint64_t>(std::log10(std::abs(num))) + 1 + isNeg;
 	}
 
 	void clearScreen() noexcept {
