@@ -15,7 +15,7 @@ namespace tetris {
 	// -------------------------------------
 	// LinesClearedInfo class definition
 	// -------------------------------------
-	
+
 	// public members below
 	LinesClearedInfo::LinesClearedInfo(const std::string_view linesInfoText, const std::size_t playFieldWidth)
 		: m_lineInfoText(linesInfoText)
@@ -41,7 +41,7 @@ namespace tetris {
 	// -------------------------------------
 	// PlayField class definition
 	// -------------------------------------
-	
+
 	// public members below
 	PlayField::PlayField()
 		: m_playField(std::vector<std::vector<TerminalBgColor>>(totalAreaHeight, std::vector<TerminalBgColor>(totalAreaWidth, TerminalBgColor::Default)))
@@ -50,7 +50,7 @@ namespace tetris {
 	std::size_t PlayField::getPlayFieldWidth() const noexcept {
 		return m_playField[0].size();
 	}
-	
+
 	std::size_t PlayField::getPlayFieldHeight() const noexcept {
 		return m_playField.size();
 	}
@@ -63,6 +63,17 @@ namespace tetris {
 
 		printChunkOfPlayField(spawnAreaHeight, getPlayFieldHeight());
 		printPlayFieldBorderLine();
+	}
+
+	void PlayField::spawnTetrominoOnPlayField(const tetromino::Tetromino& tetromino) {
+		const std::size_t initialX{ 0 };
+		const std::size_t initialY{ (getPlayFieldWidth() - tetromino.getShapeWidth()) / 2 };
+		
+		for (std::size_t i = 0; i < tetromino.getShapeHeight(); ++i) {
+			for (std::size_t ii = 0; ii < tetromino.getShapeWidth(); ++ii) {
+				m_playField[i + initialX][ii + initialY] = tetromino(i, ii);
+			}
+		}
 	}
 
 	// private members below
@@ -94,15 +105,15 @@ namespace tetris {
 	// -------------------------------------
 	// TetrisGame class definition
 	// -------------------------------------
-	
+
 	// public members below
-	TetrisGame::TetrisGame() 
+	TetrisGame::TetrisGame()
 		: LinesClearedInfo("Lines cleared")
 		, PlayField()
-		, tetrominos(tetromino::tetrominos)
-		, rng(std::random_device()())
+		, m_tetrominos(tetromino::tetrominos)
+		, m_rng(std::random_device()())
 	{
-		shuffleTetrominos();
+		// shuffleTetrominos();
 	}
 
 	void TetrisGame::run() {
@@ -128,6 +139,8 @@ namespace tetris {
 	void TetrisGame::startMainGameLoop() {
 		printLinesClearedInfo();
 
+		spawnTetrominoOnPlayField(getCurrentTetromino());
+
 		// put true here to show the spawn area for the
 		// tetrominos
 		printPlayField(true);
@@ -143,13 +156,13 @@ namespace tetris {
 
 		const auto& maxLinesClearedWidth{ utils::getDigitWidth(maxLinesCleared) };
 
-		const int64_t& fullInfoSize = getLineInfoText().size() + separator.size() + maxLinesClearedWidth;
+		const int64_t fullInfoSize = getLineInfoText().size() + separator.size() + maxLinesClearedWidth;
 
 		// The addition of 2 below is so the borders of the play field are taken into account
 		// The integer division by 2 is intentional (until it becomes a bug then it isn't)
-		const int64_t& fullPlayFieldWidth = (getPlayFieldWidth() + 2) * playFieldBlock.size();
+		const int64_t fullPlayFieldWidth = (getPlayFieldWidth() + 2) * playFieldBlock.size();
 
-		const int64_t& paddingSize{ (fullInfoSize >= fullPlayFieldWidth) ? 0 : (fullPlayFieldWidth - fullInfoSize) / 2};
+		const int64_t paddingSize{ (fullInfoSize >= fullPlayFieldWidth) ? 0 : (fullPlayFieldWidth - fullInfoSize) / 2 };
 
 		std::cout << std::string(paddingSize, ' ') << getLineInfoText() << separator;
 		std::cout << std::setw(maxLinesClearedWidth) << std::setfill('0') << getLinesCleared() << '\n';
@@ -157,8 +170,22 @@ namespace tetris {
 		// Restore initial std::cout formatting
 		std::cout.copyfmt(initialFormatting);
 	}
-	
+
 	void TetrisGame::shuffleTetrominos() noexcept {
-		std::shuffle(tetrominos.begin(), tetrominos.end(), rng);
+		std::shuffle(m_tetrominos.begin(), m_tetrominos.end(), m_rng);
+	}
+
+	void TetrisGame::removeLastUsedTetromino() noexcept {
+		m_tetrominos.pop_back();
+
+		if (m_tetrominos.size() == 0) {
+			m_tetrominos = tetromino::tetrominos;
+		}
+
+		shuffleTetrominos();
+	}
+
+	tetromino::Tetromino& TetrisGame::getCurrentTetromino() noexcept {
+		return m_tetrominos.back();
 	}
 }

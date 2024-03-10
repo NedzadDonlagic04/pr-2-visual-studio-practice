@@ -6,6 +6,8 @@ namespace tetromino {
 	// -------------------------------------
 	// Tetromino class implementation
 	// -------------------------------------
+
+	// public
 	Tetromino::Tetromino(const std::vector<std::vector<terminalColors::BackgroundColors>>& shape)
 		: m_shape(shape)
 	{}
@@ -28,7 +30,7 @@ namespace tetromino {
 
 	void Tetromino::rotate(const bool rotateRight) noexcept {
 		const std::size_t endIndex{ m_shape.size() - 1 };
-
+			
 		for (std::size_t i = 0; i < endIndex - i; ++i) {
 			for (std::size_t ii = i; ii < endIndex - i; ++ii) {
 				if (rotateRight) {
@@ -44,8 +46,10 @@ namespace tetromino {
 			}
 		}
 	}
+	
+	terminalColors::BackgroundColors Tetromino::operator()(const std::size_t rowsIndex, const std::size_t colsIndex) const noexcept {
+		return m_shape[rowsIndex][colsIndex];
+	}
 
-	// -------------------------------------
-	// functions and constants declaration / definitions
-	// -------------------------------------
+	// private
 }

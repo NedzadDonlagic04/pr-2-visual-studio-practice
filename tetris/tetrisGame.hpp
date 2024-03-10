@@ -6,6 +6,7 @@
 
 #include<vector>
 #include<random>
+#include<utility>
 
 using TerminalBgColor = terminalColors::BackgroundColors;
 
@@ -22,13 +23,13 @@ namespace tetris {
 		[[nodiscard]] std::string_view getLineInfoText() const noexcept;
 		[[nodiscard]] int getLinesCleared() const noexcept;
 
-		void incrementLinesCleared() noexcept;
-
 		virtual void printLinesClearedInfo() const noexcept = 0;
 	
 	protected:
 		constexpr static int maxLinesCleared{ 999 };
 		constexpr static std::string_view separator{ " - " };
+
+		void incrementLinesCleared() noexcept;
 
 	private:
 		std::string_view m_lineInfoText{};
@@ -46,7 +47,7 @@ namespace tetris {
 		[[nodiscard]] std::size_t getPlayFieldHeight() const noexcept;
 
 		void printPlayField(const bool = false) const noexcept;
-	
+
 	protected:
 		constexpr static std::size_t spawnAreaHeight{ 5 };
 		constexpr static std::size_t playAreaHeight{ 20 };
@@ -54,10 +55,12 @@ namespace tetris {
 		constexpr static std::size_t totalAreaWidth{ 10 };
 
 		constexpr static TerminalBgColor borberColor{ TerminalBgColor::grey };
-		constexpr static std::string_view playFieldBlock { "  "};
+		constexpr static std::string_view playFieldBlock{ "  " };
 	
+		void spawnTetrominoOnPlayField(const tetromino::Tetromino&);
+
 	private:
-		const std::vector<std::vector<TerminalBgColor>> m_playField{};
+		std::vector<std::vector<TerminalBgColor>> m_playField{};
 
 		void printPlayFieldBorderLine() const noexcept;
 		void printChunkOfPlayField(const std::size_t, const std::size_t) const noexcept;
@@ -73,9 +76,10 @@ namespace tetris {
 		TetrisGame();
 
 		void run();
+	
 	private:
-		std::vector<tetromino::Tetromino> tetrominos{};
-		std::mt19937 rng{};
+		std::vector<tetromino::Tetromino> m_tetrominos{};
+		std::mt19937 m_rng{};
 
 		void printGameIntroInfo() const noexcept;
 		void startMainGameLoop();
@@ -83,6 +87,9 @@ namespace tetris {
 		void printLinesClearedInfo() const noexcept override;
 
 		void shuffleTetrominos() noexcept;
+		void removeLastUsedTetromino() noexcept;
+
+		[[nodiscard]] tetromino::Tetromino& getCurrentTetromino() noexcept;
 	};
 }
 

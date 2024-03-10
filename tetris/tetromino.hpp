@@ -29,6 +29,8 @@ namespace tetromino {
 		[[nodiscard]] std::size_t getShapeWidth() const noexcept;
 
 		void rotate(const bool = true) noexcept;
+		
+		[[nodiscard]] terminalColors::BackgroundColors operator()(const std::size_t, const std::size_t) const noexcept;
 	private:
 		std::vector<std::vector<terminalColors::BackgroundColors>> m_shape{};
 	};
