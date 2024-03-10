@@ -1,8 +1,11 @@
 #ifndef _TETRIS_TETRIS_GAME_HPP
 #define _TETRIS_TETRIS_GAME_HPP
 
-#include<vector>
 #include"terminalColors.hpp"
+#include"tetromino.hpp"
+
+#include<vector>
+#include<random>
 
 using TerminalBgColor = terminalColors::BackgroundColors;
 
@@ -12,6 +15,7 @@ namespace tetris {
 	// -------------------------------------
 	class LinesClearedInfo {
 	public:
+
 		LinesClearedInfo() = default;
 		LinesClearedInfo(const std::string_view, const std::size_t = 0);
 
@@ -19,11 +23,16 @@ namespace tetris {
 		[[nodiscard]] int getLinesCleared() const noexcept;
 
 		void incrementLinesCleared() noexcept;
-		void printLinesClearedInfo() const noexcept;
+
+		virtual void printLinesClearedInfo() const noexcept = 0;
+	
+	protected:
+		constexpr static int maxLinesCleared{ 999 };
+		constexpr static std::string_view separator{ " - " };
+
 	private:
 		std::string_view m_lineInfoText{};
 		int m_linesCleared{};
-		const std::size_t m_windowWidth{};
 	};
 
 	// -------------------------------------
@@ -31,20 +40,24 @@ namespace tetris {
 	// -------------------------------------
 	class PlayField {
 	public:
-		PlayField() = default;
-		PlayField(const std::size_t, const std::size_t, const std::string_view = "  ");
+		PlayField();
 		
-		[[nodiscard]] std::string_view getPlayFieldBlock() const noexcept;
 		[[nodiscard]] std::size_t getPlayFieldWidth() const noexcept;
 		[[nodiscard]] std::size_t getPlayFieldHeight() const noexcept;
 
 		void printPlayField(const bool = false) const noexcept;
+	
+	protected:
+		constexpr static std::size_t spawnAreaHeight{ 5 };
+		constexpr static std::size_t playAreaHeight{ 20 };
+		constexpr static std::size_t totalAreaHeight{ spawnAreaHeight + playAreaHeight };
+		constexpr static std::size_t totalAreaWidth{ 10 };
+
+		constexpr static TerminalBgColor borberColor{ TerminalBgColor::grey };
+		constexpr static std::string_view playFieldBlock { "  "};
+	
 	private:
 		const std::vector<std::vector<TerminalBgColor>> m_playField{};
-		const std::string_view m_playFieldBlock {};
-
-		constexpr static std::size_t spawnAreaHeight{ 5 };
-		constexpr static TerminalBgColor borberColor{ TerminalBgColor::grey };
 
 		void printPlayFieldBorderLine() const noexcept;
 		void printChunkOfPlayField(const std::size_t, const std::size_t) const noexcept;
@@ -54,18 +67,22 @@ namespace tetris {
 	// TetrisGame class declaration
 	// -------------------------------------
 	class TetrisGame 
-		: public PlayField
-		, public LinesClearedInfo {
+		: public LinesClearedInfo
+		, public PlayField {
 	public:
 		TetrisGame();
 
 		void run();
 	private:
+		std::vector<tetromino::Tetromino> tetrominos{};
+		std::mt19937 rng{};
+
 		void printGameIntroInfo() const noexcept;
 		void startMainGameLoop();
 
-		constexpr static std::size_t intendedGameScreenWidth{ 10 };
-		constexpr static std::size_t intendedGameScreenHeight { 20 };
+		void printLinesClearedInfo() const noexcept override;
+
+		void shuffleTetrominos() noexcept;
 	};
 }
 
