@@ -18,7 +18,7 @@ namespace tetris {
 	public:
 
 		LinesClearedInfo() = default;
-		LinesClearedInfo(const std::string_view, const std::size_t = 0);
+		LinesClearedInfo(const std::string_view);
 
 		[[nodiscard]] std::string_view getLineInfoText() const noexcept;
 		[[nodiscard]] int getLinesCleared() const noexcept;
@@ -29,11 +29,12 @@ namespace tetris {
 		constexpr static int maxLinesCleared{ 999 };
 		constexpr static std::string_view separator{ " - " };
 
+		void setLinesCleared(const int) noexcept;
 		void incrementLinesCleared() noexcept;
 
 	private:
-		std::string_view m_lineInfoText{};
-		int m_linesCleared{};
+		const std::string_view m_lineInfoText{};
+		int m_linesCleared{ 0 };
 	};
 
 	// -------------------------------------
@@ -46,21 +47,40 @@ namespace tetris {
 		[[nodiscard]] std::size_t getPlayFieldWidth() const noexcept;
 		[[nodiscard]] std::size_t getPlayFieldHeight() const noexcept;
 
-		void printPlayField(const bool = false) const noexcept;
+		[[nodiscard]] std::size_t getCurrentTetrominoX() const noexcept;
+		[[nodiscard]] std::size_t getCurrentTetrominoY() const noexcept;
 
+		void printPlayField(const tetromino::Tetromino&, const bool = false) const noexcept;
+
+		[[nodiscard]] bool checkCanTetrominoMoveDown(const tetromino::Tetromino&) noexcept;
+	
 	protected:
 		constexpr static std::size_t spawnAreaHeight{ 5 };
 		constexpr static std::size_t playAreaHeight{ 20 };
 		constexpr static std::size_t totalAreaHeight{ spawnAreaHeight + playAreaHeight };
 		constexpr static std::size_t totalAreaWidth{ 10 };
 
-		constexpr static TerminalBgColor borberColor{ TerminalBgColor::grey };
+		constexpr static TerminalBgColor borderColor{ TerminalBgColor::grey };
 		constexpr static std::string_view playFieldBlock{ "  " };
 	
-		void spawnTetrominoOnPlayField(const tetromino::Tetromino&);
+		void spawnTetrominoOnPlayField(const tetromino::Tetromino&) noexcept;
 
+		void moveTetrominoDown(const tetromino::Tetromino&);
+		void drawTetromino(const tetromino::Tetromino&) noexcept;
+
+		[[nodiscard]] bool wasSpawnLineCrossed() const noexcept;
+	
 	private:
 		std::vector<std::vector<TerminalBgColor>> m_playField{};
+
+		std::size_t m_currentTetrominoX{};
+		std::size_t m_currentTetrominoY{};
+
+		void setCurrentTetrominoX(const std::size_t) noexcept;
+		void setCurrentTetrominoY(const std::size_t) noexcept;
+		void setCurrentTetrominoPosition(const tetromino::Tetromino& tetromino) noexcept;
+
+		void moveDownALine() noexcept;
 
 		void printPlayFieldBorderLine() const noexcept;
 		void printChunkOfPlayField(const std::size_t, const std::size_t) const noexcept;
@@ -69,7 +89,7 @@ namespace tetris {
 	// -------------------------------------
 	// TetrisGame class declaration
 	// -------------------------------------
-	class TetrisGame 
+	class TetrisGame	
 		: public LinesClearedInfo
 		, public PlayField {
 	public:
@@ -77,9 +97,16 @@ namespace tetris {
 
 		void run();
 	
+		[[nodiscard]] bool isGameOver() const noexcept;
 	private:
-		std::vector<tetromino::Tetromino> m_tetrominos{};
-		std::mt19937 m_rng{};
+		std::vector<tetromino::Tetromino> m_tetrominos{ tetromino::tetrominos };
+		std::mt19937 m_rng{ std::random_device()() };
+
+		bool m_isCurrentTetrminoLockedIn{ true };
+		int64_t m_milisecondsPassed{ 0 };
+
+		constexpr static int64_t msPassedEachLoop{ 100 };
+		constexpr static int64_t msNeededFor1MoveDown{ msPassedEachLoop };
 
 		void printGameIntroInfo() const noexcept;
 		void startMainGameLoop();
@@ -90,6 +117,12 @@ namespace tetris {
 		void removeLastUsedTetromino() noexcept;
 
 		[[nodiscard]] tetromino::Tetromino& getCurrentTetromino() noexcept;
+		
+		[[nodiscard]] int64_t getCurrentMsPassed() const noexcept;
+		void incrementMsPassed() noexcept;
+		
+		void setIsCurrentTetrominoLockedIn(const bool) noexcept;
+		void setMsPassed(const int64_t) noexcept;
 	};
 }
 
