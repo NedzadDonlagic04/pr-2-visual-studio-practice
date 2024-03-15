@@ -15,12 +15,12 @@ using TerminalBgColor = terminalColors::BackgroundColors;
 
 namespace utils {
 	void moveCursorToPosition(const int, const int);
-	void printTextWithBgColor(const std::string_view, TerminalBgColor = TerminalBgColor::Default);
+	void printTextWithBgColor(const std::string_view, TerminalBgColor = TerminalBgColor::Default) noexcept;
 
-	[[nodiscard]] std::streamsize getDigitWidth(const int);
+	[[nodiscard]] std::streamsize getDigitWidth(const int) noexcept;
 
 	void clearScreen() noexcept;
-	void delayMs(const int64_t);
+	void delayMs(const uint64_t);
 }
 
 #endif

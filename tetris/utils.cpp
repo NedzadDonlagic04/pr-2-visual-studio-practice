@@ -20,25 +20,26 @@ namespace utils {
 		std::cout << "\033[" << y << ";" << x << "H";
 	}
 
-	void printTextWithBgColor(const std::string_view text, TerminalBgColor terminalBgColor) {
+	void printTextWithBgColor(const std::string_view text, TerminalBgColor terminalBgColor) noexcept {
 		const std::string_view bgColor = terminalColors::backgroundColors.at(terminalBgColor);
 		const std::string_view defaultBgColor = terminalColors::backgroundColors.at(terminalColors::BackgroundColors::Default);
 
 		std::cout << bgColor << text << defaultBgColor;
 	}
 
-	std::streamsize getDigitWidth(const int num) {
+	std::streamsize getDigitWidth(const int num) noexcept {
 		const bool isNeg{ num < 0 };
 
-		// uint64_t is here because I expect only integers here
-		return static_cast<uint64_t>(std::log10(std::abs(num))) + 1 + isNeg;
+		// static cast to std::streamsize because the result of std::log10 
+		// is double
+		return static_cast<std::streamsize>(std::log10(std::abs(num))) + 1 + isNeg;
 	}
 
 	void clearScreen() noexcept {
 		std::cout << "\033[2J\033[H";
 	}
 
-	void delayMs(const int64_t miliseconds) {
+	void delayMs(const uint64_t miliseconds) {
 		std::this_thread::sleep_for(std::chrono::milliseconds(miliseconds));
 	}
 }
