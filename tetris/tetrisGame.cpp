@@ -328,10 +328,8 @@ namespace tetris {
 	}
 
 	void TetrisGame::handleKeyPressActions() noexcept {
-		char keyPressed{ '\0' };
-
 		if (utils::isKeyPressed()) {
-			keyPressed = utils::getPressedKey();
+			const char keyPressed{ utils::getPressedKey() };
 
 			if (m_keyPressEvents.find(keyPressed) != m_keyPressEvents.end()) {
 				m_keyPressEvents.at(keyPressed)();
