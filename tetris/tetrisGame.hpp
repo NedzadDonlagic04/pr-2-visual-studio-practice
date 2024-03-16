@@ -6,7 +6,7 @@
 
 #include<vector>
 #include<random>
-#include<utility>
+#include<functional>
 
 using TerminalBgColor = terminalColors::BackgroundColors;
 
@@ -105,6 +105,19 @@ namespace tetris {
 		bool m_isCurrentTetrminoLockedIn{ true };
 		int64_t m_milisecondsPassed{ 0 };
 
+		const std::unordered_map<char, std::function<void()>> m_keyPressEvents{
+			{ 
+				'q', [&]() {
+					getCurrentTetromino().rotateLeft();
+				} 
+			},
+			{
+				'e', [&]() {
+					getCurrentTetromino().rotateRight();
+				}
+			},
+		};
+
 		constexpr static int64_t msPassedEachLoop{ 100 };
 		constexpr static int64_t msNeededFor1MoveDown{ msPassedEachLoop };
 
@@ -115,6 +128,8 @@ namespace tetris {
 
 		void shuffleTetrominos() noexcept;
 		void removeLastUsedTetromino() noexcept;
+
+		void handleKeyPressActions() noexcept;
 
 		[[nodiscard]] tetromino::Tetromino& getCurrentTetromino() noexcept;
 		

@@ -264,6 +264,8 @@ namespace tetris {
 			utils::delayMs(msPassedEachLoop);
 			incrementMsPassed();
 
+			handleKeyPressActions();
+
 			const bool didEnoughTimePassForMove{ getCurrentMsPassed() >= msNeededFor1MoveDown };
 			const bool canTetrominoMoveDown{ checkCanTetrominoMoveDown(currentTetromino) };
 
@@ -323,6 +325,18 @@ namespace tetris {
 		}
 
 		shuffleTetrominos();
+	}
+
+	void TetrisGame::handleKeyPressActions() noexcept {
+		char keyPressed{ '\0' };
+
+		if (utils::isKeyPressed()) {
+			keyPressed = utils::getPressedKey();
+
+			if (m_keyPressEvents.find(keyPressed) != m_keyPressEvents.end()) {
+				m_keyPressEvents.at(keyPressed)();
+			}
+		}
 	}
 
 	tetromino::Tetromino& TetrisGame::getCurrentTetromino() noexcept {
