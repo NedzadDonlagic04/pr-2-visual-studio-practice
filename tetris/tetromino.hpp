@@ -28,11 +28,15 @@ namespace tetromino {
 		[[nodiscard]] std::size_t getShapeHeight() const noexcept;
 		[[nodiscard]] std::size_t getShapeWidth() const noexcept;
 
-		void rotate(const bool = true) noexcept;
-		
+		void rotateLeft() noexcept;
+		void rotateRight() noexcept;
+	
 		[[nodiscard]] terminalColors::BackgroundColors operator()(const std::size_t, const std::size_t) const noexcept;
+	
 	private:
 		std::vector<std::vector<terminalColors::BackgroundColors>> m_shape{};
+		
+		void rotate(const bool = false) noexcept;
 	};
 
 	// -------------------------------------

@@ -41,6 +41,20 @@ namespace tetromino {
 		return m_shape[0].size();
 	}
 
+	void Tetromino::rotateLeft() noexcept {
+		rotate();
+	}
+
+	void Tetromino::rotateRight() noexcept {
+		rotate(true);
+	}
+	
+	terminalColors::BackgroundColors Tetromino::operator()(const std::size_t rowsIndex, const std::size_t colsIndex) const noexcept {
+		return m_shape[rowsIndex][colsIndex];
+	}
+
+	// private
+
 	void Tetromino::rotate(const bool rotateRight) noexcept {
 		const std::size_t endIndex{ m_shape.size() - 1 };
 			
@@ -59,10 +73,4 @@ namespace tetromino {
 			}
 		}
 	}
-	
-	terminalColors::BackgroundColors Tetromino::operator()(const std::size_t rowsIndex, const std::size_t colsIndex) const noexcept {
-		return m_shape[rowsIndex][colsIndex];
-	}
-
-	// private
 }
