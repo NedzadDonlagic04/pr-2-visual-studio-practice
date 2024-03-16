@@ -151,7 +151,9 @@ namespace tetris {
 	void PlayField::drawTetromino(const tetromino::Tetromino& tetromino) noexcept {
 		for (std::size_t i = 0; i < tetromino.getShapeHeight(); ++i) {
 			for (std::size_t ii = 0; ii < tetromino.getShapeWidth(); ++ii) {
-				m_playField[i + getCurrentTetrominoX()][ii + getCurrentTetrominoY()] = tetromino(i, ii);
+				if (tetromino(i, ii) != TerminalBgColor::Default) {
+					m_playField[i + getCurrentTetrominoX()][ii + getCurrentTetrominoY()] = tetromino(i, ii);
+				}
 			}
 		}
 	}
@@ -216,7 +218,7 @@ namespace tetris {
 		: LinesClearedInfo("Lines cleared")
 		, PlayField()
 	{
-		// shuffleTetrominos();
+		shuffleTetrominos();
 	}
 
 	void TetrisGame::run() {
@@ -269,6 +271,7 @@ namespace tetris {
 				setIsCurrentTetrominoLockedIn(true);
 				setMsPassed(0);
 				drawTetromino(currentTetromino);
+				removeLastUsedTetromino();
 
 				if (isGameOver()) {
 					break;
