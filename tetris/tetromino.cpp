@@ -22,15 +22,15 @@ namespace tetromino {
 	{}
 
 	std::size_t Tetromino::getShapeHeight() const noexcept {
-		for (std::size_t i = 0; i < m_shape.size(); ++i) {
+		for (std::ptrdiff_t i = m_shape.size() - 1; i >= 0; --i) {
 			const bool isEntireRowDefaultColor{ std::all_of(m_shape[i].begin(), m_shape[i].end(),
 				[](const auto color) {
 					return color == TerminalBgColor::Default;
 				}
 			) };
 
-			if (isEntireRowDefaultColor) {
-				return i;
+			if (!isEntireRowDefaultColor) {
+				return i + 1;
 			}
 		}
 
@@ -38,21 +38,6 @@ namespace tetromino {
 	}
 
 	std::size_t Tetromino::getShapeWidth() const noexcept {
-		const auto isEntireColDefaultColor = [&](const std::size_t col) {
-			for (std::size_t i = 0; i < m_shape.size() - 1; ++i) {
-				if (m_shape[i][col] != m_shape[i + 1][col]) {
-					return false;
-				}
-			}
-			return true;
-		};
-
-		for (std::size_t i = 0; i < m_shape[0].size(); ++i) {
-			if (isEntireColDefaultColor(i)) {
-				return i;
-			}
-		}
-
 		return m_shape[0].size();
 	}
 
