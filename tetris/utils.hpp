@@ -21,6 +21,9 @@ namespace utils {
 
 	void clearScreen() noexcept;
 	void delayMs(const uint64_t);
+
+	[[nodiscard]] bool isKeyPressed() noexcept;
+	[[nodiscard]] char getPressedKey() noexcept;
 }
 
 #endif

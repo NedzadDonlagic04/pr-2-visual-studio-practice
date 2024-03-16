@@ -5,6 +5,11 @@
 #include<chrono>
 #include<thread>
 #include<cmath>
+#include<limits>
+
+// For key pressed shenanigans
+#include<conio.h>
+#include<windows.h>
 
 /*
 	Source for the various cursor movement ansi codes (and possibly others)
@@ -41,5 +46,13 @@ namespace utils {
 
 	void delayMs(const uint64_t miliseconds) {
 		std::this_thread::sleep_for(std::chrono::milliseconds(miliseconds));
+	}
+
+	bool isKeyPressed() noexcept {
+		return _kbhit();
+	}
+
+	char getPressedKey() noexcept {
+		return _getch();
 	}
 }
