@@ -22,6 +22,7 @@ namespace utils {
 	[[nodiscard]] std::streamsize getDigitWidth(const int) noexcept;
 
 	void clearScreen() noexcept;
+	void clearScreenANSI() noexcept;
 	void delayMs(const uint64_t);
 
 	[[nodiscard]] bool isKeyPressed() noexcept;

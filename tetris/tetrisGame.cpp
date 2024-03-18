@@ -283,6 +283,8 @@ namespace tetris {
 	}
 
 	void TetrisGame::startMainGameLoop() {
+		utils::clearScreenANSI();
+
 		while (1) {
 			utils::clearScreen();
 

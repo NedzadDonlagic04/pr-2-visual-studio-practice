@@ -44,6 +44,10 @@ namespace utils {
 		setCursorPosition(0, 0);
 	}
 
+	void clearScreenANSI() noexcept {
+		std::cout << "\033[2J\033[H";
+	}
+
 	void delayMs(const uint64_t miliseconds) {
 		std::this_thread::sleep_for(std::chrono::milliseconds(miliseconds));
 	}
