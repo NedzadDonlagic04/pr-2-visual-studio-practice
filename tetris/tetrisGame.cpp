@@ -176,7 +176,7 @@ namespace tetris {
 	// protected members below
 
 	void PlayField::spawnTetrominoOnPlayField(tetromino::Points& tetromino) noexcept {
-		tetromino.offsetAllPointsBy({ 1, 2 });
+		tetromino.offsetAllPointsBy({ 1, 3 });
 	}
 
 	void PlayField::moveTetrominoDown(tetromino::Points& tetromino) {
