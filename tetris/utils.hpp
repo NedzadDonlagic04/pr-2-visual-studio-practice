@@ -16,7 +16,7 @@
 using TerminalBgColor = terminalColors::BackgroundColors;
 
 namespace utils {
-	void moveCursorToPosition(const int, const int);
+	void setCursorPosition(const int, const int);
 	void printTextWithBgColor(const std::string_view, TerminalBgColor = TerminalBgColor::Default) noexcept;
 
 	[[nodiscard]] std::streamsize getDigitWidth(const int) noexcept;

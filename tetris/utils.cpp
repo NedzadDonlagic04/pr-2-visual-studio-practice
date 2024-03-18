@@ -17,7 +17,7 @@
 */
 
 namespace utils {
-	void moveCursorToPosition(const int x, const int y) {
+	void setCursorPosition(const int x, const int y) {
 		if (x < 0 || y < 0) {
 			throw std::invalid_argument("Cursor can't be moved to a negative x or y position");
 		}
@@ -41,7 +41,7 @@ namespace utils {
 	}
 
 	void clearScreen() noexcept {
-		std::cout << "\033[2J\033[H";
+		setCursorPosition(0, 0);
 	}
 
 	void delayMs(const uint64_t miliseconds) {
