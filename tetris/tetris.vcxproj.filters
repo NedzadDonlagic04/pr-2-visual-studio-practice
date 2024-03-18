@@ -21,9 +21,6 @@
     <ClCompile Include="utils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="terminalColors.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="tetromino.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

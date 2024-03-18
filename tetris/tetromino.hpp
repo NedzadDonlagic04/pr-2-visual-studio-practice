@@ -1,8 +1,11 @@
 #ifndef _TETRIS_TETROMINO_HPP
 #define _TETRIS_TETROMINO_HPP
 
-#include<vector>
 #include"terminalColors.hpp"
+
+#include<vector>
+#include<unordered_set>
+#include<utility>
 
 using TerminalBgColor = terminalColors::BackgroundColors;
 
@@ -17,79 +20,129 @@ using TerminalBgColor = terminalColors::BackgroundColors;
 
 namespace tetromino {
 	// -------------------------------------
-	// Tetromino class declaration
+	// Points class declaration
 	// -------------------------------------
-	class Tetromino {
+	class Points {
 	public:
-		Tetromino(const std::vector<std::vector<terminalColors::BackgroundColors>>&);
-		Tetromino(std::vector<std::vector<terminalColors::BackgroundColors>>&&);
-		Tetromino(std::initializer_list<std::initializer_list<terminalColors::BackgroundColors>>&&);
+		using FirstSecondType = std::int64_t;
+		using PointType = std::pair<FirstSecondType, FirstSecondType>;
 
-		[[nodiscard]] std::size_t getShapeHeight() const noexcept;
-		[[nodiscard]] std::size_t getShapeWidth() const noexcept;
+		Points(std::vector<std::vector<char>>&&, TerminalBgColor&&);
+		Points(const Points&);
+		Points(Points&&) noexcept;
+
+		Points& operator=(const Points&) noexcept;
+		Points& operator=(Points&&) noexcept;
+
+		[[nodiscard]] TerminalBgColor getPointsColor() const noexcept;
+
+		using ConstIterator = std::vector<PointType>::const_iterator;
+		using Iterator = std::vector<PointType>::iterator;
+
+		ConstIterator begin() const noexcept;
+		ConstIterator end() const noexcept;
+
+		Iterator begin() noexcept;
+		Iterator end() noexcept;
+
+		void offsetAllPointsBy(const PointType&) noexcept;
+
+		[[nodiscard]] bool doesPointExist(const PointType&) const noexcept;
 
 		void rotateLeft() noexcept;
 		void rotateRight() noexcept;
-	
-		[[nodiscard]] terminalColors::BackgroundColors operator()(const std::size_t, const std::size_t) const noexcept;
-	
+
+		void moveOffsetUp() noexcept;
+		void moveOffsetDown() noexcept;
+		void moveOffsetLeft() noexcept;
+		void moveOffsetRight() noexcept;
+
 	private:
-		std::vector<std::vector<terminalColors::BackgroundColors>> m_shape{};
-		
-		void rotate(const bool = false) noexcept;
+		std::vector<std::vector<char>> m_pointsMatrix{};
+		std::vector<PointType> m_points{};
+		PointType m_offsetPoint { 0, 0 };
+		TerminalBgColor m_pointsColor{ TerminalBgColor::Default };
+
+		int m_currentRotation{ 0 };
+
+		constexpr static int minRotations{ 0 };
+		constexpr static int maxRotations{ 3 };
+
+		void rotate() noexcept;
+		void rotate0Deg() noexcept;
+		void rotate90Deg() noexcept;
+		void rotate180Deg() noexcept;
+		void rotate270Deg() noexcept;
 	};
 
 	// -------------------------------------
-	// functions and constants declaration / definitions
+	// constants definition
 	// -------------------------------------
 
-	/*
-		Rotation and shapes with sizes were all decided after reading the page below
-		https://tetris.wiki/Super_Rotation_System
-	*/
-	inline const std::vector<Tetromino> tetrominos{
+	inline const std::vector<Points> tetrominos{
 		// I shape
-		Tetromino{
-			{TerminalBgColor::Default  , TerminalBgColor::Default  , TerminalBgColor::Default  , TerminalBgColor::Default},
-			{TerminalBgColor::lightBlue, TerminalBgColor::lightBlue, TerminalBgColor::lightBlue, TerminalBgColor::lightBlue},
-			{TerminalBgColor::Default  , TerminalBgColor::Default  , TerminalBgColor::Default  , TerminalBgColor::Default},
-			{TerminalBgColor::Default  , TerminalBgColor::Default  , TerminalBgColor::Default  , TerminalBgColor::Default},
+		{ 
+			{
+				{ 1, 1, 1, 1 },
+				{ 0, 0, 0, 0 },
+				{ 0, 0, 0, 0 },
+				{ 0, 0, 0, 0 },
+			}, 
+			TerminalBgColor::lightBlue, 
 		},
 		// J shape
-		Tetromino{
-			{TerminalBgColor::darkBlue, TerminalBgColor::Default , TerminalBgColor::Default},
-			{TerminalBgColor::darkBlue, TerminalBgColor::darkBlue, TerminalBgColor::darkBlue},
-			{TerminalBgColor::Default , TerminalBgColor::Default , TerminalBgColor::Default},
+		{
+			{
+				{ 1, 0, 0 },
+				{ 1, 1, 1 },
+				{ 0, 0, 0 },
+			},
+			TerminalBgColor::darkBlue,
 		},
 		// L shape
-		Tetromino{
-			{TerminalBgColor::Default, TerminalBgColor::Default, TerminalBgColor::orange},
-			{TerminalBgColor::orange , TerminalBgColor::orange , TerminalBgColor::orange},
-			{TerminalBgColor::Default, TerminalBgColor::Default, TerminalBgColor::Default},
+		{
+			{
+				{ 0, 0, 1 },
+				{ 1, 1, 1 },
+				{ 0, 0, 0 },
+			},
+			TerminalBgColor::orange,
 		},
 		// O shape
-		Tetromino{
-			{TerminalBgColor::yellow, TerminalBgColor::yellow},
-			{TerminalBgColor::yellow, TerminalBgColor::yellow},
+		{
+			{
+				{ 1, 1 },
+				{ 1, 1 },
+			},
+			TerminalBgColor::yellow,
 		},
 		// S shape
-		Tetromino{
-			{TerminalBgColor::Default, TerminalBgColor::green  , TerminalBgColor::green},
-			{TerminalBgColor::green  , TerminalBgColor::green  , TerminalBgColor::Default},
-			{TerminalBgColor::Default, TerminalBgColor::Default, TerminalBgColor::Default},
+		{
+			{
+				{ 0, 1, 1 },
+				{ 1, 1, 0 },
+				{ 0, 0, 0 },
+			},
+			TerminalBgColor::green,
 		},
 		// T shape
-		Tetromino{
-			{TerminalBgColor::Default, TerminalBgColor::magenta, TerminalBgColor::Default},
-			{TerminalBgColor::magenta, TerminalBgColor::magenta, TerminalBgColor::magenta},
-			{TerminalBgColor::Default, TerminalBgColor::Default, TerminalBgColor::Default},
+		{
+			{
+				{ 0, 1, 0 },
+				{ 1, 1, 1 },
+				{ 0, 0, 0 },
+			},
+			TerminalBgColor::magenta,
 		},
 		// Z shape
-		Tetromino{
-			{TerminalBgColor::red    , TerminalBgColor::red    , TerminalBgColor::Default},
-			{TerminalBgColor::Default, TerminalBgColor::red    , TerminalBgColor::red},
-			{TerminalBgColor::Default, TerminalBgColor::Default, TerminalBgColor::Default},
-		}
+		{
+			{
+				{ 1, 1, 0 },
+				{ 0, 1, 1 },
+				{ 0, 0, 0 },
+			},
+			TerminalBgColor::red,
+		},
 	};
 }
 

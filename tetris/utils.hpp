@@ -11,6 +11,8 @@
 
 #include"terminalColors.hpp"
 
+#include<cmath>
+
 using TerminalBgColor = terminalColors::BackgroundColors;
 
 namespace utils {

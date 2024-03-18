@@ -34,14 +34,6 @@ namespace tetris {
 		m_linesCleared = linesCleared;
 	}
 
-	void LinesClearedInfo::incrementLinesCleared() noexcept {
-		++m_linesCleared;
-
-		if (m_linesCleared > maxLinesCleared) {
-			setLinesCleared(0);
-		}
-	}
-
 	// -------------------------------------
 	// PlayField class definition
 	// -------------------------------------
@@ -62,31 +54,7 @@ namespace tetris {
 		return m_playField.size();
 	}
 
-	std::size_t PlayField::getCurrentTetrominoX() const noexcept {
-		return m_currentTetrominoX;
-	}
-
-	std::size_t PlayField::getCurrentTetrominoY() const noexcept {
-		return m_currentTetrominoY;
-	}
-
-	void PlayField::printPlayField(const tetromino::Tetromino &tetromino, const bool showSpawnArea) const noexcept {
-		TerminalBgColor bgColorToDraw{};
-
-		const auto areIndexesInRangeOfTetromino = [&](const std::size_t i, const std::size_t ii) {
-			const auto initialX{ getCurrentTetrominoX() };
-			const auto initialY{ getCurrentTetrominoY() };
-
-			return i >= initialX
-				&& i < initialX + tetromino.getShapeHeight()
-				&& ii >= initialY
-				&& ii < initialY + tetromino.getShapeWidth();
-		};
-
-		const auto isCurrentTetrominoSpotDefaultColored = [&](const std::size_t i, const std::size_t ii) {
-			return tetromino(i - getCurrentTetrominoX(), ii - getCurrentTetrominoY()) == TerminalBgColor::Default;
-		};
-
+	void PlayField::printPlayField(const tetromino::Points& tetromino, const bool showSpawnArea) const noexcept {
 		printPlayFieldBorderLine();
 
 		for (std::size_t i = (showSpawnArea)? 0 : spawnAreaHeight; i < getPlayFieldHeight(); ++i) {
@@ -97,11 +65,12 @@ namespace tetris {
 			utils::printTextWithBgColor(playFieldBlock, borderColor);
 			
 			for (std::size_t ii = 0; ii < m_playField[i].size(); ++ii) {
-				bgColorToDraw = (areIndexesInRangeOfTetromino(i, ii) && !isCurrentTetrominoSpotDefaultColored(i, ii)) ?
-					tetromino(i - getCurrentTetrominoX(), ii - getCurrentTetrominoY())
-					: m_playField[i][ii];
-				
-				utils::printTextWithBgColor(playFieldBlock, bgColorToDraw);
+				if (tetromino.doesPointExist({ i, ii })) {
+					utils::printTextWithBgColor(playFieldBlock, tetromino.getPointsColor());
+				}
+				else {
+					utils::printTextWithBgColor(playFieldBlock, m_playField[i][ii]);
+				}
 			}
 
 			utils::printTextWithBgColor(playFieldBlock, borderColor);
@@ -111,50 +80,119 @@ namespace tetris {
 		printPlayFieldBorderLine();
 	}
 
-	bool PlayField::checkCanTetrominoMoveDown(const tetromino::Tetromino& tetromino) noexcept {
-		if (getCurrentTetrominoX() + tetromino.getShapeHeight() >= getPlayFieldHeight()) {
-			return false;
+	void PlayField::printPlayField(const bool showSpawnArea) const noexcept {
+		printPlayFieldBorderLine();
+
+		for (std::size_t i = (showSpawnArea) ? 0 : spawnAreaHeight; i < getPlayFieldHeight(); ++i) {
+			if (showSpawnArea && i == spawnAreaHeight) {
+				printPlayFieldBorderLine();
+			}
+
+			utils::printTextWithBgColor(playFieldBlock, borderColor);
+
+			for (std::size_t ii = 0; ii < m_playField[i].size(); ++ii) {
+				utils::printTextWithBgColor(playFieldBlock, m_playField[i][ii]);
+			}
+
+			utils::printTextWithBgColor(playFieldBlock, borderColor);
+			std::cout << '\n';
 		}
 
-		for (std::size_t i = 0; i < tetromino.getShapeHeight(); ++i) {
-			for (std::size_t ii = 0; ii < tetromino.getShapeWidth(); ++ii) {
-				const bool isCurrentPlayFieldBlockDefault{ m_playField[i + 1 + getCurrentTetrominoX()][ii + getCurrentTetrominoY()] != TerminalBgColor::Default};
-				const bool isCurrentTetrominoBlockDefault{ tetromino(i, ii) != TerminalBgColor::Default };
+		printPlayFieldBorderLine();
+	}
 
-				if (isCurrentPlayFieldBlockDefault && isCurrentTetrominoBlockDefault) {
-					return false;
-				}
+	bool PlayField::isPlayFieldDefaultAt(const tetromino::Points::PointType& point) const noexcept {
+		return m_playField[point.first][point.second] == TerminalBgColor::Default;
+	}
+
+	bool PlayField::isPointInPlayField(const tetromino::Points::PointType& point) const noexcept {
+		return point.first >= 0 && point.first < static_cast<std::ptrdiff_t>(getPlayFieldHeight())
+			&& point.second >= 0 && point.second < static_cast<std::ptrdiff_t>(getPlayFieldWidth());
+	}
+
+	bool PlayField::canTetrominoMoveDown(const tetromino::Points& tetromino) const noexcept {
+		for (const auto& point : tetromino) {
+			const std::size_t row = point.first + 1;
+
+			if (row == getPlayFieldHeight() || !isPlayFieldDefaultAt({ row, point.second })) {
+				return false;
 			}
 		}
 
 		return true;
 	}
 
+	bool PlayField::canTetrominoMoveLeft(const tetromino::Points& tetromino) const noexcept {
+		for (const auto& point : tetromino) {
+			const std::ptrdiff_t col = point.second - 1;
+
+			if (col == -1 || !isPlayFieldDefaultAt({ point.first, col })) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	bool PlayField::canTetrominoMoveRight(const tetromino::Points& tetromino) const noexcept {
+		for (const auto& point : tetromino) {
+			const std::size_t col = point.second + 1;
+
+			if (col == getPlayFieldWidth() || !isPlayFieldDefaultAt({ point.first, col })) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	bool PlayField::canTetrominoBeRotated(const tetromino::Points& tetromino) const noexcept {
+		for (const auto& point : tetromino) {
+			if (!isPointInPlayField(point) || !isPlayFieldDefaultAt(point)) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	void PlayField::rotateTetromino(tetromino::Points& tetromino, const bool rotateRight) noexcept {
+		auto currentTetrominoCopy{ tetromino };
+
+		if (rotateRight) {
+			currentTetrominoCopy.rotateRight();
+		}
+		else {
+			currentTetrominoCopy.rotateLeft();
+		}
+
+		if (!canTetrominoBeRotated(currentTetrominoCopy)) {
+			return;
+		}
+
+		tetromino = std::move(currentTetrominoCopy);
+	}
+
 	// protected members below
 
-	void PlayField::spawnTetrominoOnPlayField(const tetromino::Tetromino& tetromino) noexcept {
-		setCurrentTetrominoPosition(tetromino);
+	void PlayField::spawnTetrominoOnPlayField(tetromino::Points& tetromino) noexcept {
+		tetromino.offsetAllPointsBy({ 1, 2 });
 	}
 
-	void PlayField::moveTetrominoDown(const tetromino::Tetromino& tetromino) {
-		const auto isTetrominoOutOfPlayFieldRange = [&]() {
-			return getCurrentTetrominoX() + tetromino.getShapeHeight() >= getPlayFieldHeight();
-		};
-
-		if (isTetrominoOutOfPlayFieldRange()) {
-			throw std::out_of_range("Tetromino drawn out of bounds of playfield");
+	void PlayField::moveTetrominoDown(tetromino::Points& tetromino) {
+		for (auto& point : tetromino) {
+			++point.first;
 		}
-		
-		moveDownALine();
+		tetromino.moveOffsetDown();
 	}
 
-	void PlayField::drawTetromino(const tetromino::Tetromino& tetromino) noexcept {
-		for (std::size_t i = 0; i < tetromino.getShapeHeight(); ++i) {
-			for (std::size_t ii = 0; ii < tetromino.getShapeWidth(); ++ii) {
-				if (tetromino(i, ii) != TerminalBgColor::Default) {
-					m_playField[i + getCurrentTetrominoX()][ii + getCurrentTetrominoY()] = tetromino(i, ii);
-				}
-			}
+	void PlayField::setPlayFieldPoint(const std::size_t row, const std::size_t col, const TerminalBgColor bgColor) noexcept {
+		m_playField[row][col] = bgColor;
+	}
+
+	void PlayField::drawTetromino(const tetromino::Points& tetromino) noexcept {
+		for (const auto& point : tetromino) {
+			setPlayFieldPoint(point.first, point.second, tetromino.getPointsColor());
 		}
 	}
 
@@ -166,24 +204,40 @@ namespace tetris {
 		);
 	}
 
+	std::size_t PlayField::removeFullRows() noexcept {
+		std::size_t counter{ 0 };
+		std::size_t totalCounter{ 0 };
+
+		auto moveRowsDown = [&](const std::size_t index) {
+			for (std::ptrdiff_t start = index - counter - 1; start >= 0; --start) {
+				m_playField[start + counter] = m_playField[start];
+			}
+			for (std::size_t start = 0; start < counter; ++start) {
+				m_playField[start] = std::vector<TerminalBgColor>(getPlayFieldWidth(), TerminalBgColor::Default);
+			}
+		};
+
+		for (std::size_t i = 0; i < m_playField.size(); ++i) {
+			auto isBgColorDifferentThanDefault = [&](const TerminalBgColor bgColor) { return bgColor != TerminalBgColor::Default; };
+			auto isRowFilled = [&]() { return std::all_of(m_playField[i].begin(), m_playField[i].end(), isBgColorDifferentThanDefault); };
+
+			if (isRowFilled()) {
+				counter++;
+			}
+			else {
+				moveRowsDown(i);
+
+				totalCounter += counter;
+				counter = 0;
+			}
+		}
+
+		moveRowsDown(m_playField.size());
+		
+		return totalCounter + counter;
+	}
+
 	// private members below
-
-	void PlayField::setCurrentTetrominoX(const std::size_t currentTetrominoX) noexcept {
-		m_currentTetrominoX = currentTetrominoX;
-	}
-
-	void PlayField::setCurrentTetrominoY(const std::size_t currentTetrominoY) noexcept {
-		m_currentTetrominoY = currentTetrominoY;
-	}
-
-	void PlayField::setCurrentTetrominoPosition(const tetromino::Tetromino &tetromino) noexcept {
-		setCurrentTetrominoX(0);
-		setCurrentTetrominoY((getPlayFieldWidth() - tetromino.getShapeWidth()) / 2);
-	}
-
-	void PlayField::moveDownALine() noexcept {
-		m_currentTetrominoX++;
-	}
 
 	void PlayField::printPlayFieldBorderLine() const noexcept {
 		// The + 2 in the condition is for it to take into account the sides
@@ -192,21 +246,6 @@ namespace tetris {
 			utils::printTextWithBgColor(playFieldBlock, borderColor);
 		}
 		std::cout << '\n';
-	}
-
-	void PlayField::printChunkOfPlayField(const std::size_t start, const std::size_t end) const noexcept {
-		printPlayFieldBorderLine();
-
-		for (std::size_t i = start; i < end; ++i) {
-			utils::printTextWithBgColor(playFieldBlock, borderColor);
-
-			for (std::size_t ii = 0; ii < m_playField[i].size(); ++ii) {
-				utils::printTextWithBgColor(playFieldBlock, m_playField[i][ii]);
-			}
-
-			utils::printTextWithBgColor(playFieldBlock, borderColor);
-			std::cout << '\n';
-		}
 	}
 
 	// -------------------------------------
@@ -222,7 +261,7 @@ namespace tetris {
 	}
 
 	void TetrisGame::run() {
-		// printGameIntroInfo();
+		printGameIntroInfo();
 		startMainGameLoop();
 	}
 
@@ -235,10 +274,8 @@ namespace tetris {
 		std::cout << "Hello and welcome to my attempt at recreating Tetris in the terminal\n";
 		std::cout << "Preferably resize the terminal to take up the full screen so nothing goes out of bounds\n\n";
 		std::cout << "The controls are:\n";
-		std::cout << "Arrow keys used for moving pieces left or right\n";
+		std::cout << "J key moves things left, L key moves things right\n";
 		std::cout << "Q and E are used to rotate the pieces 90 deg left or right\n";
-		std::cout << "W is used to move the piece row by row down, this will also happen naturally but more slowly\n";
-		std::cout << "Space will move it down instantly down to the silhouette shown in white\n\n";
 		std::cout << "When you've read and understood all of this press any key to start the game...";
 		std::cin.get();
 
@@ -267,23 +304,27 @@ namespace tetris {
 			handleKeyPressActions();
 
 			const bool didEnoughTimePassForMove{ getCurrentMsPassed() >= msNeededFor1MoveDown };
-			const bool canTetrominoMoveDown{ checkCanTetrominoMoveDown(currentTetromino) };
 
-			if (didEnoughTimePassForMove && !canTetrominoMoveDown) {
+			if (didEnoughTimePassForMove && !canTetrominoMoveDown(currentTetromino)) {
 				setIsCurrentTetrominoLockedIn(true);
 				setMsPassed(0);
 				drawTetromino(currentTetromino);
 				removeLastUsedTetromino();
+				setLinesCleared(static_cast<int>(getLinesCleared() + removeFullRows()));
 
 				if (isGameOver()) {
 					break;
 				}
 			}
-			else if (didEnoughTimePassForMove && canTetrominoMoveDown) {
+			else if (didEnoughTimePassForMove && canTetrominoMoveDown(currentTetromino)) {
 				moveTetrominoDown(currentTetromino);
 				setMsPassed(0);
 			}
 		}
+
+		utils::clearScreen();
+		printLinesClearedInfo();
+		printPlayField(true);
 
 		std::cout << "Game over man\n";
 	}
@@ -337,7 +378,7 @@ namespace tetris {
 		}
 	}
 
-	tetromino::Tetromino& TetrisGame::getCurrentTetromino() noexcept {
+	tetromino::Points& TetrisGame::getCurrentTetromino() noexcept {
 		return m_tetrominos.back();
 	}
 

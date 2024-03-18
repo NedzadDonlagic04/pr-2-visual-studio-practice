@@ -3,6 +3,7 @@
 
 #include"terminalColors.hpp"
 #include"tetromino.hpp"
+#include"utils.hpp"
 
 #include<vector>
 #include<random>
@@ -30,7 +31,6 @@ namespace tetris {
 		constexpr static std::string_view separator{ " - " };
 
 		void setLinesCleared(const int) noexcept;
-		void incrementLinesCleared() noexcept;
 
 	private:
 		const std::string_view m_lineInfoText{};
@@ -47,13 +47,19 @@ namespace tetris {
 		[[nodiscard]] std::size_t getPlayFieldWidth() const noexcept;
 		[[nodiscard]] std::size_t getPlayFieldHeight() const noexcept;
 
-		[[nodiscard]] std::size_t getCurrentTetrominoX() const noexcept;
-		[[nodiscard]] std::size_t getCurrentTetrominoY() const noexcept;
+		void printPlayField(const tetromino::Points&, const bool = false) const noexcept;
+		void printPlayField(const bool = false) const noexcept;
 
-		void printPlayField(const tetromino::Tetromino&, const bool = false) const noexcept;
+		[[nodiscard]] bool isPlayFieldDefaultAt(const tetromino::Points::PointType&) const noexcept;
+		[[nodiscard]] bool isPointInPlayField(const tetromino::Points::PointType&) const noexcept;
 
-		[[nodiscard]] bool checkCanTetrominoMoveDown(const tetromino::Tetromino&) noexcept;
-	
+		[[nodiscard]] bool canTetrominoMoveDown(const tetromino::Points&) const noexcept;
+		[[nodiscard]] bool canTetrominoMoveLeft(const tetromino::Points&) const noexcept;
+		[[nodiscard]] bool canTetrominoMoveRight(const tetromino::Points&) const noexcept;
+		[[nodiscard]] bool canTetrominoBeRotated(const tetromino::Points&) const noexcept;
+
+		void rotateTetromino(tetromino::Points&, const bool = false) noexcept;
+
 	protected:
 		constexpr static std::size_t spawnAreaHeight{ 5 };
 		constexpr static std::size_t playAreaHeight{ 20 };
@@ -61,29 +67,25 @@ namespace tetris {
 		constexpr static std::size_t totalAreaWidth{ 10 };
 
 		constexpr static TerminalBgColor borderColor{ TerminalBgColor::grey };
-		constexpr static std::string_view playFieldBlock{ "  " };
-	
-		void spawnTetrominoOnPlayField(const tetromino::Tetromino&) noexcept;
+		constexpr static TerminalBgColor bgColor { TerminalBgColor::Default };
 
-		void moveTetrominoDown(const tetromino::Tetromino&);
-		void drawTetromino(const tetromino::Tetromino&) noexcept;
+		constexpr static std::string_view playFieldBlock{ "  " };
+
+		void spawnTetrominoOnPlayField(tetromino::Points&) noexcept;
+
+		void moveTetrominoDown(tetromino::Points&);
+
+		void setPlayFieldPoint(const std::size_t, const std::size_t, const TerminalBgColor) noexcept;
+		void drawTetromino(const tetromino::Points&) noexcept;
 
 		[[nodiscard]] bool wasSpawnLineCrossed() const noexcept;
 	
+		std::size_t removeFullRows() noexcept;
+
 	private:
 		std::vector<std::vector<TerminalBgColor>> m_playField{};
 
-		std::size_t m_currentTetrominoX{};
-		std::size_t m_currentTetrominoY{};
-
-		void setCurrentTetrominoX(const std::size_t) noexcept;
-		void setCurrentTetrominoY(const std::size_t) noexcept;
-		void setCurrentTetrominoPosition(const tetromino::Tetromino& tetromino) noexcept;
-
-		void moveDownALine() noexcept;
-
 		void printPlayFieldBorderLine() const noexcept;
-		void printChunkOfPlayField(const std::size_t, const std::size_t) const noexcept;
 	};
 
 	// -------------------------------------
@@ -99,7 +101,7 @@ namespace tetris {
 	
 		[[nodiscard]] bool isGameOver() const noexcept;
 	private:
-		std::vector<tetromino::Tetromino> m_tetrominos{ tetromino::tetrominos };
+		std::vector<tetromino::Points> m_tetrominos{ tetromino::tetrominos };
 		std::mt19937 m_rng{ std::random_device()() };
 
 		bool m_isCurrentTetrminoLockedIn{ true };
@@ -108,12 +110,40 @@ namespace tetris {
 		const std::unordered_map<char, std::function<void()>> m_keyPressEvents{
 			{ 
 				'q', [&]() {
-					getCurrentTetromino().rotateLeft();
-				} 
+					rotateTetromino(getCurrentTetromino());
+				}
 			},
 			{
 				'e', [&]() {
-					getCurrentTetromino().rotateRight();
+					rotateTetromino(getCurrentTetromino(), true);
+				}
+			},
+			{
+				'j', [&]() {
+					auto& currentTetromino{ getCurrentTetromino() };
+
+					if (!canTetrominoMoveLeft(currentTetromino)) {
+						return;
+					}
+
+					for (auto& point : currentTetromino) {
+						--point.second;
+					}
+					currentTetromino.moveOffsetLeft();
+				}
+			},
+			{
+				'l', [&]() {
+					auto& currentTetromino{ getCurrentTetromino() };
+
+					if (!canTetrominoMoveRight(currentTetromino)) {
+						return;
+					}
+
+					for (auto& point : currentTetromino) {
+						++point.second;
+					}
+					currentTetromino.moveOffsetRight();
 				}
 			},
 		};
@@ -131,7 +161,7 @@ namespace tetris {
 
 		void handleKeyPressActions() noexcept;
 
-		[[nodiscard]] tetromino::Tetromino& getCurrentTetromino() noexcept;
+		[[nodiscard]] tetromino::Points& getCurrentTetromino() noexcept;
 		
 		[[nodiscard]] int64_t getCurrentMsPassed() const noexcept;
 		void incrementMsPassed() noexcept;
