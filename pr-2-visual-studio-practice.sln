@@ -11,6 +11,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "practice-problem-2", "pract
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tetris", "tetris\tetris.vcxproj", "{1DD51DF4-9EAB-4926-AE7A-DD9930394760}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "practice-problem-3", "practice-problem-3\practice-problem-3.vcxproj", "{BD72CF91-9BC6-41AE-87AF-64B616138917}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -51,6 +53,14 @@ Global
 		{1DD51DF4-9EAB-4926-AE7A-DD9930394760}.Release|x64.Build.0 = Release|x64
 		{1DD51DF4-9EAB-4926-AE7A-DD9930394760}.Release|x86.ActiveCfg = Release|Win32
 		{1DD51DF4-9EAB-4926-AE7A-DD9930394760}.Release|x86.Build.0 = Release|Win32
+		{BD72CF91-9BC6-41AE-87AF-64B616138917}.Debug|x64.ActiveCfg = Debug|x64
+		{BD72CF91-9BC6-41AE-87AF-64B616138917}.Debug|x64.Build.0 = Debug|x64
+		{BD72CF91-9BC6-41AE-87AF-64B616138917}.Debug|x86.ActiveCfg = Debug|Win32
+		{BD72CF91-9BC6-41AE-87AF-64B616138917}.Debug|x86.Build.0 = Debug|Win32
+		{BD72CF91-9BC6-41AE-87AF-64B616138917}.Release|x64.ActiveCfg = Release|x64
+		{BD72CF91-9BC6-41AE-87AF-64B616138917}.Release|x64.Build.0 = Release|x64
+		{BD72CF91-9BC6-41AE-87AF-64B616138917}.Release|x86.ActiveCfg = Release|Win32
+		{BD72CF91-9BC6-41AE-87AF-64B616138917}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
