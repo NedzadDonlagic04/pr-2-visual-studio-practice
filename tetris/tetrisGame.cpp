@@ -284,6 +284,7 @@ namespace tetris {
 
 	void TetrisGame::startMainGameLoop() {
 		utils::clearScreenANSI();
+		utils::turnOffCursor();
 
 		while (1) {
 			utils::clearScreen();
@@ -325,6 +326,7 @@ namespace tetris {
 		}
 
 		utils::clearScreen();
+		utils::turnOnCursor();
 		printLinesClearedInfo();
 		printPlayField(true);
 

@@ -27,6 +27,9 @@ namespace utils {
 
 	[[nodiscard]] bool isKeyPressed() noexcept;
 	[[nodiscard]] char getPressedKey() noexcept;
+
+	void turnOffCursor() noexcept;
+	void turnOnCursor() noexcept;
 }
 
 #endif

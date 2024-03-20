@@ -59,4 +59,12 @@ namespace utils {
 	char getPressedKey() noexcept {
 		return _getch();
 	}
+
+	void turnOffCursor() noexcept {
+		std::cout << "\033[?25l";
+	}
+	
+	void turnOnCursor() noexcept {
+		std::cout << "\033[?25h";
+	}
 }
