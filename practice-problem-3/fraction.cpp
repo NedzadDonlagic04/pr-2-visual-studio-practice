@@ -1,6 +1,7 @@
 #include"fraction.hpp"
 
 #include<iostream>
+#include<sstream>
 
 namespace fraction {
 	// ---------------------------
@@ -23,6 +24,24 @@ namespace fraction {
 		, m_denominator(std::exchange(fraction.m_denominator, 1))
 		, m_fractionStr(std::move(fraction.m_fractionStr))
 	{}
+
+	Fraction::Fraction(std::string_view fractionStr) {
+		std::istringstream buffer{ std::string(fractionStr) };
+
+		int numerator{};
+		int denominator{};
+		char line{};
+
+		buffer >> numerator >> line >> denominator;
+
+
+		if (line != '/' || buffer.fail()) {
+			throw std::invalid_argument("Invalid fraction string_view\n");
+		}
+
+		setNumerator(numerator);
+		setDenominator(denominator);
+	}
 
 	void Fraction::setNumerator(const int numerator) noexcept {
 		m_numerator = numerator;
@@ -119,12 +138,13 @@ namespace fraction {
 
 		std::cin >> numerator >> line >> denominator;
 
-		if (line != '/') {
+		if (line != '/' || is.fail()) {
 			is.setstate(std::ios::failbit);
-		} else if (std::cin.good()) {
-			fraction.setNumerator(numerator);
-			fraction.setDenominator(denominator);
+			return is;
 		}
+		
+		fraction.setNumerator(numerator);
+		fraction.setDenominator(denominator);
 
 		return is;
 	}

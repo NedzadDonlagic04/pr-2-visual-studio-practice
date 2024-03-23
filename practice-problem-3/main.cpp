@@ -2,7 +2,7 @@
 #include"fraction.hpp"
 
 int main() {
-	fraction::Fraction fraction{ 1, 5 };
+	fraction::Fraction fraction{ "1/-5" };
 
 	for (int i = 0; i < 4; ++i) {
 		std::cout << fraction << " = " << fraction.getResultOfDivision() << '\n';

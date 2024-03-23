@@ -16,6 +16,7 @@ namespace fraction {
 		Fraction(const int, const int);
 		Fraction(const Fraction&) noexcept;
 		Fraction(Fraction&&) noexcept;
+		Fraction(std::string_view);
 
 		void setNumerator(const int) noexcept;
 		void setDenominator(const int);
