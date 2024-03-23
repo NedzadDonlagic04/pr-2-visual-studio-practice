@@ -15,6 +15,7 @@ namespace fraction {
 		Fraction() = default;
 		Fraction(const int, const int);
 		Fraction(const Fraction&) noexcept;
+		Fraction(Fraction&&);
 
 		void setNumerator(const int) noexcept;
 		void setDenominator(const int);
@@ -30,7 +31,7 @@ namespace fraction {
 	private:
 		int m_numerator{ 1 };
 		int m_denominator{ 1 };
-		std::string fractionStr{ "1/1" };
+		std::string m_fractionStr{ "1/1" };
 		
 		void updateNumeratorPartOfStr() noexcept;
 		void updateDenominatorPartOfStr() noexcept;

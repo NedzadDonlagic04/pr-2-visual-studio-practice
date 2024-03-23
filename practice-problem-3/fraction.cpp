@@ -12,10 +12,17 @@ namespace fraction {
 		setDenominator(denominator);
 	}
 
-	Fraction::Fraction(const Fraction& fraction) noexcept {
-		setNumerator(fraction.getNumerator());
-		setDenominator(fraction.getDenominator());
-	}
+	Fraction::Fraction(const Fraction& fraction) noexcept 
+		: m_numerator(fraction.m_numerator)
+		, m_denominator(fraction.m_denominator)
+		, m_fractionStr(fraction.m_fractionStr)
+	{}
+
+	Fraction::Fraction(Fraction&& fraction) 
+		: m_numerator(std::exchange(fraction.m_numerator, 1))
+		, m_denominator(std::exchange(fraction.m_denominator, 1))
+		, m_fractionStr(std::move(fraction.m_fractionStr))
+	{}
 
 	void Fraction::setNumerator(const int numerator) noexcept {
 		m_numerator = numerator;
@@ -52,7 +59,7 @@ namespace fraction {
 	}
 
 	std::string_view Fraction::getStrView() const noexcept {
-		return fractionStr;
+		return m_fractionStr;
 	}
 
 	std::ostream& operator<<(std::ostream& os, const Fraction& fraction) noexcept {
@@ -80,14 +87,14 @@ namespace fraction {
 
 	// private
 	void Fraction::updateNumeratorPartOfStr() noexcept {
-		const std::size_t lineIndex { fractionStr.find('/') };
+		const std::size_t lineIndex { m_fractionStr.find('/') };
 		
-		fractionStr = std::to_string(getNumerator()) + fractionStr.substr(lineIndex);
+		m_fractionStr = std::to_string(getNumerator()) + m_fractionStr.substr(lineIndex);
 	}
 
 	void Fraction::updateDenominatorPartOfStr() noexcept {
-		const std::size_t lineIndex{ fractionStr.find('/') };
+		const std::size_t lineIndex{ m_fractionStr.find('/') };
 
-		fractionStr = fractionStr.substr(0, lineIndex + 1) + std::to_string(getDenominator());
+		m_fractionStr = m_fractionStr.substr(0, lineIndex + 1) + std::to_string(getDenominator());
 	}
 }
