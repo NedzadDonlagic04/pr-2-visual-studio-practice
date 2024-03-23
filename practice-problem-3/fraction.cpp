@@ -62,6 +62,50 @@ namespace fraction {
 		return m_fractionStr;
 	}
 
+	Fraction& Fraction::operator=(const Fraction& fraction) noexcept {
+		m_numerator = fraction.m_numerator;
+		m_denominator = fraction.m_denominator;
+		m_fractionStr = fraction.m_fractionStr;
+
+		return *this;
+	}
+	
+	Fraction& Fraction::operator=(Fraction&& fraction) noexcept {
+		m_numerator = std::exchange(fraction.m_numerator, 1);
+		m_denominator = std::exchange(fraction.m_denominator, 1);
+		m_fractionStr = std::move(fraction.m_fractionStr);
+
+		return *this;
+	}
+
+	Fraction& Fraction::operator++() noexcept {
+		setNumerator(getNumerator() + getDenominator());
+
+		return *this;
+	}
+
+	Fraction Fraction::operator++(int) noexcept {
+		const Fraction copy{ *this };
+
+		setNumerator(getNumerator() + getDenominator());
+
+		return copy;
+	}
+
+	Fraction& Fraction::operator--() noexcept {
+		setNumerator(getNumerator() - getDenominator());
+
+		return *this;
+	}
+
+	Fraction Fraction::operator--(int) noexcept {
+		const Fraction copy{ *this };
+
+		setNumerator(getNumerator() - getDenominator());
+
+		return copy;
+	}
+
 	std::ostream& operator<<(std::ostream& os, const Fraction& fraction) noexcept {
 		os << fraction.getStrView();
 

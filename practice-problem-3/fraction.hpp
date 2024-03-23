@@ -25,6 +25,15 @@ namespace fraction {
 		[[nodiscard]] double getResultOfDivision(const int = 2) const;
 		[[nodiscard]] std::string_view getStrView() const noexcept;
 
+		Fraction& operator=(const Fraction&) noexcept;
+		Fraction& operator=(Fraction&&) noexcept;
+
+		Fraction& operator++() noexcept;
+		Fraction operator++(int) noexcept;
+
+		Fraction& operator--() noexcept;
+		Fraction operator--(int) noexcept;
+			
 		friend std::ostream& operator<<(std::ostream&, const Fraction&) noexcept;
 		friend std::istream& operator>>(std::istream&, Fraction&) noexcept;
 	
