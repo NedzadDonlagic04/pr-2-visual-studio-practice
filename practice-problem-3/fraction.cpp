@@ -64,12 +64,13 @@ namespace fraction {
 	std::istream& operator>>(std::istream& is, Fraction& fraction) noexcept {
 		int numerator{};
 		int denominator{};
+		char line{};
 
-		std::cin >> numerator;
-		std::cin.ignore();
-		std::cin >> denominator;
+		std::cin >> numerator >> line >> denominator;
 
-		if (std::cin.good()) {
+		if (line != '/') {
+			is.setstate(std::ios::failbit);
+		} else if (std::cin.good()) {
 			fraction.setNumerator(numerator);
 			fraction.setDenominator(denominator);
 		}
