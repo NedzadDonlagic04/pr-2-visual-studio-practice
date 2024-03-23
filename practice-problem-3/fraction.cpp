@@ -18,7 +18,7 @@ namespace fraction {
 		, m_fractionStr(fraction.m_fractionStr)
 	{}
 
-	Fraction::Fraction(Fraction&& fraction) 
+	Fraction::Fraction(Fraction&& fraction) noexcept
 		: m_numerator(std::exchange(fraction.m_numerator, 1))
 		, m_denominator(std::exchange(fraction.m_denominator, 1))
 		, m_fractionStr(std::move(fraction.m_fractionStr))

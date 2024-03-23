@@ -15,7 +15,7 @@ namespace fraction {
 		Fraction() = default;
 		Fraction(const int, const int);
 		Fraction(const Fraction&) noexcept;
-		Fraction(Fraction&&);
+		Fraction(Fraction&&) noexcept;
 
 		void setNumerator(const int) noexcept;
 		void setDenominator(const int);
