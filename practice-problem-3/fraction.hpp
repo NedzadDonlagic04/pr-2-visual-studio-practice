@@ -51,5 +51,33 @@ namespace fraction {
 		void updateNumeratorPartOfStr() noexcept;
 		void updateDenominatorPartOfStr() noexcept;
 	};
+
+	// ---------------------------
+	// function declarations
+	// ---------------------------
+	template<typename Callback = bool(const Fraction)>
+	void getFractionInput(
+		Fraction& fraction, 
+		const std::string_view outputMsg, 
+		Callback isInputValid = [](const Fraction) { return true; }
+	) noexcept {
+		bool repeatLoop{};
+
+		do {
+			repeatLoop = false;
+
+			std::cout << outputMsg;
+			std::cin >> fraction;
+
+			if (std::cin.fail()) {
+				utils::printErrorMsg("Invalid fraction input\n");
+				repeatLoop = true;
+			}
+			else if (!isInputValid(fraction)) {
+				repeatLoop = true;
+			}
+
+		} while (repeatLoop);
+	}
 }
 #endif

@@ -2,10 +2,9 @@
 #include"fraction.hpp"
 
 int main() {
-	fraction::Fraction fraction1{ "1/4" };
-	fraction::Fraction fraction2{ "6/3" };
+	fraction::Fraction fraction{};
 
-	std::cout << fraction1 - fraction2 << '\n';
+	fraction::getFractionInput(fraction, "Enter fraction: ");
 
 	return 0;
 }

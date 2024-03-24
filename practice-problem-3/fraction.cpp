@@ -204,4 +204,9 @@ namespace fraction {
 
 		m_fractionStr = m_fractionStr.substr(0, lineIndex + 1) + std::to_string(getDenominator());
 	}
+
+	// ---------------------------
+	// function definitions
+	// ---------------------------
+
 }
