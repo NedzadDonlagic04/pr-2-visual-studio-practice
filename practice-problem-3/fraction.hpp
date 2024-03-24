@@ -3,8 +3,11 @@
 
 #include"utils.hpp"
 
+#include<iostream>
 #include<string_view>
 #include<string>
+#include<random>
+#include<utility>
 
 namespace fraction {
 	// ---------------------------
@@ -71,7 +74,7 @@ namespace fraction {
 
 			if (std::cin.fail()) {
 				utils::printErrorMsg("Invalid fraction input\n");
-				utils::clearBuffer();
+				std::cin.clear();
 				repeatLoop = true;
 			}
 			else if (!isInputValid(fraction)) {
@@ -80,5 +83,7 @@ namespace fraction {
 
 		} while (repeatLoop);
 	}
+
+	Fraction generateFraction(std::mt19937&, const std::pair<int, int>&, const std::pair<int, int>&);
 }
 #endif

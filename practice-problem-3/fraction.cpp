@@ -1,6 +1,5 @@
 #include"fraction.hpp"
 
-#include<iostream>
 #include<sstream>
 
 namespace fraction {
@@ -209,4 +208,28 @@ namespace fraction {
 	// function definitions
 	// ---------------------------
 
+	Fraction generateFraction(
+		std::mt19937& rng, 
+		const std::pair<int, int>& numeratorMinMax, 
+		const std::pair<int, int>& denominatorMinMax
+	) {
+		if (numeratorMinMax.first > numeratorMinMax.second) {
+			throw std::invalid_argument("Numerator's min can't be bigger than the max\n");
+		}
+		else if (denominatorMinMax.first > denominatorMinMax.second) {
+			throw std::invalid_argument("Denominator's min can't be bigger than the max\n");
+		}
+
+		std::uniform_int_distribution<> numeratorDist{ numeratorMinMax.first, numeratorMinMax.second };
+		std::uniform_int_distribution<> denominatorDist{ denominatorMinMax.first, denominatorMinMax.second };
+
+		const int numerator{ numeratorDist(rng) };
+		int denominator{};
+
+		do {
+			denominator = denominatorDist(rng);
+		} while (!denominator);
+
+		return Fraction{ numerator, denominator };
+	}
 }
