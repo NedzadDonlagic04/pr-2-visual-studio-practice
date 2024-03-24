@@ -32,6 +32,16 @@ int main() {
 
 	std::cout << "Fraction 1: " << fraction1 << '\n';
 	std::cout << "Fraction 2: " << fraction2 << '\n';
+
+	if (fraction1 == fraction2) {
+		std::cout << "Fraction 1 is and fraction 2 are the same\n";
+	}
+	else if (fraction1 < fraction2) {
+		std::cout << "Fraction 1 is smaller than fraction 2\n";
+	}
+	else {
+		std::cout << "Fraction 2 is smaller than fraction 1\n";
+	}
 	
 	fraction::Fraction fractionAdd{};
 	fraction::Fraction fractionSub{};

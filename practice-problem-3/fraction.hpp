@@ -43,6 +43,15 @@ namespace fraction {
 		[[nodiscard]] Fraction operator*(const Fraction&) const noexcept;
 		[[nodiscard]] Fraction operator/(const Fraction&) const noexcept;
 
+		[[nodiscard]] bool operator==(const Fraction&) const noexcept;
+		[[nodiscard]] bool operator!=(const Fraction&) const noexcept;
+
+		[[nodiscard]] bool operator<=(const Fraction&) const noexcept;
+		[[nodiscard]] bool operator<(const Fraction&) const noexcept;
+
+		[[nodiscard]] bool operator>=(const Fraction&) const noexcept;
+		[[nodiscard]] bool operator>(const Fraction&) const noexcept;
+
 		friend std::ostream& operator<<(std::ostream&, const Fraction&) noexcept;
 		friend std::istream& operator>>(std::istream&, Fraction&) noexcept;
 	

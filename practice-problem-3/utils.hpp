@@ -18,8 +18,18 @@ namespace utils {
 		num1 -= num2;
 	}
 
-	[[nodiscard]] constexpr int abs(const int num) noexcept {
-		return (num < 0) ? -num : num;
+	template<typename NumberType>
+	[[nodiscard]] constexpr NumberType abs(const NumberType num) noexcept {
+		static_assert(
+			std::is_arithmetic_v<NumberType>,
+			"utils::abs requires an arithmetic type\n"
+		);
+
+		return (num < static_cast<NumberType>(0)) ? -num : num;
+	}
+
+	[[nodiscard]] constexpr bool areEqual(const double num1, const double num2, const double epsilon = 0.01) {
+		return abs(num1 - num2) < epsilon;
 	}
 
 	// Implements euclid's algorithm
@@ -66,7 +76,7 @@ namespace utils {
 	[[nodiscard]] constexpr double roundToNDecimals(const NumberType number, const int precision) {
 		static_assert(
 			std::is_floating_point_v<NumberType>,
-			"roundToNDecimals requires a floating point type\n"
+			"utils::roundToNDecimals requires a floating point type\n"
 		);
 
 		if (precision < 0) {

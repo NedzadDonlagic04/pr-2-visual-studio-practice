@@ -171,6 +171,30 @@ namespace fraction {
 		return Fraction{ numerator / gcd, denominator / gcd };
 	}
 
+	bool Fraction::operator==(const Fraction& rhs) const noexcept {
+		return utils::areEqual(getResultOfDivision(), rhs.getResultOfDivision());
+	}
+
+	bool Fraction::operator!=(const Fraction& rhs) const noexcept {
+		return !(*this == rhs);
+	}
+
+	bool Fraction::operator<=(const Fraction& rhs) const noexcept {
+		return getResultOfDivision() <= rhs.getResultOfDivision();
+	}
+
+	bool Fraction::operator<(const Fraction& rhs) const noexcept {
+		return getResultOfDivision() < rhs.getResultOfDivision();
+	}
+
+	bool Fraction::operator>=(const Fraction& rhs) const noexcept {
+		return getResultOfDivision() >= rhs.getResultOfDivision();
+	}
+	
+	bool Fraction::operator>(const Fraction& rhs) const noexcept {
+		return getResultOfDivision() > rhs.getResultOfDivision();
+	}
+
 	std::ostream& operator<<(std::ostream& os, const Fraction& fraction) noexcept {
 		os << fraction.getStrView();
 
