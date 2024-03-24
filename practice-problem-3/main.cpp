@@ -2,21 +2,10 @@
 #include"fraction.hpp"
 
 int main() {
-	fraction::Fraction fraction{ "1/-5" };
+	fraction::Fraction fraction1{ "1/4" };
+	fraction::Fraction fraction2{ "6/3" };
 
-	for (int i = 0; i < 4; ++i) {
-		std::cout << fraction << " = " << fraction.getResultOfDivision() << '\n';
-		++fraction;
-	}
-	std::cout << '\n';
-
-	fraction = { 4, 5 };
-
-	for (int i = 0; i < 4; ++i) {
-		std::cout << fraction << " = " << fraction.getResultOfDivision() << '\n';
-		--fraction;
-	}
-	std::cout << '\n';
+	std::cout << fraction1 - fraction2 << '\n';
 
 	return 0;
 }

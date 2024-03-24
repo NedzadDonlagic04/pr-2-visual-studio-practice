@@ -16,7 +16,7 @@ namespace fraction {
 		Fraction(const int, const int);
 		Fraction(const Fraction&) noexcept;
 		Fraction(Fraction&&) noexcept;
-		Fraction(std::string_view);
+		Fraction(std::string);
 
 		void setNumerator(const int) noexcept;
 		void setDenominator(const int);
@@ -34,7 +34,12 @@ namespace fraction {
 
 		Fraction& operator--() noexcept;
 		Fraction operator--(int) noexcept;
-			
+
+		Fraction operator+(const Fraction&) const noexcept;
+		Fraction operator-(const Fraction&) const noexcept;
+		Fraction operator*(const Fraction&) const noexcept;
+		Fraction operator/(const Fraction&) const noexcept;
+
 		friend std::ostream& operator<<(std::ostream&, const Fraction&) noexcept;
 		friend std::istream& operator>>(std::istream&, Fraction&) noexcept;
 	
