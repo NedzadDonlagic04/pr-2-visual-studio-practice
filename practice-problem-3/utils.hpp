@@ -4,8 +4,11 @@
 #include<cstdint>
 #include<stdexcept>
 #include<cmath>
+#include<string_view>
 
 namespace utils {
+	void printErrorMsg(const std::string_view) noexcept;
+
 	constexpr void swap(int& num1, int& num2) noexcept {
 		num1 += num2;
 		num2 = num1 - num2;
