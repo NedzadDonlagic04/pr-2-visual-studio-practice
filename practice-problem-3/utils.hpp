@@ -8,6 +8,7 @@
 
 namespace utils {
 	void printErrorMsg(const std::string_view) noexcept;
+	void clearBuffer() noexcept;
 
 	constexpr void swap(int& num1, int& num2) noexcept {
 		num1 += num2;

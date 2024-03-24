@@ -13,4 +13,9 @@ namespace utils {
 		std::cerr << errorMsg;
 		std::cerr << "\033[37m";
 	}
+
+	void clearBuffer() noexcept {
+		std::cin.clear();
+		std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+	}
 }

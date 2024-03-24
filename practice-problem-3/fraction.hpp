@@ -71,6 +71,7 @@ namespace fraction {
 
 			if (std::cin.fail()) {
 				utils::printErrorMsg("Invalid fraction input\n");
+				utils::clearBuffer();
 				repeatLoop = true;
 			}
 			else if (!isInputValid(fraction)) {
