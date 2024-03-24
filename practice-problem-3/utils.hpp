@@ -6,6 +6,34 @@
 #include<cmath>
 
 namespace utils {
+	constexpr void swap(int& num1, int& num2) noexcept {
+		num1 += num2;
+		num2 = num1 - num2;
+		num1 -= num2;
+	}
+
+	[[nodiscard]] constexpr int abs(const int num) noexcept {
+		return (num < 0) ? -num : num;
+	}
+
+	// Implements euclid's algorithm
+	// https://en.wikipedia.org/wiki/Euclidean_algorithm
+	[[nodiscard]] constexpr int getGreatestCommonDenominator(int num1, int num2) {
+		num1 = abs(num1);
+		num2 = abs(num2);
+
+		if (num1 < num2) {
+			swap(num1, num2);
+		}
+
+		while (num2) {
+			swap(num1, num2);
+			num2 %= num1;
+		}
+
+		return num1;
+	}
+
 	[[nodiscard]] constexpr int64_t getPowOf10(const int exponent) {
 		if (exponent < 0) {
 			throw std::invalid_argument("Negative exponent not allowed\n");
