@@ -4,7 +4,9 @@
 #include<cstdint>
 #include<stdexcept>
 #include<cmath>
+#include<string>
 #include<string_view>
+#include<iostream>
 
 namespace utils {
 	void printErrorMsg(const std::string_view) noexcept;
@@ -74,6 +76,32 @@ namespace utils {
 		const auto powOf10{ getPowOf10(precision) };
 			
 		return round(number * powOf10) / powOf10;
+	}
+
+	template<typename Callback = bool(const std::string&)>
+	void getStringInput(
+		std::string& str,
+		const std::string_view outputMsg,
+		Callback isInputValid = [](const std::string&) { return true; }
+	) noexcept {
+		bool repeatLoop{};
+
+		do {
+			repeatLoop = false;
+
+			std::cout << outputMsg;
+			std::getline(std::cin >> std::ws, str);
+
+			if (std::cin.fail()) {
+				utils::printErrorMsg("Invalid string input\n");
+				std::cin.clear();
+				repeatLoop = true;
+			}
+			else if (!isInputValid(str)) {
+				repeatLoop = true;
+			}
+
+		} while (repeatLoop);
 	}
 }
 
