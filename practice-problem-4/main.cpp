@@ -26,7 +26,8 @@ int main() {
 		std::cout << "Conversion " << i << ": ";
 		std::cout << memoryConversionLine.value() << '\n';
 		std::cout << "Conversion Time: ";
-		std::cout << memoryConversionLine.value().getTimeInNsToConvertTo() << "\n\n";
+		std::cout << memoryConversionLine.value().getTimeInNsToConvertTo();
+		std::cout << memory::MemoryBlock::timeConversionUnit << "\n\n";
 	}
 
 	return 0;
