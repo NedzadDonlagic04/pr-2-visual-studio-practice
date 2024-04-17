@@ -1,6 +1,6 @@
 #include<iostream>
 
-#include"memory.hpp"
+#include"memoryUtils.hpp"
 #include"memoryConversionLine.hpp"
 
 #include<random>
