@@ -17,6 +17,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "practice-problem-4", "pract
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OOP_RezervacijeGosti", "OOP_RezervacijeGosti\OOP_RezervacijeGosti.vcxproj", "{64328F4B-5FFD-47EE-A42C-841331D0D6CE}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OOP_ZavrsniRadovi", "OOP_ZavrsniRadovi\OOP_ZavrsniRadovi.vcxproj", "{B1D4BFF2-C608-4B48-8FC8-A6B7419E488B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -81,6 +83,14 @@ Global
 		{64328F4B-5FFD-47EE-A42C-841331D0D6CE}.Release|x64.Build.0 = Release|x64
 		{64328F4B-5FFD-47EE-A42C-841331D0D6CE}.Release|x86.ActiveCfg = Release|Win32
 		{64328F4B-5FFD-47EE-A42C-841331D0D6CE}.Release|x86.Build.0 = Release|Win32
+		{B1D4BFF2-C608-4B48-8FC8-A6B7419E488B}.Debug|x64.ActiveCfg = Debug|x64
+		{B1D4BFF2-C608-4B48-8FC8-A6B7419E488B}.Debug|x64.Build.0 = Debug|x64
+		{B1D4BFF2-C608-4B48-8FC8-A6B7419E488B}.Debug|x86.ActiveCfg = Debug|Win32
+		{B1D4BFF2-C608-4B48-8FC8-A6B7419E488B}.Debug|x86.Build.0 = Debug|Win32
+		{B1D4BFF2-C608-4B48-8FC8-A6B7419E488B}.Release|x64.ActiveCfg = Release|x64
+		{B1D4BFF2-C608-4B48-8FC8-A6B7419E488B}.Release|x64.Build.0 = Release|x64
+		{B1D4BFF2-C608-4B48-8FC8-A6B7419E488B}.Release|x86.ActiveCfg = Release|Win32
+		{B1D4BFF2-C608-4B48-8FC8-A6B7419E488B}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
