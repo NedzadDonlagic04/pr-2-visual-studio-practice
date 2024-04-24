@@ -3,6 +3,9 @@
 #include<vector>
 using namespace std;
 
+// Headers I included
+#include<numeric>
+
 /****************************************************************************
 1. SVE KLASE TREBAJU POSJEDOVATI ADEKVATAN DESTRUKTOR
 2. NAMJERNO IZOSTAVLJANJE KOMPLETNIH I/ILI POJEDINIH DIJELOVA DESTRUKTORA KOJI UZROKUJU RUNTIME ERROR ÆE BITI OZNACENO KAO "RE"
@@ -83,6 +86,12 @@ public:
 
 		return true;
 	}
+
+	[[nodiscard]] std::ptrdiff_t GetIndexZaElementSaDatomVrijednosti(const T1& element) noexcept {
+		const std::ptrdiff_t index { std::find(_elementi1, _elementi1 + getTrenutno(), element) - _elementi1 };
+
+		return (index == getTrenutno())? -1 : index;
+	}
 };
 class Poglavlje {
 	char* _naslov;
@@ -159,6 +168,9 @@ public:
 	}
 
 	const char* GetNaslov() const { return _naslov; }
+	const char* GetSadrzaj() const { return _sadrzaj; }
+	bool GetPrihvaceno() const { return _prihvaceno; }
+	int GetOcjena() const { return _ocjena; }
 
 	[[nodiscard]] bool operator==(const Poglavlje& rhs) {
 		return	std::strcmp(_naslov, rhs._naslov) == 0
@@ -249,6 +261,47 @@ public:
 			&& _datumOdbrane == rhs._datumOdbrane
 			&& _konacnaOcjena == rhs._konacnaOcjena;
 	}
+
+	bool DaLiSuPoglavljaValidna() const noexcept {
+		// Ovdje se provjerava da li je ispunjen ovaj uslov
+		// 2. svako poglavlje ima broj karaktera veci od minimalnog
+		// 3. svako poglavlje je prihvaceno/odobreno
+		auto DaLiJeDuzinaSadrzajaIPrihvacenostValidna = [&](const Poglavlje& poglavlje) {
+			return	std::strlen(poglavlje.GetSadrzaj()) <= min_karaktera_po_poglavlju
+				|| !poglavlje.GetPrihvaceno();
+		};
+
+		const auto poglavljeKojeNijeValidno{
+			std::find_if(
+				std::begin(_poglavljaRada),
+				std::end(_poglavljaRada),
+				DaLiJeDuzinaSadrzajaIPrihvacenostValidna
+			)
+		};
+
+		return poglavljeKojeNijeValidno == std::end(_poglavljaRada);
+	}
+
+	bool IzracunajKonacnuOcjenu() noexcept {
+		if (!DaLiSuPoglavljaValidna()) {
+			return false;
+		}
+
+		float konacnaOcjena{ std::accumulate(
+			std::begin(_poglavljaRada),
+			std::end(_poglavljaRada),
+			0.0f,
+			[&](const float currentSum, const Poglavlje& poglavlje) {
+				return currentSum + poglavlje.GetOcjena();
+			}
+		) };
+
+		konacnaOcjena /= _poglavljaRada.size();
+
+		_konacnaOcjena = konacnaOcjena;
+
+		return true;
+	}
 };
 
 class Mentor {
@@ -265,6 +318,28 @@ public:
 
 	bool DodajZavrsniRad(const std::string& brojIndeksa, const ZavrsniRad& zavrsniRad) {
 		return _teme.DodajUnikantniElement(brojIndeksa, zavrsniRad);
+	}
+
+	ZavrsniRad* ZakaziOdbranuRada(const std::string& brojIndeksa, const std::string& datumOdbrane) noexcept {
+		const auto index{ _teme.GetIndexZaElementSaDatomVrijednosti(brojIndeksa) };
+
+		if (index == -1) {
+			return nullptr;
+		}
+
+		auto& zavrsniRad{ _teme.getElement2(index) };
+		auto& poglavlje{ zavrsniRad.GetPoglavlja() };
+
+		// Ovdje se provjerava da li je ispunjen ovaj uslov
+		// 1. zavrsni rad ima broj poglavlja veci od minimalnog
+		// Unutar metode IzracunajKonacnuOcjenu se provjeravaju uslovi 2. i 3.
+		if (poglavlje.size() <= min_polgavlja || !zavrsniRad.IzracunajKonacnuOcjenu()) {
+			return nullptr;
+		}
+
+		zavrsniRad.SetDatumOdbrane(datumOdbrane);
+
+		return &zavrsniRad;
 	}
 };
 
@@ -336,11 +411,10 @@ int main() {
 		3. svako poglavlje je prihvaceno/odobreno
 	ukoliko su zadovoljeni prethodni kriteriji, izracunava se konacna ocjena rada (prosjek ocjena svih poglavlja), postavlja datum odbrane rada i vraca pokazivac na rad kome je zakazan odbrana.
 	u slucaju da student sa primljenim brojem indeksa nije prijavio zavrsni rad ili neki od postavljenih kriterija nije zadovoljen, funkcija vraca nullptr.
-*/
+	*/
 
 //parametri:brojIndeksa, datumOdbrane
-	/*
-	ZavrsniRad* zr1 = mentori[0]->ZakaziOdbranuRada("IB130011", "25.09.2018");
+	ZavrsniRad * zr1 = mentori[0]->ZakaziOdbranuRada("IB130011", "25.09.2018");
 	if (zr1 != nullptr)
 		cout << *zr1 << endl;
 
@@ -350,13 +424,11 @@ int main() {
 
 	//ispisuje sve podatke o Mentoru i njegovim mentorstvima
 	mentori[0]->Info();
-	*/
 
 	for (int i = 0; i < max; i++) {
 		delete mentori[i];
 		mentori[i] = nullptr;
 	}
-
 	system("pause>0");
 	return 0;
 }

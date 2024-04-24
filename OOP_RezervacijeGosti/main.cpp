@@ -367,7 +367,11 @@ public:
                     gostIzNiza.GetEmail() == gost.GetEmail();
         };
 
-        if (std::find_if(std::begin(_gosti), std::end(_gosti), DaLiJeGostValidan) != std::end(_gosti)) {
+        const auto gostIt { 
+            std::find_if(std::begin(_gosti), std::end(_gosti), DaLiJeGostValidan) 
+        };
+
+        if (gostIt != std::end(_gosti)) {
             return false;
         }
 
