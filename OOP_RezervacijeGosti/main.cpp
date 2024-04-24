@@ -3,10 +3,30 @@
     Included vector header because it's used in Rezervacija
 */
 #include<vector>
+#include<unordered_map>
 using namespace std;
 
 const char* crt = "\n-------------------------------------------\n";
 enum Kriteriji { CISTOCA, USLUGA, LOKACIJA, UDOBNOST };
+const char* GetKriterijiKaoTekst(const Kriteriji kriteriji) {
+    switch (kriteriji) {
+    case Kriteriji::CISTOCA:
+        return "CISTOCA";
+    case Kriteriji::LOKACIJA:
+        return "LOKACIJA";
+    case Kriteriji::UDOBNOST:
+        return "UDOBNOST";
+    case Kriteriji::USLUGA:
+        return "USLUGA";
+    default:
+        return "Nevalidna vrijednost";
+    }
+}
+std::ostream& operator<<(std::ostream& os, const Kriteriji kriteriji) {
+    os << GetKriterijiKaoTekst(kriteriji);
+
+    return os;
+}
 
 // Added function because a comment said I was allowed to
 [[nodiscard]] char* GetNizKaraktera(const char* const str) {
@@ -72,11 +92,7 @@ public:
     }
     T1& getElement1(int lokacija)const { return _elementi1[lokacija]; }
     T2& getElement2(int lokacija)const { return _elementi2[lokacija]; }
-    /*
-        Added const to method below, this made it so other const methods could call it, if this is not allowed then my bad
-        Just means wherever I have const& it has to be &
-    */
-    int getTrenutno() const { return *_trenutno; }
+    int getTrenutno() { return *_trenutno; }
     friend ostream& operator<< (ostream& COUT, const Kolekcija& obj) {
         // Replaced obj._trenutno with obj.getTrenutno(), could have also been replaced with *obj._trenutno, if this is not allowed then my bad
         for (std::size_t i = 0; i < obj.getTrenutno(); i++)
@@ -150,6 +166,8 @@ public:
 
         return *this;
     }
+
+    int getTrenutno() const { return *_trenutno; }
 };
 class Datum {
     int* _dan, * _mjesec, * _godina;
@@ -197,7 +215,7 @@ public:
     }
     Komentar(const Komentar& komentar)
         : _sadrzajKomentara { GetNizKaraktera(komentar._sadrzajKomentara) }
-        , _ocjeneKriterija{ new Kolekcija<Kriteriji, int>(komentar._ocjeneKriterija) }
+        , _ocjeneKriterija{ new Kolekcija<Kriteriji, int>(*komentar._ocjeneKriterija) }
     {}
     ~Komentar() {
         delete[] _sadrzajKomentara; _sadrzajKomentara = nullptr;
@@ -209,28 +227,26 @@ public:
     friend std::ostream& operator<<(std::ostream& os, const Komentar& komentar) {
         os << komentar._sadrzajKomentara << '\n';
 
-        for (int i = 0; i < komentar._ocjeneKriterija->getTrenutno(); ++i) {
-            std::cout << '\t';
+        float prosjecnaOcjena{ 0.0 };
+        const int ocjenaKriterijaSize{ komentar._ocjeneKriterija->getTrenutno() };
 
-            switch (komentar._ocjeneKriterija->getElement1(i)) {
-            case Kriteriji::CISTOCA:
-                std::cout << "CISTOCA(";
-                break;
-            case Kriteriji::LOKACIJA:
-                std::cout << "LOKACIJA(";
-                break;
-            case Kriteriji::UDOBNOST:
-                std::cout << "UDOBNOST(";
-                break;
-            default:
-                std::cout << "USLUGA(";
-            }
-            
-            std::cout << komentar._ocjeneKriterija->getElement2(i) << ')';
+        for (int i = 0; i < ocjenaKriterijaSize; ++i) {
+            os << '\t';
 
-            if (i + 1 != komentar._ocjeneKriterija->getTrenutno()) {
-                std::cout << '\n';
+            const auto trenutnaOcjena{ komentar._ocjeneKriterija->getElement2(i) };
+
+            os << komentar._ocjeneKriterija->getElement1(i) << '(' << trenutnaOcjena << ')';
+
+            prosjecnaOcjena += trenutnaOcjena;
+
+            if (i + 1 != ocjenaKriterijaSize) {
+                os << '\n';
             }
+        }
+        
+        if (ocjenaKriterijaSize) {
+            prosjecnaOcjena /= ocjenaKriterijaSize;
+            os << crt << "Prosjecna ocjena -> " << prosjecnaOcjena << '\n';
         }
 
         return os;
@@ -329,6 +345,12 @@ public:
     Rezervacija(Datum& OD, Datum& DO, Gost& gost) :_OD(OD), _DO(DO) {
         _gosti.push_back(gost);
     }
+    Rezervacija(const Rezervacija& rezervacija) 
+        : _OD(rezervacija._OD)
+        , _DO(rezervacija._DO)
+        , _gosti(rezervacija._gosti)
+        , _komentar(rezervacija._komentar)
+    {}
     vector<Gost>& GetGosti() { return _gosti; }
     Komentar GetKomentar() { return _komentar; }
     friend ostream& operator<< (ostream& COUT, Rezervacija& obj) {
@@ -356,15 +378,6 @@ public:
 
     void SetKomentar(const Komentar& komentar) {
         _komentar = komentar;
-    }
-
-    Rezervacija& operator=(const Rezervacija& rhs) {
-        _OD = rhs._OD;
-        _DO = rhs._DO;
-        _gosti = rhs._gosti;
-        _komentar = rhs._komentar;
-
-        return *this;
     }
 };
 
