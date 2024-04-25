@@ -67,11 +67,13 @@ public:
 	int getTrenutno() const { return _trenutno; }
 
 	bool DaLiIjedanDioElementaPostojiUKolkeciji(const T1& element1, const T2& element2) const noexcept {
-		T1* const elementi1End{ _elementi1 + getTrenutno() };
-		T2* const elementi2End{ _elementi2 + getTrenutno() };
+		for (int i = 0; i < getTrenutno(); ++i) {
+			if (getElement1(i) == element1 || getElement2(i) == element2) {
+				return true;
+			}
+		}
 
-		return	std::find(_elementi1, elementi1End, element1) != elementi1End
-			||	std::find(_elementi2, elementi2End, element2) != elementi2End;
+		return false;
 	}
 
 	bool DodajUnikantniElement(const T1& element1, const T2& element2) {

@@ -8,6 +8,8 @@ using namespace std;
 
 const char* crt = "\n-------------------------------------------\n";
 enum Kriteriji { CISTOCA, USLUGA, LOKACIJA, UDOBNOST };
+
+// Stuff I added as global functions below
 const char* GetKriterijiKaoTekst(const Kriteriji kriteriji) {
     switch (kriteriji) {
     case Kriteriji::CISTOCA:
@@ -28,7 +30,6 @@ std::ostream& operator<<(std::ostream& os, const Kriteriji kriteriji) {
     return os;
 }
 
-// Added function because a comment said I was allowed to
 [[nodiscard]] char* GetNizKaraktera(const char* const str) {
     if (!str) {
         return nullptr;
@@ -57,6 +58,8 @@ std::size_t appendElement(IteratorType& start, const std::size_t size, const Ele
     return size + 1;
 }
 
+// End of global functions I added
+
 template<class T1, class T2>
 class Kolekcija {
     T1* _elementi1;
@@ -77,13 +80,22 @@ public:
     }
     // Copy ctor added by me to be used in InsertAt method
     Kolekcija(const Kolekcija& kolekcija)
-        : _elementi1{ new T1[kolekcija.getTrenutno()] }
-        , _elementi2{ new T2[kolekcija.getTrenutno()] }
-        , _trenutno{ new int { kolekcija.getTrenutno() } }
+        : _trenutno{ new int { kolekcija.getTrenutno() } }
         , _omoguciDupliranje{ kolekcija._omoguciDupliranje }
     {
-        std::copy(kolekcija._elementi1, kolekcija._elementi1 + kolekcija.getTrenutno(), _elementi1);
-        std::copy(kolekcija._elementi2, kolekcija._elementi2 + kolekcija.getTrenutno(), _elementi2);
+        /*
+            For some reason the static analyzer was giving warnings here 
+            when there wasn't really a need for any (or so I think)
+            So I had to put the _elementi1 and _elementi2 attributes outside
+            the member initializer list
+        */
+        _elementi1 = new T1[*_trenutno];
+        _elementi2 = new T2[*_trenutno];
+
+        for (int i = 0; i < *_trenutno; ++i) {
+            _elementi1[i] = kolekcija.getElement1(i);
+            _elementi2[i] = kolekcija.getElement2(i);
+        }
     }
     ~Kolekcija() {
         delete[]_elementi1; _elementi1 = nullptr;
@@ -101,11 +113,13 @@ public:
     }
 
     [[nodiscard]] bool DaLiElementiPostoje(const T1& element1, const T2& element2) const noexcept {
-        T1* const elementi1End{ _elementi1 + getTrenutno() };
-        T2* const elementi2End{ _elementi2 + getTrenutno() };
+        for (int i = 0; i < getTrenutno(); ++i) {
+            if (getElement1(i) == element1 && getElement2(i) == element2) {
+                return true;
+            }
+        }
 
-        return  std::find(_elementi1, elementi1End, element1) != elementi1End
-            &&  std::find(_elementi2, elementi2End, element2) != elementi2End;
+        return false;
     }
 
     void AddElement(const T1 &element1, const T2 &element2) {
@@ -128,16 +142,10 @@ public:
 
         newKolekcija.AddElement(element1, element2);
 
-        std::copy_backward(
-            newKolekcija._elementi1 + index,
-            newKolekcija._elementi1 + newKolekcija.getTrenutno() - 1,
-            newKolekcija._elementi1 + newKolekcija.getTrenutno()
-        );
-        std::copy_backward(
-            newKolekcija._elementi2 + index,
-            newKolekcija._elementi2 + newKolekcija.getTrenutno() - 1,
-            newKolekcija._elementi2 + newKolekcija.getTrenutno()
-        );
+        for (int i = newKolekcija.getTrenutno() - 1; i > index; --i) {
+            newKolekcija._elementi1[i] = newKolekcija._elementi1[i - 1];
+            newKolekcija._elementi2[i] = newKolekcija._elementi2[i - 1];
+        }
 
         newKolekcija._elementi1[index] = element1;
         newKolekcija._elementi2[index] = element2;
@@ -147,12 +155,16 @@ public:
 
     Kolekcija<T1, T2>& operator=(const Kolekcija<T1, T2>& rhs) {
         // Self assignment here is safe due to the order of allocation and deallocation
-        T1* const temp1{ new T1[rhs.getTrenutno()] };
-        T2* const temp2{ new T2[rhs.getTrenutno()] };
-        int* tempSize{ new int{ rhs.getTrenutno() } };
+        const int size{ rhs.getTrenutno() };
 
-        std::copy(rhs._elementi1, rhs._elementi1 + rhs.getTrenutno(), temp1);
-        std::copy(rhs._elementi2, rhs._elementi2 + rhs.getTrenutno(), temp2);
+        T1* const temp1{ new T1[size] };
+        T2* const temp2{ new T2[size] };
+        int* tempSize{ new int{ size } };
+
+        for (int i = 0; i < size; ++i) {
+            temp1[i] = rhs.getElement1(i);
+            temp2[i] = rhs.getElement2(i);
+        }
 
         delete[] _elementi1;
         delete[] _elementi2;
