@@ -65,6 +65,8 @@ public:
 	}
 
 	int getTrenutno() const { return _trenutno; }
+	const T1& getElement1(int lokacija) const { return _elementi1[lokacija]; }
+	const T2& getElement2(int lokacija) const { return _elementi2[lokacija]; }
 
 	bool DaLiIjedanDioElementaPostojiUKolkeciji(const T1& element1, const T2& element2) const noexcept {
 		for (int i = 0; i < getTrenutno(); ++i) {
@@ -258,7 +260,7 @@ public:
 		postojecePoglavlje->OcijeniPoglavlje(ocjena);
 	}
 
-	[[nodiscard]] bool operator==(const ZavrsniRad& rhs) {
+	[[nodiscard]] bool operator==(const ZavrsniRad& rhs) const {
 		return	std::strcmp(_tema, rhs._tema) == 0
 			&& _datumOdbrane == rhs._datumOdbrane
 			&& _konacnaOcjena == rhs._konacnaOcjena;
