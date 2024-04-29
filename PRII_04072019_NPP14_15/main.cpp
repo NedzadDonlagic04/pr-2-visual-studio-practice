@@ -1,6 +1,8 @@
 ﻿#include<iostream>
 using namespace std;
 
+#include<tuple>
+
 /*
 1. BROJ I VRSTA PARAMETARA MORAJU BITI IDENTICNI KAO U PRIMJERIMA. U SUPROTNOM SE RAD NECE BODOVATI
 2. STAVITE KOMENTAR NA DIJELOVE CODE-A KOJE NE BUDETE IMPLEMENTIRALI
@@ -48,8 +50,50 @@ struct Poglavlje {
 	}
 	void OcijeniPoglavlje(int ocjena) {
 		_ocjena = ocjena;
-		if (_ocjena > 5 && ocjena <= 10)
-			_prihvaceno = true;
+		// Modified line below
+		_prihvaceno = _ocjena > 5 && ocjena <= 10;
+	}
+
+	// My additions start here
+
+	Poglavlje(const char* naslov = nullptr, const char* sadrzaj = nullptr) {
+		_ocjena = 0; _prihvaceno = false;
+		_naslov = AlocirajNizKaraktera(naslov);
+		_sadrzaj = AlocirajNizKaraktera(sadrzaj);
+	}
+
+	void DodajNaKrajSadrzaja(const char* const sadrzaj, const char* const delimiter = " ") {
+		const std::size_t newSize{
+			std::strlen(_sadrzaj)
+			+ std::strlen(delimiter)
+			+ std::strlen(sadrzaj)
+			+ 1
+		};
+		char* const newSadrzaj{ new char[newSize] {} };
+
+		strcat_s(newSadrzaj, newSize, _sadrzaj);
+		strcat_s(newSadrzaj, newSize, delimiter);
+		strcat_s(newSadrzaj, newSize, sadrzaj);
+
+		delete[] _sadrzaj;
+
+		_sadrzaj = newSadrzaj;
+	}
+
+	Poglavlje& operator=(const Poglavlje& rhs) {
+		char* const tempNaslov{ AlocirajNizKaraktera(rhs._naslov) };
+		char* const tempSadrzaj{ AlocirajNizKaraktera(rhs._sadrzaj) };
+
+		_ocjena = rhs._ocjena;
+		_prihvaceno = rhs._prihvaceno;
+
+		delete[] _naslov;
+		delete[] _sadrzaj;
+
+		_naslov = tempNaslov;
+		_sadrzaj = tempSadrzaj;
+
+		return *this;
 	}
 };
 
@@ -66,6 +110,9 @@ struct ZavrsniRad {
 		_brojIndeksa = AlocirajNizKaraktera(brojIndeksa);
 		_tema = AlocirajNizKaraktera(nazivTeme);
 		_datumOdbrane = AlocirajNizKaraktera(not_set);
+		// I added lines below
+		_trenutnoPoglavlja = 0;
+		_poglavljaRada = new Poglavlje[_trenutnoPoglavlja];
 	}
 	void Dealociraj() {
 		delete[] _tema; _tema = nullptr;
@@ -82,10 +129,102 @@ struct ZavrsniRad {
 			_poglavljaRada[i].Ispis();
 		cout << "Datum odbrane rada: " << _datumOdbrane << endl << " Ocjena: " << _konacnaOcjena << endl;
 	}
+
+	// My additions start here
+
+	ZavrsniRad(const char* brojIndeksa = nullptr, const char* nazivTeme = nullptr)
+		: _brojIndeksa{ AlocirajNizKaraktera(brojIndeksa) }
+		, _tema{ AlocirajNizKaraktera(nazivTeme) }
+		, _datumOdbrane{ AlocirajNizKaraktera(not_set) }
+		, _konacnaOcjena{ 0.0f }
+	{
+		_trenutnoPoglavlja = 0;
+		_poglavljaRada = new Poglavlje[_trenutnoPoglavlja];
+	}
+
+	ZavrsniRad(const ZavrsniRad& zavrsniRad)
+		: _brojIndeksa{ AlocirajNizKaraktera(zavrsniRad._brojIndeksa) }
+		, _tema{ AlocirajNizKaraktera(zavrsniRad._tema) }
+		, _datumOdbrane{ AlocirajNizKaraktera(zavrsniRad._datumOdbrane) }
+		, _konacnaOcjena{ 0.0f }
+	{
+		_trenutnoPoglavlja = zavrsniRad._trenutnoPoglavlja;
+		_poglavljaRada = new Poglavlje[_trenutnoPoglavlja];
+
+		for (int i = 0; i < _trenutnoPoglavlja; ++i) {
+			_poglavljaRada[i] = zavrsniRad._poglavljaRada[i];
+		}
+	}
+
+	void DodajPoglavlje(const char* const naslovPoglavlja, const char* const sadrzaj) {
+		const auto postojecePoglavlje{ DaLiPoglavljePostoji(naslovPoglavlja) };
+
+		if (postojecePoglavlje) {
+			postojecePoglavlje->DodajNaKrajSadrzaja(sadrzaj);
+			return;
+		}
+
+		Poglavlje* const tempPoglavlja{ new Poglavlje[_trenutnoPoglavlja + 1] {} };
+
+		for (int i = 0; i < _trenutnoPoglavlja; ++i) {
+			tempPoglavlja[i] = _poglavljaRada[i];
+		}
+
+		tempPoglavlja[_trenutnoPoglavlja].Unos(naslovPoglavlja, sadrzaj);
+
+		delete[] _poglavljaRada;
+		_poglavljaRada = tempPoglavlja;
+
+		++_trenutnoPoglavlja;
+	}
+
+	[[nodiscard]] Poglavlje* DaLiPoglavljePostoji(const char* const naslovPoglavlja) noexcept {
+		for (int i = 0; i < _trenutnoPoglavlja; ++i) {
+			if (!std::strcmp(_poglavljaRada[i]._naslov, naslovPoglavlja)) {
+				return _poglavljaRada + i;
+			}
+		}
+
+		return nullptr;
+	}
+
+	void OcijeniPoglavlje(const char* const naslovPoglavlja, const int ocjena) {
+		const auto postojecePoglavlje{ DaLiPoglavljePostoji(naslovPoglavlja) };
+
+		if (postojecePoglavlje) {
+			postojecePoglavlje->OcijeniPoglavlje(ocjena);
+
+			if (!postojecePoglavlje->_prihvaceno) {
+				throw std::invalid_argument("Ocjena nije validna, treba biti u rangu od 5 - 10");
+			}
+
+			return;
+		}
+
+		throw std::invalid_argument("Dato poglavlje ne postoji!");
+	}
+
+	void PostaviDatumOdbrane(const char* const datumOdbrane) noexcept {
+		delete[] _datumOdbrane;
+		_datumOdbrane = AlocirajNizKaraktera(datumOdbrane);
+	}
+
+	void IzracunajProsjecnuOcjenu() noexcept {
+		float prosjek{ 0.0f };
+
+		for (int i = 0; i < _trenutnoPoglavlja; ++i) {
+			prosjek += _poglavljaRada[i]._ocjena;
+		}
+
+		_konacnaOcjena = (_trenutnoPoglavlja) ? prosjek / _trenutnoPoglavlja : 0.0f;
+	}
 };
+
 struct Nastavnik {
 	char* _imePrezime;
 	ZavrsniRad* _teme[max_zavrsnih] = { nullptr };
+	// My addition so I can keep track of how many members are inside the array
+	int _trenutno{ 0 };
 
 	void Unos(const char* imePrezime) {
 		_imePrezime = AlocirajNizKaraktera(imePrezime);
@@ -102,11 +241,123 @@ struct Nastavnik {
 	}
 	void Ispis() {
 		cout << crt << _imePrezime << crt;
-		for (size_t i = 0; i < max_zavrsnih; i++)
+		for (size_t i = 0; i < _trenutno; i++)
 			_teme[i]->Ispis();
+	}
+
+	// My additions start here
+
+	Nastavnik(const char* imePrezime = nullptr)
+		: _imePrezime{ AlocirajNizKaraktera(imePrezime) }
+	{}
+
+	bool DodajZavrsniRad(const ZavrsniRad& zavrsniRad) {
+		if (_trenutno == max_zavrsnih) {
+			return false;
+		}
+		else if (DaLiStudentImaZavrsniRadKodNastanika(zavrsniRad._brojIndeksa)) {
+			return false;
+		}
+		else if (DaLiSeRadPonavlja(zavrsniRad._tema)) {
+			return false;
+		}
+
+		_teme[_trenutno] = new ZavrsniRad{ zavrsniRad };
+
+		++_trenutno;
+		return true;
+	}
+
+	[[nodiscard]] ZavrsniRad* DaLiStudentImaZavrsniRadKodNastanika(const char* const brojIndeksa) noexcept {
+		for (int i = 0; i < _trenutno; ++i) {
+			if (!std::strcmp(_teme[i]->_brojIndeksa, brojIndeksa)) {
+				return _teme[i];
+			}
+		}
+
+		return nullptr;
+	}
+
+	[[nodiscard]] bool DaLiSeRadPonavlja(const char* const tema) const noexcept {
+		for (int i = 0; i < _trenutno; ++i) {
+			if (!std::strcmp(_teme[i]->_tema, tema)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	[[nodiscard]] ZavrsniRad* ZakaziOdbranuRada(
+		const char* const brojIndeksa,
+		const char* const datumOdbrane)
+		noexcept {
+		auto zavrsniRadStudenta{ DaLiStudentImaZavrsniRadKodNastanika(brojIndeksa) };
+		if (!zavrsniRadStudenta || !DaLiImaBrojPoglavljaVeciOdMin(zavrsniRadStudenta)) {
+			return nullptr;
+		}
+		else if (!DaLiSvakoPoglavljeImaMinDuzinuSadrzaja(zavrsniRadStudenta)) {
+			return nullptr;
+		}
+		else if (!DaLiJeSvakoPoglavljePrihvaceno(zavrsniRadStudenta)) {
+			return nullptr;
+		}
+
+		zavrsniRadStudenta->PostaviDatumOdbrane(datumOdbrane);
+		zavrsniRadStudenta->IzracunajProsjecnuOcjenu();
+
+		return zavrsniRadStudenta;
+	}
+
+	[[nodiscard]] bool DaLiImaBrojPoglavljaVeciOdMin(
+		const ZavrsniRad* const zavrsniRad
+	) const noexcept {
+		return zavrsniRad->_trenutnoPoglavlja >= min_polgavlja;
+	}
+
+	[[nodiscard]] bool DaLiSvakoPoglavljeImaMinDuzinuSadrzaja(
+		const ZavrsniRad* const zavrsniRad
+	) const noexcept {
+		for (int i = 0; i < zavrsniRad->_trenutnoPoglavlja; ++i) {
+			if (std::strlen(zavrsniRad->_poglavljaRada[i]._sadrzaj) < min_karaktera_po_poglavlju) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	[[nodiscard]] bool DaLiJeSvakoPoglavljePrihvaceno(
+		const ZavrsniRad* const zavrsniRad
+	) const noexcept {
+		for (int i = 0; i < zavrsniRad->_trenutnoPoglavlja; ++i) {
+			if (!zavrsniRad->_poglavljaRada[i]._prihvaceno) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 };
 
+[[nodiscard]] std::tuple<char*, float> PronadjiNajStudenta(
+	Nastavnik** nastavnici, 
+	const int brojNastavnika, 
+	const float minimalnaKonacnaOcjena
+) {
+	for (int i = 0; i < brojNastavnika; ++i) {
+		for (int ii = 0; ii < nastavnici[i]->_trenutno; ++ii) {
+			if (nastavnici[i]->_teme[ii]->_konacnaOcjena >= minimalnaKonacnaOcjena) {
+				return { 
+					nastavnici[i]->_teme[ii]->_brojIndeksa,  
+					nastavnici[i]->_teme[ii]->_konacnaOcjena 
+				};
+			}
+		}
+	}
+
+	return { nullptr, 0.0f };
+}
 
 int main() {
 	cout << crt << "UPLOAD RADA OBAVEZNO IZVRSITI U ODGOVARAJUCI FOLDER NA FTP SERVERU" << endl;
@@ -130,6 +381,7 @@ int main() {
 
 	/*u zavrsni rad dodaje novo poglavlje i njegov sadrzaj. ukoliko poglavlje vec postoji u zavrsnom radu, funkcija tom poglavlju treba dodati novi sadrzaj i pri tome zadrzi postojeci (izmedju postojeceg i novog sadrzaja se dodaje prazan prostor). u slucaju da poglavlje ne postoji, ono se dodaje zajedno sa sadrzajem*/
 	//parametri: nazivPoglavlja, sadrzajPoglavlja
+
 	multimedijalni.DodajPoglavlje("Uvod", "U ovom poglavlju ce biti rijeci");
 	multimedijalni.DodajPoglavlje("Uvod", "o multimedijalnim sistemima koji se danas koriste");
 	multimedijalni.DodajPoglavlje("Uvod", "u savremenom poslovanju");
@@ -142,6 +394,7 @@ int main() {
 
 	/*funkcija DodajZavrsniRad ima zadatak da odredjenom nastavniku dodijeli mentorstvo na zavrsnom radu. sprijeciti dodavanje zavrsnih radova sa istom temom kao i mogucnost da jedan student kod istog nastavnika posjeduje vise zavrsnih radova*/
 	//brojIndeksa, zavrsniRad
+
 	if (nastavnici[0]->DodajZavrsniRad(multimedijalni))
 		cout << "Zavrsni rad uspjesno dodat!" << endl;
 	if (nastavnici[0]->DodajZavrsniRad(podrsa_operaterima))
@@ -165,6 +418,7 @@ int main() {
 */
 
 //paramteri: brojIndeksa, datumOdbrane
+
 	ZavrsniRad* zr1 = nastavnici[0]->ZakaziOdbranuRada("IB120021", "25.09.2019");
 	if (zr1 != nullptr)
 		zr1->Ispis();
@@ -179,6 +433,7 @@ int main() {
 
 	/*funkcija PronadjiNajStudenta ima zadatak da pronadje prvog studenta koji je zavrsni rad odbranio kod
 	nastavnika/mentora, te tom prilikom ostvario (odnosi se na studenta) ocjenu vecu od proslijedjene (npr. 8.2)*/
+
 	float prosjekStudenta = 0;
 	char* indeksStudenta;
 	//parametri PronadjiNajStudenta: nastavnici, brojNastavnika, minimalnaKonacnaOcjena
@@ -191,6 +446,8 @@ int main() {
 		delete nastavnici[i];
 		nastavnici[i] = nullptr;
 	}
+		
 	system("pause>0");
 	return 0;
+	
 }
