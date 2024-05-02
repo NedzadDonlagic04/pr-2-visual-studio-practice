@@ -1,6 +1,14 @@
 ﻿#include <iostream>
 using namespace std;
 
+// Headers I included below
+#include<vector>
+#include<numeric>
+#include<thread>
+#include<fstream>
+#include<regex>
+#include<string>
+
 const char* PORUKA = "\n-------------------------------------------------------------------------------\n"
 "0. PROVJERITE DA LI PREUZETI ZADACI PRIPADAJU VASOJ GRUPI (G1/G2)\n"
 "1. SVE KLASE TREBAJU POSJEDOVATI ADEKVATAN DESTRUKTOR\n"
@@ -22,6 +30,37 @@ const char* PORUKA = "\n--------------------------------------------------------
 const char* crt = "\n-------------------------------------------\n";
 enum Karakteristike { NARUDZBA, KVALITET, PAKOVANJE, ISPORUKA };
 
+// Functions I made below
+
+[[nodiscard]] bool isStrValidInt(const std::string& str) noexcept {
+	std::regex isIntValidation{ "^-?\\d+$" };
+
+	return std::regex_search(str, isIntValidation);
+}
+
+[[nodiscard]] const char* getKarakteristikeAsText(const Karakteristike& karakteristika) noexcept {
+	switch (karakteristika) {
+	case Karakteristike::NARUDZBA:
+		return "NARUDZBA";
+	case Karakteristike::KVALITET:
+		return "KVALITET";
+	case Karakteristike::PAKOVANJE:
+		return "PAKOVANJE";
+	case Karakteristike::ISPORUKA:
+		return "ISPORUKA";
+	default:
+		return "Karakteristika ne postoji\n";
+	}
+}
+
+std::ostream& operator<<(std::ostream& os, const Karakteristike& karakteristika) {
+	os << getKarakteristikeAsText(karakteristika);
+
+	return os;
+}
+
+// Functions I made above
+
 char* GetNizKaraktera(const char* sadrzaj, bool dealociraj = false) {
 	if (sadrzaj == nullptr)return nullptr;
 	int vel = strlen(sadrzaj) + 1;
@@ -41,7 +80,9 @@ class Rjecnik {
 public:
 	Rjecnik(bool omoguciDupliranje = true) {
 		_omoguciDupliranje = omoguciDupliranje;
-
+		_trenutno = 0;
+		_elementi1 = new T1[_trenutno];
+		_elementi2 = new T2[_trenutno];
 	}
 	~Rjecnik() {
 		delete[] _elementi1; _elementi1 = nullptr;
@@ -51,9 +92,115 @@ public:
 	T2& getElement2(int lokacija)const { return _elementi2[lokacija]; }
 	int getTrenutno() const { return _trenutno; }
 	friend ostream& operator<< (ostream& COUT, const Rjecnik& obj) {
-		for (size_t i = 0; i < obj._trenutno; i++)
-			COUT << obj.getElement1(i) << " " << obj.getElement2(i) << endl;
+		for (size_t i = 0; i < obj._trenutno; i++) {
+			COUT << obj.getElement1(i) << " " << obj.getElement2(i);
+
+			/*
+				Moved endl to if because in main a comment makes it look like the
+				extra endl at the end shouldn't be there
+			*/
+			if (i + 1 != obj._trenutno) {
+				COUT << endl;
+			}
+		}
 		return COUT;
+	}
+
+	// Methods I added below
+	Rjecnik(const Rjecnik& rijecnik)
+		: _omoguciDupliranje { rijecnik._omoguciDupliranje }
+		, _trenutno { rijecnik.getTrenutno() }
+		, _elementi1 { new T1[rijecnik.getTrenutno()] }
+		, _elementi2 { new T2[rijecnik.getTrenutno()] }
+	{
+		for (int i = 0; i < rijecnik.getTrenutno(); ++i) {
+			_elementi1[i] = rijecnik.getElement1(i);
+			_elementi2[i] = rijecnik.getElement2(i);
+		}
+	}
+
+	Rjecnik& operator=(Rjecnik&& rhs) {
+		bool tempOmoguciDupliranje{ std::exchange(rhs._omoguciDupliranje, true) };
+		int tempTrenutno{ std::exchange(rhs._trenutno, 0) };
+		T1* const tempElementi1{ std::exchange(rhs._elementi1, new T1[rhs._trenutno]) };
+		T2* const tempElementi2{ std::exchange(rhs._elementi2, new T2[rhs._trenutno]) };
+
+		_omoguciDupliranje = tempOmoguciDupliranje;
+		_trenutno = tempTrenutno;
+		_elementi1 = tempElementi1;
+		_elementi2 = tempElementi2;
+
+		return *this;
+	}
+
+	Rjecnik& operator=(const Rjecnik& rhs) {
+		_omoguciDupliranje = rhs._omoguciDupliranje;
+		_trenutno = rhs.getTrenutno();
+
+		T1* const tempElementi1{ new T1[getTrenutno()] };
+		T2* const tempElementi2{ new T2[getTrenutno()] };
+
+		for (int i = 0; i < getTrenutno(); ++i) {
+			tempElementi1[i] = rhs.getElement1(i);
+			tempElementi2[i] = rhs.getElement2(i);
+		}
+
+		delete[] _elementi1;
+		delete[] _elementi2;
+
+		_elementi1 = tempElementi1;
+		_elementi2 = tempElementi2;
+
+		return *this;
+	}
+
+	void AddElement(const T1& element1, const T2& element2) {
+		if (!_omoguciDupliranje && DaLiElementPostoji(element1, element2)) {
+			throw std::runtime_error("Dupliciranje elemenata nije dozvoljeno");
+		}
+
+		T1* const tempElementi1{ new T1[getTrenutno() + 1] };
+		T2* const tempElementi2{ new T2[getTrenutno() + 1] };
+
+		for (int i = 0; i < getTrenutno(); ++i) {
+			tempElementi1[i] = getElement1(i);
+			tempElementi2[i] = getElement2(i);
+		}
+
+		delete[] _elementi1;
+		delete[] _elementi2;
+
+		_elementi1 = tempElementi1;
+		_elementi2 = tempElementi2;
+
+		_elementi1[getTrenutno()] = element1;
+		_elementi2[getTrenutno()] = element2;
+
+		++_trenutno;
+	}
+
+	[[nodiscard]] bool DaLiElementPostoji(const T1& element1, const T2& element2) const noexcept {
+		for (int i = 0; i < getTrenutno(); ++i) {
+			if (getElement1(i) == element1 || getElement2(i) == element2) {
+				return true;
+			}
+		}
+		
+		return false;
+	}
+
+	Rjecnik operator()(int start, const int end) {
+		Rjecnik<T1, T2> temp{ _omoguciDupliranje };
+
+		if (start < 0 || start >= getTrenutno() || end < 0 || end >= getTrenutno()) {
+			return temp;
+		}
+
+		for (; start <= end; ++start) {
+			temp.AddElement(getElement1(start), getElement2(start));
+		}
+
+		return temp;
 	}
 };
 class Datum {
@@ -70,8 +217,44 @@ public:
 		delete _godina; _godina = nullptr;
 	}
 	friend ostream& operator<< (ostream& COUT, const Datum& obj) {
-		COUT << obj._dan << "." << obj._mjesec << "." << obj._godina;
+		COUT << obj.getDan() << "." << obj.getMjesec() << "." << obj.getGodina();
 		return COUT;
+	}
+
+	// Methods I added below
+
+	[[nodiscard]] int getDan() const noexcept {
+		return *_dan;
+	}
+
+	[[nodiscard]] int getMjesec() const noexcept {
+		return *_mjesec;
+	}
+
+	[[nodiscard]] int getGodina() const noexcept {
+		return *_godina;
+	}
+
+	Datum(const Datum& datum)
+		: _dan { new int { datum.getDan() } }
+		, _mjesec{ new int { datum.getMjesec() } }
+		, _godina{ new int { datum.getGodina() } }
+	{}
+
+	Datum& operator=(const Datum& rhs) {
+		int* const tempDan{ new int { rhs.getDan() } };
+		int* const tempMjesec{ new int { rhs.getMjesec() } };
+		int* const tempGodina{ new int { rhs.getGodina() } };
+
+		delete _dan;
+		delete _mjesec;
+		delete _godina;
+
+		_dan = tempDan;
+		_mjesec = tempMjesec;
+		_godina = tempGodina;
+
+		return *this;
 	}
 };
 
@@ -86,6 +269,110 @@ public:
 	}
 	int GetOcjena() { return _ocjena; }
 	Rjecnik<Karakteristike, const char*>& GetKomentareKarakteristika() { return _komentariKarakteristika; }
+	
+	// Methods I added below
+	[[nodiscard]] int getOcjena() const noexcept { 
+		return _ocjena; 
+	}
+
+	[[nodiscard]] const Rjecnik<Karakteristike, const char*>& getKomentareKarakteristika() const noexcept {
+		return _komentariKarakteristika; 
+	}
+
+	ZadovoljstvoKupca(const ZadovoljstvoKupca& zadovoljstvoKupca)
+		: _ocjena{ zadovoljstvoKupca.getOcjena() }
+	{
+		const auto& komentariKarakteristike{ zadovoljstvoKupca.getKomentareKarakteristika() };
+		for (int i = 0; i < komentariKarakteristike.getTrenutno(); ++i) {
+			_komentariKarakteristika.AddElement(
+				komentariKarakteristike.getElement1(i),
+				GetNizKaraktera(komentariKarakteristike.getElement2(i))
+			);
+		}
+	}
+
+	ZadovoljstvoKupca& operator=(const ZadovoljstvoKupca& rhs) {
+		_ocjena = rhs.getOcjena();
+
+		Rjecnik<Karakteristike, const char*> tempKomentariKarakteristika{};
+
+		const auto& komentariKarakteristike{ rhs.getKomentareKarakteristika() };
+		for (int i = 0; i < komentariKarakteristike.getTrenutno(); ++i) {
+			tempKomentariKarakteristika.AddElement(
+				komentariKarakteristike.getElement1(i),
+				GetNizKaraktera(komentariKarakteristike.getElement2(i))
+			);
+		}
+
+		_komentariKarakteristika = std::move(tempKomentariKarakteristika);
+
+		return *this;
+	}
+
+	~ZadovoljstvoKupca() {
+		for (int i = 0; i < _komentariKarakteristika.getTrenutno(); ++i) {
+			delete[] _komentariKarakteristika.getElement2(i);
+		}
+	}
+
+	[[nodiscard]] bool operator==(const ZadovoljstvoKupca& rhs) {
+		return getOcjena() == rhs.getOcjena() 
+			&& DaLiSuKomentariKarakteristikaJednaki(rhs.getKomentareKarakteristika());
+	}
+
+	[[nodiscard]] bool DaLiSuKomentariKarakteristikaJednaki(
+		const Rjecnik<Karakteristike, const char*>& komentariKarakteristika
+	) const noexcept {
+		if (komentariKarakteristika.getTrenutno() != _komentariKarakteristika.getTrenutno()) {
+			return false;
+		}
+
+		for (int i = 0; i < _komentariKarakteristika.getTrenutno(); ++i) {
+			if (_komentariKarakteristika.getElement1(i) != komentariKarakteristika.getElement1(i)) {
+				return false;
+			}
+			else if (!std::strcmp(_komentariKarakteristika.getElement2(i), komentariKarakteristika.getElement2(i))) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	friend std::ostream& operator<<(std::ostream& os, const ZadovoljstvoKupca& zadovoljstvoKupca) {
+		os << zadovoljstvoKupca.getOcjena() << '\n';
+
+		const auto& komentariKarakteristika{ zadovoljstvoKupca.getKomentareKarakteristika() };
+
+		for (int i = 0; i < komentariKarakteristika.getTrenutno(); ++i) {
+			os << '\t' << komentariKarakteristika.getElement1(i) << " - ";
+			os << komentariKarakteristika.getElement2(i);
+
+			if (i + 1 != komentariKarakteristika.getTrenutno()) {
+				os << '\n';
+			}
+		}
+
+		return os;
+	}
+
+	void DodajKomentarKarakteristike(const Karakteristike& karakteristika, const char* const komentar) {
+		if (DaLiJeKarakteristikaKomentarisana(karakteristika)) {
+			throw std::runtime_error("Karakteristika vec komentarisana");
+		}
+
+		_komentariKarakteristika.AddElement(karakteristika, GetNizKaraktera(komentar));
+	}
+
+	[[nodiscard]] bool DaLiJeKarakteristikaKomentarisana(const Karakteristike& karakteristika) const noexcept {
+		for (int i = 0; i < _komentariKarakteristika.getTrenutno(); ++i) {
+			if (_komentariKarakteristika.getElement1(i) == karakteristika) {
+				return true;
+			}
+		}
+
+		return false;
+	}
 };
 
 class Osoba {
@@ -96,7 +383,7 @@ public:
 	Osoba(const char* imePrezime = "", Datum datumRodjenja = Datum()) : _datumRodjenja(datumRodjenja) {
 		_imePrezime = GetNizKaraktera(imePrezime);
 	}
-	~Osoba() {
+	virtual ~Osoba() {
 		delete[] _imePrezime; _imePrezime = nullptr;
 	}
 	char* GetImePrezime() { return _imePrezime; }
@@ -107,15 +394,26 @@ public:
 		COUT << obj._imePrezime << " " << obj._datumRodjenja << endl;
 		return COUT;
 	}
+
+	// Methods I added below
+	[[nodiscard]] const char* getImePrezime() const noexcept { 
+		return _imePrezime; 
+	}
+
+	[[nodiscard]] const Datum& getDatumRodjenja() const noexcept { 
+		return _datumRodjenja; 
+	}
 };
 
-class Kupac {
+class Kupac : public Osoba {
 	char* _emailAdresa;
 	//float se odnosi na iznos racuna za odredjenu kupovinu
 	Rjecnik<float, ZadovoljstvoKupca>* _kupovine;
 	vector<int> _bodovi; // bodovi sakupljeni tokom kupovine, svakih potrosenih 10KM donosi po 1 bod.
 public:
-	Kupac(const char* imePrezime = "", Datum datumRodjenja = Datum(), const char* emailAdresa = "") {
+	Kupac(const char* imePrezime = "", Datum datumRodjenja = Datum(), const char* emailAdresa = "")
+		: Osoba(imePrezime, datumRodjenja)
+	{
 		_emailAdresa = GetNizKaraktera(emailAdresa);
 		_kupovine = new Rjecnik<float, ZadovoljstvoKupca>(false);
 	}
@@ -144,15 +442,159 @@ public:
 		COUT << crt;
 		return COUT;
 	}
+
+	// Methods I added below
+	[[nodiscard]] const char* getEmail() const noexcept { 
+		return _emailAdresa; 
+	}
+	
+	[[nodiscard]] const Rjecnik<float, ZadovoljstvoKupca>& getKupovine() const noexcept { 
+		return *_kupovine; 
+	}
+	
+	[[nodiscard]] const std::vector<int>& getBodovi() const noexcept { 
+		return _bodovi; 
+	}
+	
+	[[nodiscard]] int getBodoviUkupno() const noexcept {
+		return std::accumulate(std::begin(_bodovi), std::end(_bodovi), 0);
+	}
+
+	void Info() override {
+		std::cout << crt << getImePrezime() << ' ' << getDatumRodjenja() << ' ' << getEmail() << '\n';
+		std::cout << "KUPOVINE -> " << crt;
+
+		for (int i = 0; i < _kupovine->getTrenutno(); ++i) {
+			std::cout << "Iznost racuna: " << _kupovine->getElement1(i);
+			std::cout << "KM, zadovoljstvo kupca: " << _kupovine->getElement2(i);
+			std::cout << crt;
+		}
+
+		std::cout << "BODOVI -> ";
+		for (const auto& bod : _bodovi) {
+			std::cout << bod << ", ";
+		}
+
+		std::cout << crt;
+	}
+
+	void DodajKupovinu(const float cijena, const ZadovoljstvoKupca& zadovoljstvoKupca) noexcept {
+		const int bodovi = cijena / 10;
+
+		_kupovine->AddElement(cijena, zadovoljstvoKupca);
+		
+		if (!bodovi) {
+			return;
+		}
+		
+		_bodovi.push_back(bodovi);
+
+		if (bodovi <= 5) {
+			return;
+		}
+
+		SendEmail();
+	}
+
+	void SacuvajBodove() const noexcept {
+		const std::string fileName { getEmail() + std::string(".txt")};
+	
+		std::ofstream bodoviFile{ fileName, std::fstream::app };
+
+		if (!bodoviFile.is_open()) {
+			return;
+		}
+
+		for (const auto& bod : _bodovi) {
+			bodoviFile << bod << '\n';
+		}
+	}
+
+	void UcitajBodove() noexcept {
+		const std::string fileName{ getEmail() + std::string(".txt") };
+
+		std::ifstream bodoviFile{ fileName };
+
+		if (!bodoviFile.is_open()) {
+			return;
+		}
+
+		std::string line{};
+
+		// If the regex isn't written right inside the function isStrValidInt
+		// something will probably break
+		while (std::getline(bodoviFile, line)) {
+			if (isStrValidInt(line)) {
+				_bodovi.push_back(std::stoll(line));
+			}
+		}
+	}
+
+	[[nodiscard]] Rjecnik<Karakteristike, const char*> GetKupovineByKomentar(const char* const dioKomentara) const noexcept {
+		Rjecnik<Karakteristike, const char*> temp{};
+
+		for (int i = 0; i < _kupovine->getTrenutno(); ++i) {
+			const auto& komentarKarakteristike{ 
+				_kupovine->getElement2(i).getKomentareKarakteristika() 
+			};
+
+			for (int ii = 0; ii < komentarKarakteristike.getTrenutno(); ++ii) {
+				if (std::strstr(komentarKarakteristike.getElement2(ii), dioKomentara)) {
+					temp.AddElement(
+						komentarKarakteristike.getElement1(ii),
+						GetNizKaraktera(komentarKarakteristike.getElement2(ii))
+					);
+				}
+			}
+		}
+		
+		return temp;
+	}
+
+private:
+	void SendEmail() {
+		/*
+			Mutex isn't needed here because join is called right after
+			the thread is created and since nothing else is changing
+			data in between this is fine
+			std::cout is also thread safe
+		*/
+		std::thread email{
+			[&]() {
+				std::this_thread::sleep_for(std::chrono::seconds(3));
+
+				std::cout << crt;
+				std::cout << "TO: " << getEmail() << ";\nSubject: Ostvareni bodovi\n\n";
+				std::cout << "Postovani,\n\nPrilikom posljednje kupovine ste ostvarili ";
+				std::cout << _bodovi.back() << " bodova tako da trenutno vas ukupan broj ";
+				std::cout << "bodova iznosi " << getBodoviUkupno() << "\n\nZahvaljujemo vam na kupovini.";
+				std::cout << "\nPuno pozdrava";
+				std::cout << crt;
+			}
+		};
+
+		email.join();
+	}
 };
 
 const char* GetOdgovorNaPrvoPitanje() {
 	cout << "Pitanje -> Nabrojite i ukratko pojasnite osnovne razlike izmedju list i vector klase?\n";
-	return "Odgovor -> OVDJE UNESITE VAS ODGOVOR";
+	return "Odgovor -> Vektor spasava elemente u nizu, sto znaci da je svaki element jedan za drugim u memoriji, liste spasavaju pointer na "
+		"sljedeci element, sto znaci da elementi nisu jedan za drugim u memoriji. Vektor moze zauzeti vise memorije unapred u slucaju dodavanja "
+		" novih elemenata dok list to ne radi. Svaki elementu vektor klasi zahtjeva memorije samo za sebe, svaki element u list klasi zahtjeva "
+		" memorije za sebe i za pokazivac na prijasnji i sljedeci element. Insertovanje novog elementa (igdje sem na kraju) u list-i je mnogo "
+		" jeftinije nego u vektor zbog prijasnje navedenih osobina, ali zato pristup u vektor je mnogo jeftiniji nego u liste, posto je vektor "
+		" niz uzme se pocetak niza i doda offset dok lista mora proci od pocetka kroz sve clanove dok ne dode do trazenog. ";
 }
 const char* GetOdgovorNaDrugoPitanje() {
 	cout << "Pitanje -> Pojasnite opcije vezane za preslikavanje (vrijednosti, referenci, dostupnost) parametara prilikom koristenja lambda funkcija?\n";
-	return "Odgovor -> OVDJE UNESITE VAS ODGOVOR";
+	return "Odgovor -> Preslikavanje parametara po vrijednosti [=] znaci da sve varijable koje spominjemo u tijelu lambde ce biti kopirane "
+		" po vrijednosti, modificiranje njih nece dovesti do promjene orginala. Preslikavanje parametara po referenci [&] znaci da sve "
+		" varijable koje spominjemo u tijelu lambde ce biti kopirane po referenci, modificiranje njih ce dovesti do promjene orginala. "
+		" Preslikavanje parametara po dostupnosti znaci da mozemo u [] izlistati koje varijable zelimo prenjeti u lambdu i kako, npr."
+		" [&var1, var2] ovdje je var1 po referenci preslikano, dok je var2 po vrijednosti.";
+	// Nisam siguran sta je dostupnost jer prevod na nas jezik inace goes smoothly, pa sam predpostavio da je to kada se uradi nesto na fazon
+	// [&variable, variable2]
 }
 
 void main() {
