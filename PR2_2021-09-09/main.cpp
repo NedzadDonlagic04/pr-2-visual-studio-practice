@@ -412,7 +412,7 @@ public:
 		return os;
 	}
 
-	[[nodiscard]] bool DaLiSuJednakeOcjeneIDatum(const Kolekcija<int, Datum*, brojTehnika>& ocjene) const noexcept {
+	[[nodiscard]] bool daLiSuJednakeOcjeneIDatum(const Kolekcija<int, Datum*, brojTehnika>& ocjene) const noexcept {
 		if (ocjene.getTrenutno() != _ocjene->getTrenutno()) {
 			return false;
 		}
@@ -430,7 +430,7 @@ public:
 
 	[[nodiscard]] bool operator==(const Tehnika& rhs) const noexcept {
 		return !std::strcmp(getNaziv(), rhs.getNaziv())
-			&& DaLiSuJednakeOcjeneIDatum(rhs.getOcjene());
+			&& daLiSuJednakeOcjeneIDatum(rhs.getOcjene());
 	}
 
 	[[nodiscard]] double getAverageGrade() const noexcept {
@@ -633,7 +633,7 @@ public:
 
 	bool AddTehniku(const Pojas& pojas, const Tehnika& tehnika) {
 		if (!_polozeniPojasevi.size()) {
-			DodajNoviPojasITehniku(pojas, tehnika);
+			dodajNoviPojasITehniku(pojas, tehnika);
 			return true;
 		}
 
@@ -663,18 +663,18 @@ public:
 				return false;
 			}
 
-			DodajTehnikuZaPostojeciPojas(*postojeciPojas, tehnika);
+			dodajTehnikuZaPostojeciPojas(*postojeciPojas, tehnika);
 			return true;
 		}
-		else if (!DaLiJeIspunjenUslovZaDodavanjeNovogPojasa(pojas)) {
+		else if (!daLiJeIspunjenUslovZaDodavanjeNovogPojasa(pojas)) {
 			return false;
 		}
 
-		DodajNoviPojasITehniku(pojas, tehnika);
+		dodajNoviPojasITehniku(pojas, tehnika);
 		return true;
 	}
 
-	[[nodiscard]] bool DaLiJeIspunjenUslovZaDodavanjeNovogPojasa(const Pojas& pojas) const noexcept {
+	[[nodiscard]] bool daLiJeIspunjenUslovZaDodavanjeNovogPojasa(const Pojas& pojas) const noexcept {
 		if (!_polozeniPojasevi.size()) {
 			return true;
 		}
@@ -698,12 +698,12 @@ public:
 	}
 
 private:
-	void DodajNoviPojasITehniku(const Pojas& pojas, const Tehnika& tehnika) noexcept {
+	void dodajNoviPojasITehniku(const Pojas& pojas, const Tehnika& tehnika) noexcept {
 		_polozeniPojasevi.push_back(Polaganje{ pojas, tehnika });
 		sendMail(_polozeniPojasevi.back(), tehnika.getNaziv());
 	}
 
-	void DodajTehnikuZaPostojeciPojas(Polaganje& polaganje, const Tehnika& tehnika) noexcept {
+	void dodajTehnikuZaPostojeciPojas(Polaganje& polaganje, const Tehnika& tehnika) noexcept {
 		polaganje.addTehnika(tehnika);
 		sendMail(polaganje, tehnika.getNaziv());
 	}
