@@ -533,14 +533,20 @@ public:
 	}
 
 	[[nodiscard]] double getAverage() const noexcept {
+		const std::size_t size{ _polozeneTehnike.size() };
+
+		if (!size) {
+			return 0.0;
+		}
+
 		return std::accumulate(
 			std::begin(_polozeneTehnike),
 			std::end(_polozeneTehnike),
 			0.0,
-			[](const double sum, const Tehnika* const tehnika) {
+			[&](const double sum, const Tehnika* const tehnika) {
 				return sum + tehnika->getAverageGrade();
 			}
-		);
+		) / size;
 	}
 };
 
@@ -687,14 +693,20 @@ public:
 	}
 
 	[[nodiscard]] double getAverage() const noexcept {
+		const std::size_t size{ _polozeniPojasevi.size() };
+
+		if (!size) {
+			return 0.0;
+		}
+
 		return std::accumulate(
 			std::begin(_polozeniPojasevi),
 			std::end(_polozeniPojasevi),
 			0.0,
-			[](const double sum, const Polaganje& polaganje) {
+			[&](const double sum, const Polaganje& polaganje) {
 				return sum + polaganje.getAverage();
 			}
-		);
+		) / size;
 	}
 
 private:
