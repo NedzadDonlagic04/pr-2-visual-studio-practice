@@ -312,7 +312,7 @@ public:
 	Tehnika(const char* naziv) {
 		_naziv = GetNizKaraktera(naziv);
 		// Changed line below from nullptr to what it is
-		_ocjene = new Kolekcija<int, Datum*, brojTehnika>;
+		_ocjene = new Kolekcija<int, Datum*, brojTehnika>{};
 	}
 	~Tehnika() {
 		delete[] _naziv; _naziv = nullptr;
