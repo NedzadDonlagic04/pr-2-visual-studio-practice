@@ -358,7 +358,7 @@ public:
 
 	void DodajKomentarKarakteristike(const Karakteristike& karakteristika, const char* const komentar) {
 		if (DaLiJeKarakteristikaKomentarisana(karakteristika)) {
-			throw std::runtime_error("Karakteristika vec komentarisana");
+			throw std::exception("Karakteristika vec komentarisana");
 		}
 
 		_komentariKarakteristika.AddElement(karakteristika, GetNizKaraktera(komentar));
