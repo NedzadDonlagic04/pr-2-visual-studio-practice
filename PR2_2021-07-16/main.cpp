@@ -827,7 +827,7 @@ const char* GetOdgovorNaDrugoPitanje() {
 	cout << "Pitanje -> Ukratko opisite redoslijed kreiranja objekta bazne klase u slucaju visestrukog nasljedjivanja(prilikom instanciranja objekta najizvedenije klase), te koja su moguca rjesenja najznacajnijih problema ubtom kontekstu ? \n";
 	return "Odgovor -> OVDJE UNESITE VAS ODGOVOR";
 }
-const std::string& PORUKA{ "Nisam siguran zasto ova varijabla nije bila definisana na pocetku zadatka, niti sta predstavlja\n" };
+const std::string& PORUKA{ "Nisam siguran zasto ova varijabla nije bila definisana na pocetku zadatka\n" };
 void main() {
 	cout << PORUKA;
 	cin.get();
