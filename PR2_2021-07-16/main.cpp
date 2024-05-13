@@ -818,19 +818,23 @@ private:
 };
 const char* GetOdgovorNaPrvoPitanje() {
 	cout << "Pitanje -> Pojasnite ulogu operatora const_cast?\n";
-	return "Odgovor -> OVDJE UNESITE VAS ODGOVOR";
+	return "Odgovor -> Operator const_cast moze dodati ili smaketi const na nekoj varijabli, ali modificiranje varijable takve je "
+		"jedino validno u slucaju da orginalni objekat nije const. Npr. ako imamo neki objekat a koji je const, smaketi const sa njega "
+		"sa const cast i modificiranje njega bi dovelo do nedefinisanog ponasanja. Da je a bio objekat koji nije const, i ima referencu "
+		"b koja jest const, smaketi const sa b i modificiranje njega je ok.";
 }
 const char* GetOdgovorNaDrugoPitanje() {
 	cout << "Pitanje -> Ukratko opisite redoslijed kreiranja objekta bazne klase u slucaju visestrukog nasljedjivanja(prilikom instanciranja objekta najizvedenije klase), te koja su moguca rjesenja najznacajnijih problema ubtom kontekstu ? \n";
 	return "Odgovor -> OVDJE UNESITE VAS ODGOVOR";
 }
+const std::string& PORUKA{ "Nisam siguran zasto ova varijabla nije bila definisana na pocetku zadatka, niti sta predstavlja\n" };
 void main() {
-	//cout << PORUKA;
-	//cin.get();
-	//cout << GetOdgovorNaPrvoPitanje() << endl;
-	//cin.get();
-	//cout << GetOdgovorNaDrugoPitanje() << endl;
-	//cin.get();
+	cout << PORUKA;
+	cin.get();
+	cout << GetOdgovorNaPrvoPitanje() << endl;
+	cin.get();
+	cout << GetOdgovorNaDrugoPitanje() << endl;
+	cin.get();
 	Datum datum19062020(19, 6, 2020),
 		datum20062020(20, 6, 2020),
 		datum30062020(30, 6, 2020),
