@@ -435,7 +435,7 @@ public:
 
     void AddOcjenuKriterija(const Kriteriji& kriteriji, const int ocjena) {
         if (daLiKriterijiPostoji(kriteriji)) {
-            throw std::runtime_error("Kriteriji je vec ocijenjen!");
+            throw std::exception("Kriteriji je vec ocijenjen!");
         }
         else if (!daLiJeOcjenaValidna(ocjena)) {
             // Exception could be thrown here
