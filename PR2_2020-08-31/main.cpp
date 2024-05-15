@@ -666,7 +666,10 @@ public:
     }
 
     void Info() override {
-        std::cout << "Info\n";
+        std::cout << getImePrezime() << " " << getEmail() << " " << getLozinka() << endl;
+        for (const auto& polozeniPredmet : _polozeniPredmeti) {
+            std::cout << *polozeniPredmet;
+        }
     }
 
     [[nodiscard]] Ispit* getIspitForPredmet(const Predmet& predmet) {
