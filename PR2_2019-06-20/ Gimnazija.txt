@@ -1,0 +1,20 @@
+Ime prezime: "Jasmin Azemovic"
+Broj telefona: "+387(61)111-222"
+Predmet - aktivnost:
+MATEMATIKA - I 4 Priprema za takmicenje iz Matematije koje se odrzava u Konjicu 07.02.2019
+
+MATEMATIKA - I 4 Aktivnosti iz matematike
+
+FIZIKA - I 4 Analiza stepena apsorpcije materijala 
+
+HEMIJA - I 5 Priprema otopina za vjezbe iz predmeta Hemija
+
+Ime prezime: "Adel Handzic"
+Broj telefona: "+387(61)333-444"
+Predmet - aktivnost:
+MATEMATIKA - I 5 Izrada skripte na temu integralni racun
+
+Ime prezime: "Telefon NotValidFormat"
+Broj telefona: "NOT_SET"
+Predmet - aktivnost:
+
