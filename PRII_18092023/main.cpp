@@ -391,7 +391,7 @@ public:
             sum += std::abs(datum1 - datum2);
         }
 
-        return sum / size;
+        return sum / (size - 1);
     }
 
     [[nodiscard]] const Kolekcija<int, Datum*, MaxBrojRjesenja>& getOcjene() const noexcept { 
