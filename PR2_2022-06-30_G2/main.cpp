@@ -627,13 +627,13 @@ const char* GetOdgovorNaDrugoPitanje() {
 
 void main() {
 
-    //cout << PORUKA;
-    //cin.get();
+    cout << PORUKA;
+    cin.get();
 
-    //cout << GetOdgovorNaPrvoPitanje() << endl;
-    //cin.get();
-    //cout << GetOdgovorNaDrugoPitanje() << endl;
-    //cin.get();
+    cout << GetOdgovorNaPrvoPitanje() << endl;
+    cin.get();
+    cout << GetOdgovorNaDrugoPitanje() << endl;
+    cin.get();
 
     Datum datum30062022(30, 6, 2022);
 
