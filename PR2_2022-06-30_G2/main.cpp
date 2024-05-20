@@ -627,7 +627,8 @@ const char* GetOdgovorNaDrugoPitanje() {
 
 void main() {
 
-    cout << PORUKA;
+    // Didn't exist in the setup so I am leaving it commented
+    // cout << PORUKA;
     cin.get();
 
     cout << GetOdgovorNaPrvoPitanje() << endl;
