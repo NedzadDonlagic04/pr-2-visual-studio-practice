@@ -190,14 +190,11 @@ public:
         }
     }
 
-    Kolekcija* operator()(const int start, const int end) {
+    Kolekcija* operator()(int start, int end) {
         Kolekcija* temp{ new Kolekcija {} };
         
-        if (start < 0 || start >= getTrenutno()) {
-            return temp;
-        } else if (end < 0 || end >= getTrenutno()) {
-            return temp;
-        }
+        start = std::max(0, start);
+        end = std::min(getTrenutno() - 1, end);
 
         for (int i = start; i <= end; ++i) {
             temp->AddElement(getElement1(i), getElement2(i));
