@@ -549,6 +549,11 @@ public:
         const std::string& filePath{ "./" + fileName };
 
         std::ifstream file{ filePath };
+
+        if (!file.is_open()) {
+            return false;
+        }
+
         std::string line{};
 
         while (std::getline(file, line)) {
@@ -568,6 +573,10 @@ public:
         }
 
         std::ifstream file{ filePath };
+
+        if (!file.is_open()) {
+            return std::make_tuple(-1, -1, -1);
+        }
 
         file >> std::noskipws;
 
