@@ -244,7 +244,7 @@ class ZadovoljstvoKupca {
 	int _ocjena; //za svaku kupovinu kupac moze ostaviti jednu ocjenu
 	//uz ocjenu, kupci mogu komentarisati svaku od karakteristika proizvoda.
 	//onemoguciti dupliranje karakteristika tj. svaka karakteristika se moze komentarisati samo jednom...u suprotnom baciti objekat tipa exception
-	Rjecnik<Karakteristike, const char*> _komentariKarakteristika{ false };
+	Rjecnik<Karakteristike, const char*> _komentariKarakteristika;
 public:
 	ZadovoljstvoKupca(int ocjena = 0) {
 		_ocjena = ocjena;
@@ -288,14 +288,23 @@ public:
 
 		return os;
 	}
+	
+	[[nodiscard]] bool daLiKarakteristikaPostoji(const Karakteristike& karakteristika) const noexcept {
+		for (int i = 0; i < _komentariKarakteristika.getTrenutno(); ++i) {
+			if (karakteristika == _komentariKarakteristika.getElement1(i)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
 
 	void DodajKomentarKarakteristike(const Karakteristike& karakteristika, const char* const komentar) {
-		try {
-			_komentariKarakteristika.AddElement(karakteristika, komentar);
-		}
-		catch (const std::exception&) {
+		if (daLiKarakteristikaPostoji(karakteristika)) {
 			throw std::exception("Karakteristika je vec komentarisana");
 		}
+		
+		_komentariKarakteristika.AddElement(karakteristika, komentar);
 	}
 
 	[[nodiscard]] bool operator==(const ZadovoljstvoKupca& rhs) const noexcept {
