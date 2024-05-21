@@ -386,7 +386,7 @@ public:
 
     friend ostream& operator<< (ostream& COUT, const Uspjeh& obj)
     {
-        COUT << obj._razred;
+        COUT << obj._razred << '\n';
         const auto& predmeti{ obj.getPredmeti() };
         for (int i = 0; i < predmeti.getTrenutno(); ++i) {
             COUT << *predmeti.getElement1(i) << ' ';
