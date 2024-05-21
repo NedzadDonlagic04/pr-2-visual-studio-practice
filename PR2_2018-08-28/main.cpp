@@ -487,8 +487,6 @@ public:
 
         const auto& zadnjeVrijeme{ _predmeti->getElement2(size - 1) };
 
-        std::cout << datumVrijeme - zadnjeVrijeme << '\n';
-
         return (datumVrijeme - zadnjeVrijeme) >= 1;
     }
 
