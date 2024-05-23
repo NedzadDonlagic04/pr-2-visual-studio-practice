@@ -318,7 +318,8 @@ public:
         _ocjeneKriterija = new Kolekcija<Kriteriji, int>{};
     }
     ~Komentar() {
-        clearResources();
+        delete[] _sadrzajKomentara; _sadrzajKomentara = nullptr;
+        delete _ocjeneKriterija; _ocjeneKriterija = nullptr;
     }
     char* GetSadrzajKomentara() { return _sadrzajKomentara; }
     Kolekcija<Kriteriji, int>* GetOcjeneKriterija() { return _ocjeneKriterija; }
@@ -334,10 +335,10 @@ public:
             return *this;
         }
         
-        clearResources();
+        delete[] _sadrzajKomentara;
 
         _sadrzajKomentara = GetNizKaraktera(rhs.getSadrzajKomentara());
-        _ocjeneKriterija = new Kolekcija<Kriteriji, int>{ rhs.getOcjeneKriterija() };
+        *_ocjeneKriterija = rhs.getOcjeneKriterija();
 
         return *this;
     }
@@ -413,12 +414,6 @@ public:
         }
         
         _ocjeneKriterija->AddElement(kriteriji, ocjena);
-    }
-
-private:
-    void clearResources() {
-        delete[] _sadrzajKomentara; _sadrzajKomentara = nullptr;
-        delete _ocjeneKriterija; _ocjeneKriterija = nullptr;
     }
 };
 
