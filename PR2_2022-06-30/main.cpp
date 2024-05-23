@@ -490,7 +490,7 @@ public:
     }
     vector<Gost>& GetGosti() { return _gosti; }
     Komentar GetKomentar() { return _komentar; }
-    friend ostream& operator<< (ostream& COUT, Rezervacija& obj) {
+    friend ostream& operator<< (ostream& COUT, const Rezervacija& obj) {
         COUT << crt << "Rezervacija " << obj._OD << " - " << obj._DO << " za goste: " << endl;
         for (size_t i = 0; i < obj._gosti.size(); i++)
             COUT << "\t" << i + 1 << "." << obj._gosti[i];
