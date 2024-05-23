@@ -745,21 +745,25 @@ private:
 
 const char* GetOdgovorNaPrvoPitanje() {
 	cout << "Pitanje -> Pojasnite ulogu operatora reinterpret_cast.\n";
-	return "Odgovor -> OVDJE UNESITE VAS ODGOVOR";
+	return "Odgovor -> reinterpret_cast operator kada pretvara jedan tip podatka u drugi samo tretira set bitova kao da su taj drugi tip podatka, "
+		"za razliku od cast-a kao sto je static_cast koji ce promjeniti set bitova da vrijednost se pravilno predstavi u drugom tipu podatka."
+		"Zbog cega je veoma lahko preko ovog cast-a doci do nedefinisanog ponasanja unutar programa. ";
 }
 const char* GetOdgovorNaDrugoPitanje() {
 	cout << "Pitanje -> Ukratko opisite znacaj i vrste pametnih pokazivaca.\n";
-	return "Odgovor -> OVDJE UNESITE VAS ODGOVOR";
+	return "Odgovor -> Pametni pokazivac je tip podatka koji pruza funkcionalnost pointera sa automatskim memory management. Kada se smart pointer"
+		" vise ne koristi (ode izvan opsega ili pozivom metode kao sto je reset) memorija je dealocirana. Neki od tipova koji dodu kao dio "
+		" standardne biblioteke su std::unique_ptr, std::shared_ptr, std::weak_ptr i std::auto_ptr.";
 }
 void main() {
 
-	//cout << PORUKA;
-	//cin.get();
+	cout << PORUKA;
+	cin.get();
 
-	//cout << GetOdgovorNaPrvoPitanje() << endl;
-	//cin.get();
-	//cout << GetOdgovorNaDrugoPitanje() << endl;
-	//cin.get();
+	cout << GetOdgovorNaPrvoPitanje() << endl;
+	cin.get();
+	cout << GetOdgovorNaDrugoPitanje() << endl;
+	cin.get();
 
 	Datum   datum19062020(19, 6, 2020),
 		datum20062020(20, 6, 2020),
