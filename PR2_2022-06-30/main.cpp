@@ -466,8 +466,7 @@ public:
     }
 
     [[nodiscard]] bool operator==(const Gost& rhs) const noexcept {
-        return !std::strcmp(getImePrezime(), rhs.getImePrezime())
-            && getEmail() == rhs.getEmail()
+        return getEmail() == rhs.getEmail()
             && getBrojPasosa() == rhs.getBrojPasosa();
     }
 
