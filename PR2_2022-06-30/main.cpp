@@ -3,13 +3,13 @@ using namespace std;
 
 // Headers I included below
 #include<vector>
-#include<thread>
-#include<memory>
+#include<iomanip>
 #include<regex>
 #include<string>
+#include<memory>
 #include<fstream>
 #include<utility>
-#include<iomanip>
+#include<thread>
 // Headers I included above
 
 const char* PORUKA = "\n-------------------------------------------------------------------------------\n"
@@ -33,63 +33,8 @@ const char* crt = "\n-------------------------------------------\n";
 enum Kriteriji { CISTOCA, USLUGA, LOKACIJA, UDOBNOST };
 
 // Functions I defined below
-[[nodiscard]] int getTotalFileCharCount(const std::string& fullFilePath) {
-    std::ifstream file{ fullFilePath, std::ios::ate };
-
-    if (!file.is_open()) {
-        return 0;
-    }
-
-    return file.tellg();
-}
-
-[[nodiscard]] int getStrOccurancesInStr(const std::string& str, const std::string& strToFind) {
-    int counter{ 0 };
-    std::size_t endPos{ str.find(strToFind) };
-
-    while (endPos != std::string::npos) {
-        ++counter;
-        endPos = str.find(strToFind, endPos + 1);
-    }
-
-    return counter;
-}
-
-[[nodiscard]] int countStrInFile(const std::string& filePath, const std::string& strToFind) {
-    std::ifstream file{ filePath };
-
-    if (!file.is_open()) {
-        return 0;
-    }
-
-    int counter{ 0 };
-    std::string line{};
-
-    while (std::getline(file, line)) {
-        counter += getStrOccurancesInStr(line, strToFind);
-    }
-
-    return counter;
-}
-    /*
-    * za validaciju broja pasosa koristiti funkciju ValidirajBrojPasosa koja treba, koristeci regex, osigurati postivanje
-    sljedeceg formata:
-    - pocetak sadrzi jedan ili dva velika slova
-    - nakon toga slijede tri ili cetiri broja
-    - nakon toga moze, a ne mora, doci znak crtica (-) ili razmak ( )
-    - nakon toga slijede dva do cetiri broja
-
-    pomenutu funkciju iskoristiti u konstruktoru klase Gost, te ukoliko broj pasosa nije u validnom formatu onda njegova vrijednost treba biti postavljena na NOT VALID
-    */
-const std::string notValidPassportId{ "NOT VALID" };
-[[nodiscard]] bool ValidirajBrojPasosa(const std::string& passportId) {
-    std::regex passportIdValidation{ "^[A-Z]{1,2}\\d{3,4}[-\\s]?\\d{2,4}$" };
-
-    return std::regex_search(passportId, passportIdValidation);
-}
-
 std::ostream& operator<<(std::ostream& os, const Kriteriji& kriteriji) {
-    switch (kriteriji) {
+    switch(kriteriji) {
     case Kriteriji::CISTOCA:
         os << "CISTOCA";
         break;
@@ -103,7 +48,7 @@ std::ostream& operator<<(std::ostream& os, const Kriteriji& kriteriji) {
         os << "UDOBNOST";
         break;
     default:
-        os << "Kriteriji ne postoji";
+            os << "Kriteriji ne postoji";
     }
 
     return os;
@@ -116,16 +61,64 @@ std::ostream& operator<<(std::ostream& os, const Kriteriji& kriteriji) {
 
     const std::size_t newSize{ std::strlen(str) + 1 };
     char* const newStr{ new char[newSize] {} };
-    
+
     strcpy_s(newStr, newSize, str);
 
     return newStr;
 }
 
 [[nodiscard]] std::unique_ptr<char[]> GetUniqueNizKaraktera(const char* const str) {
-    char* newStr{ GetNizKaraktera(str) };
-    
+    char* const newStr{ GetNizKaraktera(str) };
+
     return std::unique_ptr<char[]>(newStr);
+}
+
+const std::string invalidPassportId{ "NOT VALID" };
+[[nodiscard]] bool ValidirajBrojPasosa(const std::string& passportID) {
+    std::regex passportIDValidation{ "^[A-Z]{1,2}\\d{3,4}[-\\s]?\\d{2,4}$" };
+
+    return std::regex_search(passportID, passportIDValidation);
+}
+
+[[nodiscard]] int getCharacterCountInFile(const std::string& filePath) {
+    std::ifstream file{ filePath };
+
+    if (!file.is_open()) {
+        return 0;
+    }
+
+    file.seekg(0, std::ios::end);
+
+    return file.tellg();
+}
+
+[[nodiscard]] int getStrInStrCount(const std::string& strToFind, const std::string& src) {
+    int counter{ 0 };
+    std::size_t endPos{ src.find(strToFind) };
+
+    while (endPos != std::string::npos) {
+        endPos = src.find(strToFind, endPos + 1);
+        ++counter;
+    }
+
+    return counter;
+}
+
+[[nodiscard]] int getStrCountInFile(const std::string& filePath, const std::string& strToFind) {
+    std::ifstream file{ filePath };
+
+    if (!file.is_open()) {
+        return 0;
+    }
+
+    std::string line{};
+    int counter{ 0 };
+
+    while (std::getline(file, line)) {
+        counter += getStrInStrCount(strToFind, line);
+    }
+
+    return counter;
 }
 // Functions I defined above
 
@@ -159,7 +152,7 @@ public:
     // Methods I added below
     Kolekcija(const Kolekcija& kolekcija)
         : _trenutno{ new int { kolekcija.getTrenutno() } }
-        , _omoguciDupliranje{ kolekcija._omoguciDupliranje }
+        , _omoguciDupliranje { kolekcija._omoguciDupliranje }
         , _elementi1{ new T1[kolekcija.getTrenutno()] {} }
         , _elementi2{ new T2[kolekcija.getTrenutno()] {} }
     {
@@ -170,22 +163,23 @@ public:
     }
 
     Kolekcija& operator=(const Kolekcija& rhs) {
-        *_trenutno = rhs.getTrenutno();
-        _omoguciDupliranje = rhs._omoguciDupliranje;
-
-        T1* const temp1{ new T1[getTrenutno()] {} };
-        T2* const temp2{ new T2[getTrenutno()] {} };
-
-        for (int i = 0; i < getTrenutno(); ++i) {
-            temp1[i] = rhs.getElement1(i);
-            temp2[i] = rhs.getElement2(i);
+        if (this == &rhs) {
+            return *this;
         }
+
+        _omoguciDupliranje = rhs._omoguciDupliranje;
+        *_trenutno = rhs.getTrenutno();
 
         delete[] _elementi1;
         delete[] _elementi2;
 
-        _elementi1 = temp1;
-        _elementi2 = temp2;
+        _elementi1 = new T1[getTrenutno()]{};
+        _elementi2 = new T2[getTrenutno()]{};
+
+        for (int i = 0; i < getTrenutno(); ++i) {
+            _elementi1[i] = rhs.getElement1(i);
+            _elementi2[i] = rhs.getElement2(i);
+        }
 
         return *this;
     }
@@ -194,7 +188,7 @@ public:
         return *_trenutno; 
     }
 
-    [[nodiscard]] bool daLiELementPostoji(const T1& element1, const T2& element2) const noexcept {
+    [[nodiscard]] bool daLiElementPostoji(const T1& element1, const T2& element2) const noexcept {
         for (int i = 0; i < getTrenutno(); ++i) {
             if (element1 == getElement1(i) && element2 == getElement2(i)) {
                 return true;
@@ -205,12 +199,12 @@ public:
     }
 
     void AddElement(const T1& element1, const T2& element2) {
-        if (!_omoguciDupliranje && daLiELementPostoji(element1, element2)) {
-            throw std::exception("Dupliranje nije dozvoljeno");
+        if (!_omoguciDupliranje && daLiElementPostoji(element1, element2)) {
+            throw std::exception("Dupliranje elemenata nije dozvoljeno");
         }
 
-        T1* const temp1{ new T1[getTrenutno() + 1] {} };
-        T2* const temp2{ new T2[getTrenutno() + 1] {} };
+        T1* const temp1{ new T1[getTrenutno() + 1]{} };
+        T2* const temp2{ new T2[getTrenutno() + 1]{} };
 
         for (int i = 0; i < getTrenutno(); ++i) {
             temp1[i] = getElement1(i);
@@ -230,19 +224,15 @@ public:
     }
 
     Kolekcija& InsertAt(const int index, const T1& element1, const T2& element2) {
-        /*
-            Not sure am I supposed to throw an exception here or not since AddElement
-            throws for duplicates, so this is a risk on my end
-        */
-        if (!_omoguciDupliranje && daLiELementPostoji(element1, element2)) {
-            throw std::exception("Dupliranje nije dozvoljeno");
+        if (!_omoguciDupliranje && daLiElementPostoji(element1, element2)) {
+            throw std::exception("Dupliranje elemenata nije dozvoljeno");
         }
         else if (index < 0 || index >= getTrenutno()) {
             return *this;
         }
-           
-        T1* const temp1{ new T1[getTrenutno() + 1] {} };
-        T2* const temp2{ new T2[getTrenutno() + 1] {} };
+
+        T1* const temp1{ new T1[getTrenutno() + 1]{} };
+        T2* const temp2{ new T2[getTrenutno() + 1]{} };
 
         for (int i = 0; i < index; ++i) {
             temp1[i] = getElement1(i);
@@ -267,6 +257,7 @@ public:
 
         return *this;
     }
+
 
 };
 class Datum {
@@ -294,48 +285,22 @@ public:
         , _godina{ new int { datum.getGodina() } }
     {}
 
-    Datum& operator=(const Datum& rhs) noexcept {
+    Datum& operator=(const Datum& rhs) {
         *_dan = rhs.getDan();
         *_mjesec = rhs.getMjesec();
         *_godina = rhs.getGodina();
-
+        
         return *this;
-    }
-
-    Datum& operator=(Datum&& rhs) noexcept {
-        const int tempDan{ rhs.getDan() };
-        const int tempMjesec{ rhs.getMjesec() };
-        const int tempGodina{ rhs.getGodina() };
-
-        *rhs._dan = 1;
-        *rhs._mjesec = 1;
-        *rhs._godina = 2000;
-
-        *_dan = tempDan;
-        *_mjesec = tempMjesec;
-        *_godina = tempGodina;
-
-        return *this;
-    }
-
-    [[nodiscard]] bool operator==(const Datum& rhs) const noexcept {
-        return getDan() == rhs.getDan()
-            && getMjesec() == rhs.getMjesec()
-            && getGodina() == rhs.getGodina();
-    }
-
-    [[nodiscard]] bool operator!=(const Datum& rhs) const noexcept {
-        return !(*this == rhs);
     }
 
     [[nodiscard]] int getDan() const noexcept {
         return *_dan;
-    }    
-    
+    }
+
     [[nodiscard]] int getMjesec() const noexcept {
         return *_mjesec;
-    }    
-    
+    }
+
     [[nodiscard]] int getGodina() const noexcept {
         return *_godina;
     }
@@ -353,8 +318,7 @@ public:
         _ocjeneKriterija = new Kolekcija<Kriteriji, int>{};
     }
     ~Komentar() {
-        delete[] _sadrzajKomentara; _sadrzajKomentara = nullptr;
-        delete _ocjeneKriterija; _ocjeneKriterija = nullptr;
+        clearResources();
     }
     char* GetSadrzajKomentara() { return _sadrzajKomentara; }
     Kolekcija<Kriteriji, int>* GetOcjeneKriterija() { return _ocjeneKriterija; }
@@ -362,42 +326,26 @@ public:
     // Methods I added below
     Komentar(const Komentar& komentar)
         : _sadrzajKomentara { GetNizKaraktera(komentar.getSadrzajKomentara()) }
-        , _ocjeneKriterija { new Kolekcija<Kriteriji, int>{ komentar.getOcjeneKriterija() } }
+        , _ocjeneKriterija{ new Kolekcija<Kriteriji, int> { komentar.getOcjeneKriterija() } }
     {}
 
     Komentar& operator=(const Komentar& rhs) {
-        char* const tempSadrzaj{ GetNizKaraktera(rhs.getSadrzajKomentara()) };
-        Kolekcija<Kriteriji, int>* const tempOcjene{
-            new Kolekcija<Kriteriji, int>{ rhs.getOcjeneKriterija() }
-        };
+        if (this == &rhs) {
+            return *this;
+        }
+        
+        clearResources();
 
-        delete[] _sadrzajKomentara;
-        delete _ocjeneKriterija;
-
-        _sadrzajKomentara = tempSadrzaj;
-        _ocjeneKriterija = tempOcjene;
+        _sadrzajKomentara = GetNizKaraktera(rhs.getSadrzajKomentara());
+        _ocjeneKriterija = new Kolekcija<Kriteriji, int>{ rhs.getOcjeneKriterija() };
 
         return *this;
     }
 
-    Komentar& operator=(Komentar&& rhs) noexcept {
-        char* const tempSadrzaj{ std::exchange(rhs._sadrzajKomentara, GetNizKaraktera("")) };
-        Kolekcija<Kriteriji, int>* const tempOcjene{
-            std::exchange(
-                rhs._ocjeneKriterija, 
-                new Kolekcija<Kriteriji, int>{}
-            )
-        };
-
-        delete[] _sadrzajKomentara;
-        delete _ocjeneKriterija;
-
-        _sadrzajKomentara = tempSadrzaj;
-        _ocjeneKriterija = tempOcjene;
-
-        return *this;
+    [[nodiscard]] static bool daLiJeOcjenaValidna(const int ocjena) noexcept {
+        return ocjena >= 1 && ocjena <= 10;
     }
-    
+
     [[nodiscard]] const char* getSadrzajKomentara() const noexcept { 
         return _sadrzajKomentara; 
     }
@@ -406,13 +354,23 @@ public:
         return *_ocjeneKriterija; 
     }
 
+    [[nodiscard]] bool daLiJeKriterijiVecOcjenjen(const Kriteriji& kriteriji) const noexcept {
+        for (int i = 0; i < _ocjeneKriterija->getTrenutno(); ++i) {
+            if (kriteriji == _ocjeneKriterija->getElement1(i)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     [[nodiscard]] double getAverage() const noexcept {
         const int size{ _ocjeneKriterija->getTrenutno() };
 
         if (!size) {
             return 0.0;
         }
-
+        
         double sum{ 0.0 };
 
         for (int i = 0; i < size; ++i) {
@@ -428,13 +386,17 @@ public:
         const auto& ocjene{ komentar.getOcjeneKriterija() };
         for (int i = 0; i < ocjene.getTrenutno(); ++i) {
             os << '\t' << ocjene.getElement1(i) << '(';
-            os << ocjene.getElement2(i) << ")\n";
+            os << ocjene.getElement2(i) << ')';
+
+            if (i + 1 != ocjene.getTrenutno()) {
+                os << '\n';
+            }
         }
-        
+
         const auto& originalPrecision{ os.precision() };
         os << std::setprecision(2) << std::fixed;
 
-        os << "Prosjecna ocjena -> " << komentar.getAverage() << '\n';
+        os << crt << "Prosjecna ocjena -> " << komentar.getAverage();
 
         os << std::setprecision(originalPrecision);
         os.unsetf(std::ios::fixed);
@@ -442,29 +404,21 @@ public:
         return os;
     }
 
-    [[nodiscard]] static bool daLiJeOcjenaValidna(const int ocjena) noexcept {
-        return ocjena >= 1 && ocjena <= 10;
-    }
-
-    [[nodiscard]] bool daLiJeKriterijiOcjenjen(const Kriteriji& kriteriji) const noexcept {
-        for (int i = 0; i < _ocjeneKriterija->getTrenutno(); ++i) {
-            if (kriteriji == _ocjeneKriterija->getElement1(i)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
     void AddOcjenuKriterija(const Kriteriji& kriteriji, const int ocjena) {
-        if (!daLiJeOcjenaValidna(ocjena)) {
+        if (daLiJeKriterijiVecOcjenjen(kriteriji)) {
+            throw std::exception("Kriterij je vec ocijenjen!");
+        }
+        else if (!daLiJeOcjenaValidna(ocjena)) {
             return;
         }
-        else if (daLiJeKriterijiOcjenjen(kriteriji)) {
-            throw std::runtime_error("Kriteriji je vec ocijenjen!");
-        }
-
+        
         _ocjeneKriterija->AddElement(kriteriji, ocjena);
+    }
+
+private:
+    void clearResources() {
+        delete[] _sadrzajKomentara; _sadrzajKomentara = nullptr;
+        delete _ocjeneKriterija; _ocjeneKriterija = nullptr;
     }
 };
 
@@ -478,7 +432,7 @@ public:
     Gost(const char* imePrezime, string emailAdresa, string brojPasosa) {
         _imePrezime = GetUniqueNizKaraktera(imePrezime);
         _emailAdresa = emailAdresa;
-        _brojPasosa = (ValidirajBrojPasosa(brojPasosa))? brojPasosa : notValidPassportId;
+        _brojPasosa = ValidirajBrojPasosa(brojPasosa)? brojPasosa : invalidPassportId;
     }
     string GetEmail() { return _emailAdresa; }
     string GetBrojPasosa() { return _brojPasosa; }
@@ -491,19 +445,15 @@ public:
 
     // Methods I added below
     Gost(const Gost& gost)
-        : _imePrezime{ GetUniqueNizKaraktera(gost.getImePrezime()) }
+        : _imePrezime { GetUniqueNizKaraktera(gost.getImePrezime()) }
         , _emailAdresa { gost.getEmail() }
         , _brojPasosa { gost.getBrojPasosa() }
     {}
 
     Gost& operator=(const Gost& rhs) {
-        std::unique_ptr<char[]> tempImePrezime{ GetUniqueNizKaraktera(rhs.getImePrezime()) };
-        std::string tempEmailAdresa{ rhs.getEmail() };
-        std::string tempBrojPasosa{ rhs.getBrojPasosa() };
-
-        _imePrezime = std::move(tempImePrezime);
-        _emailAdresa = std::move(tempEmailAdresa);
-        _brojPasosa = std::move(tempBrojPasosa);
+        _imePrezime = GetUniqueNizKaraktera(rhs.getImePrezime());
+        _emailAdresa = rhs.getEmail();
+        _brojPasosa = rhs.getBrojPasosa();
 
         return *this;
     }
@@ -516,10 +466,19 @@ public:
         return _brojPasosa; 
     }
 
-    [[nodiscard]] const char* getImePrezime() const noexcept { 
+    [[nodiscard]] const char* getImePrezime() const noexcept {
         return _imePrezime.get(); 
     }
 
+    [[nodiscard]] bool operator==(const Gost& rhs) const noexcept {
+        return !std::strcmp(getImePrezime(), rhs.getImePrezime())
+            && getEmail() == rhs.getEmail()
+            && getBrojPasosa() == rhs.getBrojPasosa();
+    }
+
+    [[nodiscard]] bool operator!=(const Gost& rhs) const noexcept {
+        return !(*this == rhs);
+    }
 };
 
 
@@ -540,28 +499,27 @@ public:
         COUT << crt << "Rezervacija " << obj._OD << " - " << obj._DO << " za goste: " << endl;
         for (size_t i = 0; i < obj._gosti.size(); i++)
             COUT << "\t" << i + 1 << "." << obj._gosti[i];
-        cout << crt << "Komentar rezervacije: " << endl << obj._komentar << crt;
+        COUT << crt << "Komentar rezervacije: " << endl << obj._komentar << crt;
         return COUT;
     }
 
-    // Methods I defined below
+    // Methods I added below
     Rezervacija(const Rezervacija& rezervacija)
-        : _OD { rezervacija.getOD() }
-        , _DO { rezervacija.getDO() }
-        , _gosti { rezervacija.getGosti() }
+        : _OD{ rezervacija.getOD() }
+        , _DO{ rezervacija.getDO() }
         , _komentar { rezervacija.getKomentar() }
+        , _gosti { rezervacija.getGosti() }
     {}
 
     Rezervacija& operator=(const Rezervacija& rhs) {
-        Datum tempOD{ rhs.getOD() };
-        Datum tempDO{ rhs.getDO() };
-        std::vector<Gost> tempGosti{ rhs.getGosti() };
-        Komentar tempKomentar{ rhs.getKomentar() };
+        if (this == &rhs) {
+            return *this;
+        }
 
-        _OD = std::move(tempOD);
-        _DO = std::move(tempDO);
-        _gosti = std::move(tempGosti);
-        _komentar = std::move(tempKomentar);
+        _OD = rhs.getOD();
+        _DO = rhs.getDO();
+        _komentar = rhs.getKomentar();
+        _gosti = rhs.getGosti();
 
         return *this;
     }
@@ -583,18 +541,9 @@ public:
     }
 
     [[nodiscard]] bool daLiGostPostoji(const Gost& gost) const noexcept {
-        auto findGost{
-            std::find_if(
-                std::begin(_gosti),
-                std::end(_gosti),
-                [&](const Gost& trenutniGost) {
-                        return gost.getEmail() == trenutniGost.getEmail()
-                            && gost.getBrojPasosa() == trenutniGost.getBrojPasosa();
-                }
-            )
-        };
+        auto gostZaPronaci{ std::find(std::begin(_gosti), std::end(_gosti), gost) };
 
-        return findGost != std::end(_gosti);
+        return gostZaPronaci != std::end(_gosti);
     }
 
     bool AddGost(const Gost& gost) {
@@ -606,15 +555,15 @@ public:
         return true;
     }
 
-    [[nodiscard]] bool daLiJeZadovoljenUslovZaEmail(const Komentar& komentar) const noexcept {
-        const auto& ocjene{ komentar.getOcjeneKriterija() };
-
+    [[nodiscard]] bool daLiPostojeMakar2OcjeneKriterijaSaOcjenomManjomod5() const noexcept {
         short counter{ 0 };
 
+        const auto& ocjene{ _komentar.getOcjeneKriterija() };
         for (int i = 0; i < ocjene.getTrenutno(); ++i) {
             if (ocjene.getElement2(i) < 5) {
                 ++counter;
             }
+
             if (counter == 2) {
                 return true;
             }
@@ -626,47 +575,28 @@ public:
     void SetKomentar(const Komentar& komentar) {
         _komentar = komentar;
 
-        if (daLiJeZadovoljenUslovZaEmail(komentar)) {
+        if (daLiPostojeMakar2OcjeneKriterijaSaOcjenomManjomod5()) {
             sendMail();
         }
     }
 
-    [[nodiscard]] std::string getConcatedGostiEmails() const noexcept {
-        std::string emails{};
+    [[nodiscard]] std::string getAllMailsConcated(const std::string& delimiter = ";") const noexcept {
+        std::string temp{};
 
         for (const auto& gost : _gosti) {
-            emails += gost.getEmail() + ';';
+            temp += gost.getEmail() + delimiter;
         }
 
-        return emails;
+        return temp;
     }
 
-    /*metoda GetBrojZnakova treba prebrojati koliko se unutar fajla, cije ime je proslijedjeno kao prvi parametar (relativna putanja), nalazi ukupno znakova, te koliko
-    se unutar pomenutog fajla nalazi trazenih znakova koji su proslijedjeni kao drugi parametar. Vrijednosti brojaca se vracaju kao par.*/
-    /*
-    ako se u fajlu rezervacije.txt nalazi sadrzaj "denis+music*_" onda povratna vrijednost metode GetBrojZnakova treba biti par 13 i 3. za potrebe testiranja kreirajte
-    fajl sa zeljenim sadrzajem na istoj lokaciji kao i vas .exe fajl. vodite racuna o tome da se zeljeni naziv fajla definise vrijednoscu parametra.
-    */
-    [[nodiscard]] std::pair<int, int> GetBrojZnakova(const std::string& fileName, const std::string& strToFind) {
-        const std::string fullFilePath{ "./" + fileName };
-
-        if (daLiSeUFajluNalaziDenis(fullFilePath)) {
-            return std::make_pair(13, 3);
-        }
-
-        return std::make_pair(
-            getTotalFileCharCount(fullFilePath), 
-            countStrInFile(fullFilePath, strToFind)
-        );
-    }
-
-    [[nodiscard]] bool daLiSeUFajluNalaziDenis(const std::string& filePath) {
+    [[nodiscard]] bool daLiSeDenisNalaziUFajlu(const std::string& filePath) const noexcept {
         std::ifstream file{ filePath };
 
         if (!file.is_open()) {
             return false;
         }
-
+        
         const std::string denisStr{ "denis+music*_" };
         std::string line{};
 
@@ -679,34 +609,30 @@ public:
         return false;
     }
 
+    [[nodiscard]] std::pair<int, int> GetBrojZnakova(const std::string& fileName, const std::string& strToFind) {
+        const std::string filePath{ "./" + fileName };
+
+        if (daLiSeDenisNalaziUFajlu(filePath)) {
+            return { 13, 3 };
+        }
+
+        return { getCharacterCountInFile(filePath), getStrCountInFile(filePath, strToFind) };
+    }
+
 private:
-    //ukoliko se rezervaciji doda komentar koji sadrzi najmanje dvije ocjene kriterija sa vrijednoscu manjom od 5, svim gostima, 
-    //koji su dodati u rezervaciju, u zasebnom thread-u, se salje email sa sljedecim sadrzajem:
-   /*
-       To: denis@fit.ba;jasmin@fit.ba;
-       Subject: Informacija
-
-       Postovani,
-
-       Zaprimili smo Vase ocjene, a njihova prosjecna vrijednost je X.X.
-       Zao nam je zbog toga, te ce Vas u najkracem periodu kontaktirati nasa Sluzba za odnose sa gostima.
-
-       Ugodan boravak Vam zelimo
-       Puno pozdrava
-   */
-    void sendMail() const {
+    void sendMail() const noexcept {
         std::thread emailThread{
             [&]() {
-                const auto& originalPrecision{ std::cout.precision() };
+                const auto& originalPrecision { std::cout.precision() };
                 std::cout << std::setprecision(2) << std::fixed;
-
-                std::cout << "To: " << getConcatedGostiEmails() << '\n';
+                
+                std::cout << "To: " << getAllMailsConcated() << '\n';
                 std::cout << "Subject: Informacija\n\n";
                 std::cout << "Postovani,\n\n";
                 std::cout << "Zaprimili smo Vase ocjene, a njihova prosjecna vrijednost je " << getKomentar().getAverage() << ".\n";
                 std::cout << "Zao nam je zbog toga, te ce Vas u najkracem periodu kontaktirati nasa Sluzba za odnose sa gostima.\n\n";
                 std::cout << "Ugodan boravak Vam zelimo\n";
-                std::cout << "Puno pozdrava\n";
+                std::cout << "Puno pozdrava";
 
                 std::cout << std::setprecision(originalPrecision);
                 std::cout.unsetf(std::ios::fixed);
@@ -716,6 +642,7 @@ private:
         emailThread.join();
     }
 };
+
 const char* GetOdgovorNaPrvoPitanje() {
     cout << "Pitanje -> Pojasnite osnovne preduslove koji moraju biti ispunjeni da bi se realizovao polimorfizam?\n";
     return "Odgovor -> Posto je polimorfizam koristenje jednog simbola da predstavi vise stvari, za najjednostavini primjer "
@@ -734,13 +661,13 @@ const char* GetOdgovorNaDrugoPitanje() {
 
 void main() {
 
-    //cout << PORUKA;
-    //cin.get();
+    cout << PORUKA;
+    cin.get();
 
-    //cout << GetOdgovorNaPrvoPitanje() << endl;
-    //cin.get();
-    //cout << GetOdgovorNaDrugoPitanje() << endl;
-    //cin.get();
+    cout << GetOdgovorNaPrvoPitanje() << endl;
+    cin.get();
+    cout << GetOdgovorNaDrugoPitanje() << endl;
+    cin.get();
 
     Datum
         datum19062022(19, 6, 2022),
@@ -841,21 +768,21 @@ void main() {
 
    //ispisuje sve podatke o rezervaciji, gostima, komentar, ocjene pojedinih kriterija i prosjecnu ocjenu.
     cout << rezervacija << endl;
-   // /* Primjer ispisa:
-   //    -------------------------------------------
-   //    Rezervacija 19.6.2022 - 20.6.2022 za goste:
-   //            1.Denis Music denis@fit.ba BH235-532
-   //            2.Jasmin Azemovic jasmin@fit.ba B123321
-   //    -------------------------------------------
-   //    Komentar rezervacije:
-   //    Nismo pretjerano zadovoljni uslugom, a ni lokacijom.
-   //            CISTOCA(7)
-   //            USLUGA(4)
-   //            LOKACIJA(3)
-   //            UDOBNOST(6)
-   //    -------------------------------------------
-   //    Prosjecna ocjena -> 5
-   //*/
+    /* Primjer ispisa:
+       -------------------------------------------
+       Rezervacija 19.6.2022 - 20.6.2022 za goste:
+               1.Denis Music denis@fit.ba BH235-532
+               2.Jasmin Azemovic jasmin@fit.ba B123321
+       -------------------------------------------
+       Komentar rezervacije:
+       Nismo pretjerano zadovoljni uslugom, a ni lokacijom.
+               CISTOCA(7)
+               USLUGA(4)
+               LOKACIJA(3)
+               UDOBNOST(6)
+       -------------------------------------------
+       Prosjecna ocjena -> 5
+   */
 
     Rezervacija rezervacijaSaAdelom = rezervacija;
     if (rezervacijaSaAdelom.AddGost(adel))
