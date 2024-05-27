@@ -678,7 +678,7 @@ public:
 
 		const auto& zadnjiPojas{ _polozeniPojasevi.back() };
 
-		return zadnjiPojas.getBrojTehnika() > 3 && zadnjiPojas.getAverage() > 3.5;
+		return zadnjiPojas.getPojas() + 1 == pojas && zadnjiPojas.getBrojTehnika() > 3 && zadnjiPojas.getAverage() > 3.5;
 	}
 
 	bool AddTehniku(const Pojas& pojas, const Tehnika& tehnika) {
