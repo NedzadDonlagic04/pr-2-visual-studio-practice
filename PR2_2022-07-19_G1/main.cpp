@@ -3,11 +3,11 @@ using namespace std;
 
 // Headers I included below
 #include<vector>
+#include<thread>
 #include<string>
-#include<regex>
+#include<iomanip>
 #include<fstream>
 #include<numeric>
-#include<thread>
 // Headers I included above
 
 const char* PORUKA = "\n-------------------------------------------------------------------------------\n"
@@ -73,10 +73,10 @@ class Rjecnik {
 public:
 	Rjecnik(bool omoguciDupliranje = true) {
 		_omoguciDupliranje = omoguciDupliranje;
+
 	}
 	~Rjecnik() {
-		delete[] _elementi1; _elementi1 = nullptr;
-		delete[] _elementi2; _elementi2 = nullptr;
+		clearResources();
 	}
 	T1& getElement1(int lokacija)const { return _elementi1[lokacija]; }
 	T2& getElement2(int lokacija)const { return _elementi2[lokacija]; }
@@ -87,9 +87,10 @@ public:
 		return COUT;
 	}
 
+	// Methods I added below
 	Rjecnik(const Rjecnik& rjecnik)
 		: _trenutno { rjecnik.getTrenutno() }
-		, _omoguciDupliranje { rjecnik._omoguciDupliranje }
+		, _omoguciDupliranje { rjecnik.getOmoguciDupliranje()}
 		, _elementi1{ new T1[rjecnik.getTrenutno()] {} }
 		, _elementi2{ new T2[rjecnik.getTrenutno()] {} }
 	{
@@ -104,11 +105,10 @@ public:
 			return *this;
 		}
 
-		_omoguciDupliranje = rhs._omoguciDupliranje;
 		_trenutno = rhs.getTrenutno();
+		_omoguciDupliranje = rhs.getOmoguciDupliranje();
 
-		delete[] _elementi1;
-		delete[] _elementi2;
+		clearResources();
 
 		_elementi1 = new T1[getTrenutno()]{};
 		_elementi2 = new T2[getTrenutno()]{};
@@ -121,9 +121,13 @@ public:
 		return *this;
 	}
 
+	[[nodiscard]] bool getOmoguciDupliranje() const noexcept {
+		return _omoguciDupliranje;
+	}
+
 	[[nodiscard]] bool daLiElementPostoji(const T1& element1, const T2& element2) const noexcept {
 		for (int i = 0; i < getTrenutno(); ++i) {
-			if (getElement1(i) == element1 || getElement2(i) == element2) {
+			if (element1 == getElement1(i) || element2 == getElement2(i)) {
 				return true;
 			}
 		}
@@ -132,12 +136,12 @@ public:
 	}
 
 	void AddElement(const T1& element1, const T2& element2) {
-		if (!_omoguciDupliranje && daLiElementPostoji(element1, element2)) {
+		if (!getOmoguciDupliranje() && daLiElementPostoji(element1, element2)) {
 			throw std::exception("Dupliranje elemenata nije dozvoljeno");
 		}
 
-		T1* const temp1{ new T1[getTrenutno() + 1]{} };
-		T2* const temp2{ new T2[getTrenutno() + 1]{} };
+		T1* const temp1{ new T1[getTrenutno() + 1] {} };
+		T2* const temp2{ new T2[getTrenutno() + 1] {} };
 
 		for (int i = 0; i < getTrenutno(); ++i) {
 			temp1[i] = getElement1(i);
@@ -147,8 +151,7 @@ public:
 		temp1[getTrenutno()] = element1;
 		temp2[getTrenutno()] = element2;
 
-		delete[] _elementi1;
-		delete[] _elementi2;
+		clearResources();
 
 		_elementi1 = temp1;
 		_elementi2 = temp2;
@@ -168,30 +171,14 @@ public:
 		for (int i = start; i <= end; ++i) {
 			temp.AddElement(getElement1(i), getElement2(i));
 		}
-
+		
 		return temp;
 	}
 
-	[[nodiscard]] bool operator==(const Rjecnik& rhs) const noexcept {
-		if (_omoguciDupliranje != rhs._omoguciDupliranje) {
-			return false;
-		} else if (getTrenutno() != rhs.getTrenutno()) {
-			return false;
-		}
-
-		for (int i = 0; i < getTrenutno(); ++i) {
-			if (getElement1(i) != rhs.getElement1(i)) {
-				return false;
-			} else if (getElement2(i) != rhs.getElement2(i)) {
-				return false;
-			}
-		}
-
-		return true;
-	}
-
-	[[nodiscard]] bool operator!=(const Rjecnik& rhs) const noexcept {
-		return !(*this == rhs);
+private:
+	void clearResources() {
+		delete[] _elementi1; _elementi1 = nullptr;
+		delete[] _elementi2; _elementi2 = nullptr;
 	}
 };
 class Datum {
@@ -214,9 +201,9 @@ public:
 
 	// Methods I added below
 	Datum(const Datum& datum)
-		: _dan{ new int { datum.getDan() } }
-		, _mjesec{ new int { datum.getMjesec() } }
-		, _godina{ new int { datum.getGodina() } }
+		: _dan { new int { datum.getDan() } }
+		, _mjesec { new int { datum.getMjesec() } }
+		, _godina { new int { datum.getGodina() } }
 	{}
 
 	Datum& operator=(const Datum& rhs) {
@@ -225,6 +212,16 @@ public:
 		*_godina = rhs.getGodina();
 
 		return *this;
+	}
+
+	[[nodiscard]] bool operator==(const Datum& rhs) const noexcept {
+		return getDan() == rhs.getDan()
+			&& getMjesec() == rhs.getMjesec()
+			&& getGodina() == rhs.getGodina();
+	}
+
+	[[nodiscard]] bool operator!=(const Datum& rhs) const noexcept {
+		return !(*this == rhs);
 	}
 
 	[[nodiscard]] int getDan() const noexcept {
@@ -258,40 +255,55 @@ public:
 		, _komentariKarakteristika { zadovoljstvoKupca.getKomentareKarakteristika() }
 	{}
 
-	ZadovoljstvoKupca& operator=(const ZadovoljstvoKupca& rhs) {
-		_ocjena = rhs.getOcjena();
-		_komentariKarakteristika = rhs.getKomentareKarakteristika();
+	ZadovoljstvoKupca& operator=(const ZadovoljstvoKupca& zadovoljstvoKupca) {
+		_ocjena = zadovoljstvoKupca.getOcjena();
+		_komentariKarakteristika = zadovoljstvoKupca.getKomentareKarakteristika();
 
 		return *this;
 	}
 
-	[[nodiscard]] int getOcjena() const noexcept { 
-		return _ocjena; 
-	}
+	[[nodiscard]] bool daLiSuJednakiKomentariKarakteristika(
+		const Rjecnik<Karakteristike, const char*>& komentariKarakteristika
+	) const noexcept {
+		if (_komentariKarakteristika.getTrenutno() != komentariKarakteristika.getTrenutno()) {
+			return false;
+		}
+		else if (_komentariKarakteristika.getOmoguciDupliranje() != komentariKarakteristika.getOmoguciDupliranje()) {
+			return false;
+		}
 
-	[[nodiscard]] const Rjecnik<Karakteristike, const char*>& getKomentareKarakteristika() const noexcept { 
-		return _komentariKarakteristika; 
-	}
-
-	friend std::ostream& operator<<(std::ostream& os, const ZadovoljstvoKupca& zadovoljstvoKupca) {
-		os << zadovoljstvoKupca.getOcjena() << '\n';
-		
-		const auto& ocjene{ zadovoljstvoKupca.getKomentareKarakteristika() };
-		for (int i = 0; i < ocjene.getTrenutno(); ++i) {
-			os << '\t' << ocjene.getElement1(i) << " - ";
-			os << ocjene.getElement2(i);
-
-			if (i + 1 != ocjene.getTrenutno()) {
-				os << '\n';
+		for (int i = 0; i < komentariKarakteristika.getTrenutno(); ++i) {
+			if (komentariKarakteristika.getElement1(i) != _komentariKarakteristika.getElement1(i)) {
+				return false;
+			}
+			else if (std::strcmp(komentariKarakteristika.getElement2(i), _komentariKarakteristika.getElement2(i))) {
+				return false;
 			}
 		}
 
-		return os;
+		return true;
 	}
-	
-	[[nodiscard]] bool daLiKarakteristikaPostoji(const Karakteristike& karakteristika) const noexcept {
+
+	[[nodiscard]] bool operator==(const ZadovoljstvoKupca& rhs) const noexcept {
+		return getOcjena() == rhs.getOcjena()
+			&& daLiSuJednakiKomentariKarakteristika(rhs.getKomentareKarakteristika());
+	}
+
+	[[nodiscard]] bool operator!=(const ZadovoljstvoKupca& rhs) const noexcept {
+		return !(*this == rhs);
+	}
+
+	void DodajKomentarKarakteristike(const Karakteristike& karakteristike, const char* const komentar) {
+		if (daLiJeKarakteristikaVecOcjenjena(karakteristike)) {
+			throw std::runtime_error("Karakteristika je vec komentarisana");
+		}
+
+		_komentariKarakteristika.AddElement(karakteristike, komentar);
+	}
+
+	[[nodiscard]] bool daLiJeKarakteristikaVecOcjenjena(const Karakteristike& karakteristike) const noexcept {
 		for (int i = 0; i < _komentariKarakteristika.getTrenutno(); ++i) {
-			if (karakteristika == _komentariKarakteristika.getElement1(i)) {
+			if (karakteristike == _komentariKarakteristika.getElement1(i)) {
 				return true;
 			}
 		}
@@ -299,21 +311,31 @@ public:
 		return false;
 	}
 
-	void DodajKomentarKarakteristike(const Karakteristike& karakteristika, const char* const komentar) {
-		if (daLiKarakteristikaPostoji(karakteristika)) {
-			throw std::exception("Karakteristika je vec komentarisana");
-		}
+	[[nodiscard]] int getOcjena() const noexcept { 
+		return _ocjena; 
+	}
+	
+	[[nodiscard]] const Rjecnik<Karakteristike, const char*>& getKomentareKarakteristika() const noexcept { 
+		return _komentariKarakteristika; 
+	}
+	
+	friend std::ostream& operator<<(std::ostream& os, const ZadovoljstvoKupca& zadovoljstvoKupca) {
+		os << zadovoljstvoKupca.getOcjena() << '\n';
 		
-		_komentariKarakteristika.AddElement(karakteristika, komentar);
-	}
+		const auto& komentariKarakterisika{ 
+			zadovoljstvoKupca.getKomentareKarakteristika() 
+		};
 
-	[[nodiscard]] bool operator==(const ZadovoljstvoKupca& rhs) const noexcept {
-		return getOcjena() == rhs.getOcjena()
-			&& getKomentareKarakteristika() == rhs.getKomentareKarakteristika();
-	}
+		for (int i = 0; i < komentariKarakterisika.getTrenutno(); ++i) {
+			os << '\t' << komentariKarakterisika.getElement1(i) << " - ";
+			os << komentariKarakterisika.getElement2(i);
 
-	[[nodiscard]] bool operator!=(const ZadovoljstvoKupca& rhs) const noexcept {
-		return !(*this == rhs);
+			if (i + 1 != komentariKarakterisika.getTrenutno()) {
+				os << '\n';
+			}
+		}
+
+		return os;
 	}
 };
 
@@ -349,12 +371,13 @@ public:
 		}
 
 		delete[] _imePrezime;
-
+		
 		_imePrezime = GetNizKaraktera(rhs.getImePrezime());
 		_datumRodjenja = rhs.getDatumRodjenja();
 
 		return *this;
 	}
+
 	[[nodiscard]] const char* getImePrezime() const noexcept { 
 		return _imePrezime; 
 	}
@@ -371,7 +394,7 @@ class Kupac : public Osoba {
 	Rjecnik<float, ZadovoljstvoKupca>* _kupovine;
 	vector<int> _bodovi; // bodovi sakupljeni tokom kupovine, svakih potrosenih 10KM donosi po 1 bod.
 public:
-	Kupac(const char* imePrezime = "", Datum datumRodjenja = Datum(), const char* emailAdresa = "")
+	Kupac(const char* imePrezime = "", Datum datumRodjenja = Datum(), const char* emailAdresa = "") 
 		: Osoba(imePrezime, datumRodjenja)
 	{
 		_emailAdresa = GetNizKaraktera(emailAdresa);
@@ -404,6 +427,28 @@ public:
 	}
 
 	// Methods I added below
+	Kupac(const Kupac& kupac) 
+		: Osoba(kupac)
+		, _emailAdresa { GetNizKaraktera(kupac.getEmail()) }
+		, _bodovi { kupac.getBodovi() }
+		, _kupovine{ new Rjecnik<float, ZadovoljstvoKupca>{ kupac.getKupovine() } }
+	{}
+
+	Kupac& operator=(const Kupac& rhs) {
+		if (this == &rhs) {
+			return *this;
+		}
+
+		delete[] _emailAdresa;
+
+		Osoba::operator=(rhs);
+		_emailAdresa = GetNizKaraktera(rhs.getEmail());
+		_bodovi = rhs.getBodovi();
+		*_kupovine = rhs.getKupovine();
+
+		return *this;
+	}
+
 	[[nodiscard]] const char* getEmail() const noexcept { 
 		return _emailAdresa; 
 	}
@@ -417,15 +462,7 @@ public:
 	}
 
 	[[nodiscard]] int getBodoviUkupno() const noexcept {
-		return std::accumulate(
-			std::begin(_bodovi),
-			std::end(_bodovi),
-			0
-		);
-	}
-
-	void Info() override {
-		std::cout << *this;
+		return std::accumulate(std::begin(_bodovi), std::end(_bodovi), 0);
 	}
 
 	void DodajKupovinu(const float cijena, const ZadovoljstvoKupca& zadovoljstvoKupca) {
@@ -434,22 +471,28 @@ public:
 		}
 
 		_kupovine->AddElement(cijena, zadovoljstvoKupca);
-		
-		const int brojBodova = cijena / 10;
-		
-		if (!brojBodova) {
+
+		const int bodovi = cijena / 10;
+
+		if (!bodovi) {
 			return;
 		}
 
-		_bodovi.push_back(brojBodova);
+		_bodovi.push_back(bodovi);
 
-		if (brojBodova > 5) {
-			sendMail();
+		if (bodovi < 5) {
+			return;
 		}
+
+		sendMail();
 	}
 
-	void SacuvajBodove() const {
-		const std::string filePath{ "./" + std::string(getEmail()) + ".txt" };
+	void Info() {
+		std::cout << *this;
+	}
+
+	void SacuvajBodove() {
+		const std::string filePath{ std::string("./") + getEmail() + ".txt" };
 
 		std::ofstream file{ filePath, std::ios::out | std::ios::app };
 
@@ -459,7 +502,7 @@ public:
 	}
 
 	void UcitajBodove() {
-		const std::string filePath{ "./" + std::string(getEmail()) + ".txt" };
+		const std::string filePath{ std::string("./") + getEmail() + ".txt" };
 
 		std::ifstream file{ filePath };
 
@@ -474,26 +517,23 @@ public:
 				_bodovi.push_back(std::stoi(line));
 			}
 			catch (const std::exception& err) {
-				// std::cout << "UcitajBodove error msg: ";
-				// std::cout << err.what() << '\n';
+				// std::cout << "Error -> " << err.what() << '\n';
 			}
 		}
 	}
 
-	[[nodiscard]] Rjecnik<Karakteristike, const char*> GetKupovineByKomentar(const std::string& dioKomentaraZaPronaci) {
+	Rjecnik<Karakteristike, const char*> GetKupovineByKomentar(const std::string& komentar) {
 		Rjecnik<Karakteristike, const char*> temp{};
-
+		
 		for (int i = 0; i < _kupovine->getTrenutno(); ++i) {
 			const auto& zadovoljstvoKupca{ _kupovine->getElement2(i) };
-			const auto& komentariKarakteristika{ zadovoljstvoKupca.getKomentareKarakteristika() };
+			const auto& komentariKarakteristike{ zadovoljstvoKupca.getKomentareKarakteristika() };
 
-			for (int i = 0; i < komentariKarakteristika.getTrenutno(); ++i) {
-				const auto& trenutniKomentar{ std::string(komentariKarakteristika.getElement2(i)) };
-				
-				if (trenutniKomentar.find(dioKomentaraZaPronaci) != std::string::npos) {
+			for (int i = 0; i < komentariKarakteristike.getTrenutno(); ++i) {
+				if (std::string(komentariKarakteristike.getElement2(i)).find(komentar) != std::string::npos) {
 					temp.AddElement(
-						komentariKarakteristika.getElement1(i),
-						komentariKarakteristika.getElement2(i)
+						komentariKarakteristike.getElement1(i), 
+						komentariKarakteristike.getElement2(i)
 					);
 				}
 			}
@@ -508,11 +548,10 @@ private:
 			[&]() {
 				std::cout << "\nTo: " << getEmail() << '\n';
 				std::cout << "Subject: Osvareni bodovi\n\n";
-				std::cout << "Postovani,\n\n";
-				std::cout << "Prilikom posljednje kupovine ste ostvarili " << getBodovi().back() << " bodova, tako da trenutno vas ";
-				std::cout << "ukupan broj bodova iznosi " << getBodoviUkupno() << ".\n\n";
-				std::cout << "Zahvaljujemo vam na kupovini.\n";
-				std::cout << "Puno pozdrava\n";
+				std::cout << "Postovani\n\n";
+				std::cout << "Prilikom posljednje kupovine ste ostvarili " << getBodovi().back() << " bodova, tako";
+				std::cout << " da trenutno vas ukupan broj bodova iznosi " << getBodoviUkupno() << ".\n";
+				std::cout << "Zahvaljujemo vam na kupovini.\nPuno pozdrava\n";
 			}
 		};
 
@@ -522,22 +561,11 @@ private:
 
 const char* GetOdgovorNaPrvoPitanje() {
 	cout << "Pitanje -> Nabrojite i ukratko pojasnite osnovne razlike izmedju list i vector klase?\n";
-	return "Odgovor -> Vektor spasava elemente u nizu, sto znaci da je svaki element jedan za drugim u memoriji, liste spasavaju pointer na "
-		"sljedeci element, sto znaci da elementi nisu jedan za drugim u memoriji. Vektor moze zauzeti vise memorije unapred u slucaju dodavanja "
-		" novih elemenata dok list to ne radi. Svaki elementu vektor klasi zahtjeva memorije samo za sebe, svaki element u list klasi zahtjeva "
-		" memorije za sebe i za pokazivac na prijasnji i sljedeci element. Insertovanje novog elementa (igdje sem na kraju) u list-i je mnogo "
-		" jeftinije nego u vektor zbog prijasnje navedenih osobina, ali zato pristup u vektor je mnogo jeftiniji nego u liste, posto je vektor "
-		" niz uzme se pocetak niza i doda offset dok lista mora proci od pocetka kroz sve clanove dok ne dode do trazenog. ";
+	return "Odgovor -> OVDJE UNESITE VAS ODGOVOR";
 }
 const char* GetOdgovorNaDrugoPitanje() {
 	cout << "Pitanje -> Pojasnite opcije vezane za preslikavanje (vrijednosti, referenci, dostupnost) parametara prilikom koristenja lambda funkcija?\n";
-	return "Odgovor -> Preslikavanje parametara po vrijednosti [=] znaci da sve varijable koje spominjemo u tijelu lambde ce biti kopirane "
-		" po vrijednosti, modificiranje njih nece dovesti do promjene orginala. Preslikavanje parametara po referenci [&] znaci da sve "
-		" varijable koje spominjemo u tijelu lambde ce biti kopirane po referenci, modificiranje njih ce dovesti do promjene orginala. "
-		" Preslikavanje parametara po dostupnosti znaci da mozemo u [] izlistati koje varijable zelimo prenjeti u lambdu i kako, npr."
-		" [&var1, var2] ovdje je var1 po referenci preslikano, dok je var2 po vrijednosti.";
-	// Nisam siguran sta je dostupnost jer prevod na nas jezik inace goes smoothly, pa sam predpostavio da je to kada se uradi nesto na fazon
-	// [&variable, variable2]
+	return "Odgovor -> OVDJE UNESITE VAS ODGOVOR";
 }
 
 void main() {
@@ -656,7 +684,7 @@ void main() {
 	denis->SacuvajBodove();
 	//metoda UcitajBodove ucitava sadrzaj fajla pod nazivom emailKorisnika.txt i njegove vrijednosti pohranjuje/dodaje u vector _bodovi (zadrzavajuci postojece bodove).  
 	denis->UcitajBodove();
-
+	denis->Info();
 	//metoda GetKupovineByKomentar treba da pronadje i vrati sve karakteristike proizvoda i komentare kupaca koji sadrze vrijednost proslijedjenog parametra
 	Rjecnik<Karakteristike, const char*> osteceniProizvodi = denis->GetKupovineByKomentar("ostecen");
 	cout << crt << "Rezultat pretrage -> " << crt << osteceniProizvodi << crt;
