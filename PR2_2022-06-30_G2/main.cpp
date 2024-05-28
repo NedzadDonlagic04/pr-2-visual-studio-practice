@@ -158,7 +158,7 @@ public:
     Rijecnik RemoveAt(const int index) {
         Rijecnik temp;
 
-        if (index < 0 || index > getTrenutno()) {
+        if (index < 0 || index >= getTrenutno()) {
             return temp;
         }
 
