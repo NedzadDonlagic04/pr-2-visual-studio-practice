@@ -16,8 +16,8 @@ const char* crt = "\n-------------------------------------------\n";
 enum Karakteristike { NARUDZBA, KVALITET, PAKOVANJE, ISPORUKA };
 
 // Functions I defined below
-std::ostream& operator<<(std::ostream& os, const Karakteristike karakteristike) {
-    switch (karakteristike) {
+std::ostream& operator<<(std::ostream& os, Karakteristike karakteristika) {
+    switch (karakteristika) {
     case Karakteristike::NARUDZBA:
         os << "NARUDZBA";
         break;
@@ -58,9 +58,9 @@ std::ostream& operator<<(std::ostream& os, const Karakteristike karakteristike) 
 
 const std::string notValid{ "NOT VALID" };
 [[nodiscard]] bool ValidirajJedinstveniKod(const std::string code) {
-    std::regex codeValidation{ "^\\[[A-Z]{1,2}\\]\\d{3,4}[-\\s]?\\{[a-z]{2}\\}$" };
+    std::regex codeValidation{ "\\[[A-Z]{1,2}\\]\\d{3,4}[-\\s]?\\{[a-z]{2}\\}" };
 
-    return std::regex_search(code, codeValidation);
+    return std::regex_match(code, codeValidation);
 }
 // Functions I defined above
 
@@ -98,10 +98,7 @@ public:
     }
 
     ~Rijecnik() {
-        for (int i = 0; i < getTrenutno(); ++i) {
-            delete _elementi1[i]; 
-            delete _elementi2[i]; 
-        }
+        clearArrays();
         delete _trenutno;
     }
 
@@ -112,10 +109,7 @@ public:
 
         _omoguciDupliranje = rhs._omoguciDupliranje;
 
-        for (int i = 0; i < getTrenutno(); ++i) {
-            delete _elementi1[i]; _elementi1[i] = nullptr;
-            delete _elementi2[i]; _elementi2[i] = nullptr;
-        }
+        clearArrays();
 
         *_trenutno = rhs.getTrenutno();
 
@@ -178,6 +172,14 @@ public:
         _elementi2[getTrenutno()] = nullptr;
 
         return temp;
+    }
+
+private:
+    void clearArrays() {
+        for (int i = 0; i < getTrenutno(); ++i) {
+            delete _elementi1[i];
+            delete _elementi2[i];
+        }
     }
 };
 class Datum {
@@ -304,10 +306,10 @@ public:
     }
 
     [[nodiscard]] bool daLiJeKarakteristikaVecOcjenjena(
-        const Karakteristike& karakteristike
+        Karakteristike karakteristika
     ) const noexcept {
         for (int i = 0; i < _ocjeneKarakteristika->getTrenutno(); ++i) {
-            if (karakteristike == _ocjeneKarakteristika->getElement1(i)) {
+            if (karakteristika == _ocjeneKarakteristika->getElement1(i)) {
                 return true;
             }
         }
@@ -323,11 +325,11 @@ public:
         return _komentar; 
     }
     
-    [[nodiscard]] const Rijecnik<Karakteristike, int, 4>& getOcjeneKarakteristika() const noexcept { 
+    [[nodiscard]] const Rijecnik<Karakteristike, int, 4>& getOcjeneKarakteristika() const noexcept {
         return *_ocjeneKarakteristika; 
     }
 
-    void AddOcjenuKarakteristike(const Karakteristike& karakteristika, const int ocjena) {
+    void AddOcjenukarakteristika(Karakteristike karakteristika, const int ocjena) {
         if (!daLiJeOcjenaValidna(ocjena)) {
             return;
         }
@@ -588,11 +590,21 @@ private:
 };
 const char* GetOdgovorNaPrvoPitanje() {
     cout << "Pitanje -> \Nabrojite i ukratko pojasnite osnovne ios modove koji se koriste u radu sa fajlovima?\n";
-    return "Odgovor -> OVDJE UNESITE VAS ODGOVOR";
+    return "Odgovor -> ios::out - otvara fajl za citanje\n"
+        "ios::in - otvara fajl za pisanje\n"
+        "ios::app - prije svakog pisanja u fajl odlazi na kraj njega \n"
+        "ios::ate - kada otvori fajl odlazi na kraj njega\n"
+        "ios::trunc - otvara fajl, sve sto je bilo u fajlu prijasnje se brise\n"
+        "ios::binary - otvara fajl u binarnom modu, podatci su spaseni onako kako su u memoriji\n";
+        "ios::noreplace - slicno ios::app, samo sto nece uspjeti otvoriti fajl ako ne postoji i fail-ovat ce\n";
 }
 const char* GetOdgovorNaDrugoPitanje() {
     cout << "Pitanje -> Pojasnite prednosti i nedostatke visestrukog nasljedjivaja, te ulogu virtualnog nasljedjivanja u tom kontekstu?\n";
-    return "Odgovor -> OVDJE UNESITE VAS ODGOVOR";
+    return "Odgovor -> Kao i kod jednostrukog nasljedivanja velika prednost je to sto se moze u jednoj klasi napisati kod "
+        "i iskoristiti napisana logika u drugim bez potrebe ponavljanja koda na vise mjesta. Mana je to sto se moze desiti "
+        "da nasljedujemo klase koje su naslijedile istu baznu klasu, zbog cega se moze dogoditi da se kreira vise kopija istog "
+        "objekta sto donosi sa sobom ambiguoznost pri pozivanju odredenih metoda, virtualno nasljedivanje tu ima ulogu da "
+        "omoguci da najnasljedenija klasa uzme odgovornost kreiranja samo jedne instance objekta tog, bez dupliranja.";
 }
 
 void main() {
@@ -685,23 +697,23 @@ void main() {
         cout << "Kupac uspjesno dodan!";
 
     ZadovoljstvoKupca zadovoljstvoKupca("Nismo pretjerano zadovoljni kvalitetom, a ni pakovanjem");
-    zadovoljstvoKupca.AddOcjenuKarakteristike(NARUDZBA, 7);
-    zadovoljstvoKupca.AddOcjenuKarakteristike(KVALITET, 4);
+    zadovoljstvoKupca.AddOcjenukarakteristika(NARUDZBA, 7);
+    zadovoljstvoKupca.AddOcjenukarakteristika(KVALITET, 4);
 
     try {
-        zadovoljstvoKupca.AddOcjenuKarakteristike(KVALITET, 4); //kakrakteristika je vec ocjenjena
+        zadovoljstvoKupca.AddOcjenukarakteristika(KVALITET, 4); //kakrakteristika je vec ocjenjena
     }
     catch (exception& err) {
         cout << err.what() << crt;
     }
 
-    zadovoljstvoKupca.AddOcjenuKarakteristike(PAKOVANJE, 3);
-    zadovoljstvoKupca.AddOcjenuKarakteristike(ISPORUKA, 6);
+    zadovoljstvoKupca.AddOcjenukarakteristika(PAKOVANJE, 3);
+    zadovoljstvoKupca.AddOcjenukarakteristika(ISPORUKA, 6);
 
     //u okviru kupovine postavlja vrijednost atributa _zadovoljstvoKupca
     kupovina.SetZadovoljstvoKupca(zadovoljstvoKupca);
 
-    //ukoliko se kupovini  doda zadovoljstvo koji sadrzi najmanje dvije karakteristike sa ocjenom manjom od 5, svim kupcima, 
+    //ukoliko se kupovini  doda zadovoljstvo koji sadrzi najmanje dvije karakteristika sa ocjenom manjom od 5, svim kupcima, 
     //koji su dodati u kupovinu, u zasebnom thread-u, se salje email sa sljedecim sadrzajem:
    /*
        To: denis@fit.ba;jasmin@fit.ba;

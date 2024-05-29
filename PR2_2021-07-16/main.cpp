@@ -24,7 +24,7 @@ char* GetNizKaraktera(const char* sadrzaj) {
 }
 
 // Functions I defined below
-std::ostream& operator<<(std::ostream& os, const Pojas& pojas) {
+std::ostream& operator<<(std::ostream& os, Pojas pojas) {
 	switch (pojas) {
 	case Pojas::BIJELI:
 		os << "BIJELI";
@@ -159,12 +159,15 @@ public:
 		delete _elementi1[index];
 		delete _elementi2[index];
 
+		--(*_trenutno);
+
 		for (int i = index; i < getTrenutno(); ++i) {
 			_elementi1[i] = _elementi1[i + 1];
 			_elementi2[i] = _elementi2[i + 1];
 		}
 
-		--(*_trenutno);
+		_elementi1[getTrenutno()] = nullptr;
+		_elementi2[getTrenutno()] = nullptr;
 	}
 
 	T2& operator[](const T1& element1) {
@@ -452,7 +455,7 @@ public:
 		, _polozeneTehnike { polaganje.getTehnikeCopy() }
 	{}
 
-	Polaganje(const Pojas& pojas, const Tehnika& tehnika)
+	Polaganje(Pojas pojas, const Tehnika& tehnika)
 		: _pojas{ pojas }
 	{
 		_polozeneTehnike.push_back(new Tehnika{ tehnika });
@@ -600,7 +603,7 @@ public:
 		lozinka)
 		: Korisnik(imePrezime, emailAdresa, lozinka)
 	{}
-	~KaratePolaznik() {
+	~KaratePolaznik() override {
 		cout << crt << "DESTRUKTOR -> KaratePolaznik" << crt;
 		clearPolozeniPojasevi();
 	}
@@ -646,7 +649,7 @@ public:
 		return temp;
 	}
 
-	[[nodiscard]] Polaganje* getPolaganjeForPojas(const Pojas& pojas) noexcept {
+	[[nodiscard]] Polaganje* getPolaganjeForPojas(Pojas pojas) noexcept {
 		auto polaganjeZaPronaci{
 			std::find_if(
 				std::begin(_polozeniPojasevi),
@@ -660,7 +663,7 @@ public:
 		return (polaganjeZaPronaci == std::end(_polozeniPojasevi)) ? nullptr : *polaganjeZaPronaci;
 	}
 
-	[[nodiscard]] bool daLiJeIspunjenUslovZaVisiPojas(const Pojas& pojas) const noexcept {
+	[[nodiscard]] bool daLiJeIspunjenUslovZaVisiPojas(Pojas pojas) const noexcept {
 		const auto& size{ _polozeniPojasevi.size() };
 
 		if (!size) {
@@ -674,7 +677,7 @@ public:
 			&& zadnjePolaganje.getAverage() > 3.5;
 	}
 
-	bool AddTehniku(const Pojas& pojas, const Tehnika& tehnika) {
+	bool AddTehniku(Pojas pojas, const Tehnika& tehnika) {
 		auto polaganje{ getPolaganjeForPojas(pojas) };
 
 		if (polaganje) {
@@ -745,7 +748,11 @@ private:
 };
 const char* GetOdgovorNaPrvoPitanje() {
 	cout << "Pitanje -> Pojasnite ulogu operatora const_cast?\n";
-	return "Odgovor -> OVDJE UNESITE VAS ODGOVOR";
+	return "Odgovor -> const_cast operator je jedini cast koji moze da smakne ili doda const, on je jedini pomocu kojeg je "
+		"dozvoljeno smaknuti const sa neke vrijednosti, bitno je samo naglasiti da se vrijednost moze jedino mijenjati "
+		"ako orginalni objekat nije const. Ako imamo situaciju kao int a = 5; const int& b = a; ovdje je uredu pomocu "
+		"const_cast smaknuti const sa b i promjeniti vrijednost jer a orginalno nije const, da je a orginalno bilo const "
+		"onda bi ovo dovelo do nedefinisanog ponasanja.";
 }
 const char* GetOdgovorNaDrugoPitanje() {
 	cout << "Pitanje -> Ukratko opisite redoslijed kreiranja objekta bazne klase u slucaju visestrukog nasljedjivanja(prilikom instanciranja objekta najizvedenije klase), te koja su moguca rjesenja najznacajnijih problema ubtom kontekstu ? \n";

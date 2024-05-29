@@ -47,7 +47,7 @@ const char* NIJE_VALIDNA = "<VRIJEDNOST_NIJE_VALIDNA>";
 		&& std::regex_search(password, atLeast1SpecialCharCheck);
 }
 
-std::ostream& operator<<(std::ostream& os, const Pojas& pojas) {
+std::ostream& operator<<(std::ostream& os, Pojas pojas) {
 	switch (pojas) {
 	case Pojas::BIJELI:
 		os << "BIJELI";
@@ -96,11 +96,7 @@ class Kolekcija {
 public:
 	Kolekcija() { _trenutno = new int(0); }
 	~Kolekcija() {
-
-		for (size_t i = 0; i < *_trenutno; i++) {
-			delete _elementi1[i]; _elementi1[i] = nullptr;
-			delete _elementi2[i]; _elementi2[i] = nullptr;
-		}
+		clearArrays();
 		delete _trenutno; _trenutno = nullptr;
 	}
 
@@ -128,10 +124,7 @@ public:
 			return *this;
 		}
 
-		for (int i = 0; i < getTrenutno(); ++i) {
-			delete _elementi1[i];
-			delete _elementi2[i];
-		}
+		clearArrays();
 
 		*_trenutno = rhs.getTrenutno();
 
@@ -182,10 +175,10 @@ public:
 			return;
 		}
 		
-		--(*_trenutno);
-
 		delete _elementi1[index];
 		delete _elementi2[index];
+
+		--(*_trenutno);
 
 		for (int i = index; i < getTrenutno(); ++i) {
 			_elementi1[i] = _elementi1[i + 1];
@@ -201,6 +194,14 @@ public:
 			if (element1 == getElement1(i)) {
 				return getElement2(i);
 			}
+		}
+	}
+
+private:
+	void clearArrays() {
+		for (size_t i = 0; i < *_trenutno; i++) {
+			delete _elementi1[i]; _elementi1[i] = nullptr;
+			delete _elementi2[i]; _elementi2[i] = nullptr;
 		}
 	}
 };
@@ -382,7 +383,7 @@ public:
 		const auto& originalPrecision{ os.precision() };
 		os << std::setprecision(2) << std::fixed;
 
-		os << "Prosjek ocjena: " << tehnika.getAverage() << '\n';
+		os << "Prosjek ocjena -> " << tehnika.getAverage() << '\n';
 
 		os << std::setprecision(originalPrecision);
 		os.unsetf(std::ios::fixed);
@@ -477,7 +478,7 @@ public:
 		, _polozeneTehnike { polaganje.getTehnikeCopy() }
 	{}
 
-	Polaganje(const Pojas& pojas, const Tehnika& tehnika)
+	Polaganje(Pojas pojas, const Tehnika& tehnika)
 		: _pojas{ pojas }
 	{
 		_polozeneTehnike.push_back(new Tehnika{ tehnika });
@@ -529,7 +530,7 @@ public:
 			std::begin(_polozeneTehnike),
 			std::end(_polozeneTehnike),
 			0.0,
-			[&](const double sum, const Tehnika* const tehnika) {
+			[](const double sum, const Tehnika* const tehnika) {
 				return sum + tehnika->getAverage();
 			}
 		) / size;
@@ -614,7 +615,7 @@ public:
 	KaratePolaznik(const char* imePrezime, string emailAdresa, string lozinka) 
 		: Korisnik(imePrezime, emailAdresa, lozinka)
 	{}
-	~KaratePolaznik() {
+	~KaratePolaznik() override {
 		cout << crt << "DESTRUKTOR -> KaratePolaznik" << crt;
 	}
 	friend ostream& operator<< (ostream& COUT, KaratePolaznik& obj) {
@@ -655,7 +656,7 @@ public:
 		return _polozeniPojasevi; 
 	}
 
-	[[nodiscard]] Polaganje* getPolaganjeForPojas(const Pojas& pojas) {
+	[[nodiscard]] Polaganje* getPolaganjeForPojas(Pojas pojas) {
 		auto polaganjeZaPronaci{
 			std::find_if(
 				std::begin(_polozeniPojasevi),
@@ -669,7 +670,7 @@ public:
 		return (polaganjeZaPronaci == std::end(_polozeniPojasevi)) ? nullptr : &(*polaganjeZaPronaci);
 	}
 
-	[[nodiscard]] bool daLiJeIspunjenUslovZaVisiPojas(const Pojas& pojas) {
+	[[nodiscard]] bool daLiJeIspunjenUslovZaVisiPojas(Pojas pojas) {
 		const auto& size{ _polozeniPojasevi.size() };
 
 		if (!size) {
@@ -681,7 +682,7 @@ public:
 		return zadnjiPojas.getPojas() + 1 == pojas && zadnjiPojas.getBrojTehnika() > 3 && zadnjiPojas.getAverage() > 3.5;
 	}
 
-	bool AddTehniku(const Pojas& pojas, const Tehnika& tehnika) {
+	bool AddTehniku(Pojas pojas, const Tehnika& tehnika) {
 		auto polaganje{ getPolaganjeForPojas(pojas) };
 
 		if (polaganje) {
@@ -713,7 +714,7 @@ public:
 			std::begin(_polozeniPojasevi),
 			std::end(_polozeniPojasevi),
 			0.0,
-			[&](const double sum, const Polaganje& polaganje) {
+			[](const double sum, const Polaganje& polaganje) {
 				return sum + polaganje.getAverage();
 			}
 		) / size;

@@ -44,7 +44,7 @@ char* GetNizKaraktera(const char* sadrzaj) {
 }
 
 // Functions I defined below
-std::ostream& operator<<(std::ostream& os, const Predmet& predmet) {
+std::ostream& operator<<(std::ostream& os, Predmet predmet) {
     switch (predmet) {
     case Predmet::UIT:
         os << "UIT";
@@ -98,12 +98,10 @@ public:
         _trenutno = new int{ 0 };
     }
     ~Kolekcija() {
-        for (size_t i = 0; i < *_trenutno; i++) {
-            delete _elementi1[i]; _elementi1[i] = nullptr;
-            delete _elementi2[i]; _elementi2[i] = nullptr;
-        }
+        clearArrays();
         delete _trenutno; _trenutno = nullptr;
     }
+
     T1& getElement1(int lokacija)const { return *_elementi1[lokacija]; }
     T2& getElement2(int lokacija)const { return *_elementi2[lokacija]; }
     int getTrenutno() const { return *_trenutno; }
@@ -128,10 +126,7 @@ public:
             return *this;
         }
 
-        for (int i = 0; i < getTrenutno(); ++i) {
-            delete _elementi1[i]; _elementi1[i] = nullptr;
-            delete _elementi2[i]; _elementi2[i] = nullptr;
-        }
+        clearArrays();
 
         *_trenutno = rhs.getTrenutno();
 
@@ -192,6 +187,14 @@ public:
         }
 
         return temp;
+    }
+
+private:
+    void clearArrays() {
+        for (size_t i = 0; i < *_trenutno; i++) {
+            delete _elementi1[i]; _elementi1[i] = nullptr;
+            delete _elementi2[i]; _elementi2[i] = nullptr;
+        }
     }
 };
 class Datum {
@@ -300,7 +303,6 @@ public:
     }
     ~Pitanje() {
         clearResources();
-
     }
 
     char* GetSadrzaj() { return _sadrzaj; }
@@ -451,9 +453,6 @@ public:
         return os;
     }
 
-    // ispisuje sadrzaj/tekst pitanja, ocjene (zajedno sa datumom) i prosjecnu ocjenu za sve odgovore/rjesenja
-    // ukoliko pitanje nema niti jednu ocjenu prosjecna treba biti 0
-
 private:
     void clearResources() {
         delete[] _sadrzaj; _sadrzaj = nullptr;
@@ -487,7 +486,7 @@ public:
         , _pitanjaOdgovori { ispit.getPitanjaOdgovore() }
     {}
 
-    Ispit(const Predmet& predmet, const Pitanje& pitanje)
+    Ispit(Predmet predmet, const Pitanje& pitanje)
         : _predmet{ new Predmet { predmet } }
     {
         _pitanjaOdgovori.push_back(pitanje);
@@ -531,13 +530,14 @@ public:
             return 0.0;
         }
 
-        double sum{ 0.0 };
-
-        for (const auto& pitanjeOdgovor : _pitanjaOdgovori) {
-            sum += pitanjeOdgovor.getAverage();
-        }
-
-        return sum / size;
+        return std::accumulate(
+            std::begin(_pitanjaOdgovori),
+            std::end(_pitanjaOdgovori),
+            0.0,
+            [](const double sum, const Pitanje& pitanje) {
+                return sum + pitanje.getAverage();
+            }
+        ) / size;
     }
 
     [[nodiscard]] std::size_t getBrojPitanje() const noexcept {
@@ -621,13 +621,13 @@ public:
     Kandidat(const char* imePrezime, string emailAdresa, string lozinka) 
         : Korisnik(imePrezime, emailAdresa, lozinka)
     {}
-    ~Kandidat() {
+    ~Kandidat() override {
         clearResources();
         cout << crt << "KANDIDAT :: DESTRUKTOR" << crt;
     }
 
-    friend ostream& operator<< (ostream& COUT, Kandidat& obj) {
-        COUT << (Korisnik&)obj << endl;
+    friend ostream& operator<< (ostream& COUT, const Kandidat& obj) {
+        COUT << (const Korisnik&)obj << endl;
         for (size_t i = 0; i < obj._polozeniPredmeti.size(); i++)
             COUT << *obj._polozeniPredmeti[i];
         return COUT;
@@ -667,7 +667,7 @@ public:
         return temp;
     }
 
-    [[nodiscard]] Ispit* getIspitForPredmet(const Predmet& predmet) {
+    [[nodiscard]] Ispit* getIspitForPredmet(Predmet predmet) {
         auto postojeciIspit{
             std::find_if(
                 std::begin(_polozeniPredmeti),
@@ -681,7 +681,7 @@ public:
         return (postojeciIspit == std::end(_polozeniPredmeti)) ? nullptr : *postojeciIspit;
     }
 
-    [[nodiscard]] bool daLiJeIspunjenUslovZaVeciPredmet(const Predmet& predmet) const noexcept {
+    [[nodiscard]] bool daLiJeIspunjenUslovZaVisiPredmet(Predmet predmet) const noexcept {
         const auto& size{ _polozeniPredmeti.size() };
 
         if (!size) {
@@ -693,7 +693,7 @@ public:
         return zadnjiIspit.getPredmet() + 1 == predmet && zadnjiIspit.getBrojPitanje() >= 3 && zadnjiIspit.getAverage() > 3.5;
     }
 
-    bool AddPitanje(const Predmet& predmet, const Pitanje& pitanje) {
+    bool AddPitanje(Predmet predmet, const Pitanje& pitanje) {
         if (!getAktivan()) {
             return false;
         }
@@ -709,7 +709,7 @@ public:
             sendMail(*ispit);
             return true;
         }
-        else if (!daLiJeIspunjenUslovZaVeciPredmet(predmet)) {
+        else if (!daLiJeIspunjenUslovZaVisiPredmet(predmet)) {
             return false;
         }
 
@@ -725,19 +725,16 @@ public:
             return 0.0;
         }
 
-        double sum{ 0.0 };
-
-        for (const auto& polozeniPredmet : _polozeniPredmeti) {
-            sum += polozeniPredmet->getAverage();
-        }
-
-        return sum / size;
+        return std::accumulate(
+            std::begin(_polozeniPredmeti),
+            std::end(_polozeniPredmeti),
+            0.0,
+            [](const double sum, const Ispit* const ispit) {
+                return sum + ispit->getAverage();
+            }
+        ) / size;
     }
-    /*
-koristeci adekvatan operator osigurati pretragu pozitivno ocijenjeni odgovora u okviru pitanja u proslijedjenom vremenskom opsegu OD - DO.
-rezultat pretrage trebaju biti ona pitanja kojima je, u definisanom periodu, najmanje jedan odgovor ocijenjen pozitivno. drugi formalni
-argument tipa float predstavlja prosjecnu ocjenu odgovora na pronadjenom pitanju
-*/
+
     Kolekcija<Pitanje, float> operator()(const Datum& pocetak, const Datum& kraj) const {
         Kolekcija<Pitanje, float> temp{};
 
@@ -763,12 +760,14 @@ private:
             [&]() {
                 const auto& originaPrecision{ std::cout.precision() };
                 std::cout << std::setprecision(2) << std::fixed;
-
+                
                 std::cout << "FROM:info@kursevi.ba\n";
                 std::cout << "TO: " << getEmail() << '\n';
-                std::cout << "Postovani " << getImePrezime() << ", evidentirano vam je pitanje " << ispit.getPitanjaOdgovore().back().getSadrzaj();
+                std::cout << "Postovani " << getImePrezime() << ", evidentirano vam je pitanje ";
+                std::cout << std::quoted(ispit.getPitanjaOdgovore().back().getSadrzaj());
                 std::cout << " za predmet " << ispit.getPredmet() << '\n';
-                std::cout << "Dosadasnji uspjeh (prosjek ocjena)\n za pitanje " << ispit.getPitanjaOdgovore().back().getSadrzaj();
+                std::cout << "Dosadasnji uspjeh (prosjek ocjena)\n za pitanje ";
+                std::cout << std::quoted(ispit.getPitanjaOdgovore().back().getSadrzaj());
                 std::cout << " iznosi " << ispit.getAverage() << ", a ukupni uspjeh (prosjek ocjena) na svim predmetima iznosi ";
                 std::cout << getAverage() << '\n';
                 std::cout << "Pozdrav.\n\n";
@@ -789,11 +788,23 @@ private:
 };
 const char* GetOdgovorNaPrvoPitanje() {
     cout << "Pitanje -> Pojasnite STACK i HEAP dio memorije, za šta su namijenjeni, te na koji način se trebaju koristiti (prednosti i nedostaci pojedinih slučajeva).\n";
-    return "Odgovor -> OVDJE UNESITE VAS ODGOVOR";
+    return "Odgovor -> STACK je dio memorije namjenjen za lokalne varijable, parametre funkcija, stack frame-ovi funkcija "
+        " koje se izvrsavaju i slicno. Prednost rada na stacku je sto za nas je obavljeno alociranje i dealociranje, dok je "
+        " mana ogranicena kolicina memorije koju stack posjeduje.\n"
+        "HEAP je dio memorije koji se daje u dijelovima koji se zovu pages (ja mislim da je otprilike jedan page 4kB?)"
+        " i sluzi nam za dinamicko alociranje memorije koja bi inace bila mozda previse za drzati na stacku, to je "
+        " najveca prednost, dok je mana to sto smo mi onda odgovorni za tu memoriju i mi je moramo alocirati i dealocirati "
+        " rucno (iako su uvedene ideje kao smart pointeri da olaksaju taj proces, nece se uvijek one koristiti za taj proces).";
 }
 const char* GetOdgovorNaDrugoPitanje() {
     cout << "Pitanje -> Pojasnite preduslove za realizaciju polimorfizma, te koje su prednosti njegovog korištenja?\n";
-    return "Odgovor -> OVDJE UNESITE VAS ODGOVOR";
+    return "Odgovor -> Da bi se realizovao polimorfizam potrebna je makar 1 metoda da bude deklarisana sa kljucnom rijeci virtual."
+        "Recimo imamo klase Base i Derived, u klasi Base definisemo virtual void Info() {}, u klasi Derived definisemo "
+        "void Info() override {} (naravno pored ovog je potrebno deklarisati virtualnim destruktor Base klase)."
+        "Sada ako uzmemo Base* base = new Derived {}; i pozovemo base->Info(); imamo mogucnost pristupiti metodi Info"
+        " iz najnasljedenije klase. Prednosti nasljedivanja su u tome sto nam dozvoljava da pomocu pokazivaca na baznu "
+        " klasu imamo mogucnost da radimo sa svim objektima koji su je naslijedili, to moze dovesti do manje ponavljanja koda"
+        " i fleksibilniji rad sa klasama.";
 }
 void main() {
 

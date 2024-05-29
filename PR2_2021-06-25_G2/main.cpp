@@ -8,6 +8,7 @@ using namespace std;
 #include<numeric>
 #include<array>
 #include<regex>
+#include<string>
 // Methods I added above
 
 const char* PORUKA = "\n-------------------------------------------------------------------------------\n"
@@ -32,12 +33,12 @@ enum Dupliranje { BEZ_DUPLIKATA, SA_DUPLIKATIMA };
 // Functions I defined below
 const std::string notSetEmail{ "notSet@edu.karate.ba" };
 [[nodiscard]] bool ValidirajEmail(const std::string& email) {
-    std::regex emailValidation{ "^\\d_[A-Za-z]{3,}[._]?[A-Za-z]{3,}@(edu.)?karate.(ba|com|org)$" };
+    std::regex emailValidation{ "\\d_[A-Za-z]{3,}[._]?[A-Za-z]{3,}@(edu\\.)?karate\\.(ba|com|org)" };
 
-    return std::regex_search(email, emailValidation);
+    return std::regex_match(email, emailValidation);
 }
 
-std::ostream& operator<<(std::ostream& os, const Pojas& pojas) {
+std::ostream& operator<<(std::ostream& os, Pojas pojas) {
     switch (pojas) {
     case Pojas::BIJELI:
         os << "BIJELI";
@@ -380,7 +381,7 @@ public:
     [[nodiscard]] float getAverageBrojDanaIzmeduOcjena() const noexcept {
         const int size{ _ocjene->getTrenutno() - 1};
 
-        if (!size) {
+        if (size <= 0) {
             return 0.0;
         }
 
@@ -466,7 +467,7 @@ public:
         , _polozeneTehnike { polaganje.getTehnikeCopy() }
     {}
 
-    Polaganje(const Pojas& pojas, const Tehnika& tehnika, const std::string& napomena)
+    Polaganje(Pojas pojas, const Tehnika& tehnika, const std::string& napomena)
         : _pojas { pojas }
     {
         _polozeneTehnike.AddElement(new Tehnika{ tehnika }, napomena);
@@ -611,7 +612,7 @@ public:
         return _imePrezime; 
     }
 
-    [[nodiscard]] Polaganje* getPolaganjeForPojas(const Pojas& pojas) {
+    [[nodiscard]] Polaganje* getPolaganjeForPojas(Pojas pojas) {
         auto polaganjeZaPronaci{
             std::find_if(
                 std::begin(_polozeniPojasevi),
@@ -625,7 +626,7 @@ public:
         return (polaganjeZaPronaci != std::end(_polozeniPojasevi)) ? &(*polaganjeZaPronaci) : nullptr;
     }
 
-    [[nodiscard]] bool daLiJeIspunjenUslovZaVisiPojas(const Pojas& pojas) const {
+    [[nodiscard]] bool daLiJeIspunjenUslovZaVisiPojas(Pojas pojas) const {
         if (!_polozeniPojasevi.size()) {
             return true;
         }
@@ -635,7 +636,7 @@ public:
         return pojas == zadnjePolaganje.getPojas() + 1 && zadnjePolaganje.getAverage() > 3.5;
     }
 
-    bool AddTehniku(const Pojas& pojas, const Tehnika& tehnika, const std::string& napomena) {
+    bool AddTehniku(Pojas pojas, const Tehnika& tehnika, const std::string& napomena) {
         if (tehnika.getAverage() < 3.5) {
             return false;
         }
@@ -757,10 +758,10 @@ void main() {
     cout << PORUKA;
     cin.get();
 
-    //cout << GetOdgovorNaPrvoPitanje() << endl;
-    //cin.get();
-    //cout << GetOdgovorNaDrugoPitanje() << endl;
-    //cin.get();
+    cout << GetOdgovorNaPrvoPitanje() << endl;
+    cin.get();
+    cout << GetOdgovorNaDrugoPitanje() << endl;
+    cin.get();
 
     Datum temp,
         datum19062021(19, 6, 2021),

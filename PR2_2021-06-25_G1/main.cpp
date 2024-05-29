@@ -26,12 +26,11 @@ const char* PORUKA = "\n--------------------------------------------------------
 "9. NEMOJTE POSTAVLJATI VISUAL STUDIO PROJEKTE, VEC SAMO .DOCX FAJL SA VASIM RJESENJEM!\n"
 "-------------------------------------------------------------------------------\n";
 
-
 const char* crt = "\n-------------------------------------------\n";
 enum eRazred { PRVI = 1, DRUGI, TRECI, CETVRTI };
 
 // Functions I defined below
-std::ostream& operator<<(std::ostream& os, const eRazred& razred) {
+std::ostream& operator<<(std::ostream& os, eRazred razred) {
     switch (razred) {
     case eRazred::PRVI:
         os << "PRVI";
@@ -67,9 +66,9 @@ ukoliko broj telefona nije u validnom formatu, njegova vrijednost se postavlja n
 const std::string invalidPhoneNum{ "NOT VALID" };
 
 [[nodiscard]] bool ValidirajBrojTelefona(const std::string& phoneNum) {
-    std::regex phoneNumValidation{ "^\\+\\d{2,3}0?\\d{4,5}[\\s-]?\\d{2,3}$" };
+    std::regex phoneNumValidation{ "\\+\\d{2,3}0?\\d{4,5}[\\s-]?\\d{2,3}" };
 
-    return std::regex_search(phoneNum, phoneNumValidation);
+    return std::regex_match(phoneNum, phoneNumValidation);
 }
 // Functions I defined above
 
@@ -108,7 +107,7 @@ public:
 
     // Methods I added below
     Kolekcija(const Kolekcija& kolekcija)
-        : _omoguciDupliranje { kolekcija._omoguciDupliranje }
+        : _omoguciDupliranje { kolekcija.getOmoguciDupliranje() }
         , _elementi1{ new T1[kolekcija.getTrenutno()] {} }
         , _elementi2{ new T2[kolekcija.getTrenutno()] {} }
     {
@@ -123,7 +122,7 @@ public:
             return *this;
         }
 
-        _omoguciDupliranje = rhs._omoguciDupliranje;
+        _omoguciDupliranje = rhs.getOmoguciDupliranje();
         _trenutno = rhs.getTrenutno();
         clearResources();
 
@@ -138,6 +137,10 @@ public:
         return *this;
     }
 
+    [[nodiscard]] bool getOmoguciDupliranje() const noexcept {
+        return _omoguciDupliranje;
+    }
+
     [[nodiscard]] bool daLiElementPostoji(const T1& element1, const T2& element2) const noexcept {
         for (int i = 0; i < getTrenutno(); ++i) {
             if (element1 == getElement1(i) && element2 == getElement2(i)) {
@@ -149,7 +152,7 @@ public:
     }
 
     void AddElement(const T1& element1, const T2& element2) {
-        if (!_omoguciDupliranje && daLiElementPostoji(element1, element2)) {
+        if (!getOmoguciDupliranje() && daLiElementPostoji(element1, element2)) {
             throw std::runtime_error("Dupliranje elemenata nije dozvoljeno");
         }
 
@@ -331,6 +334,9 @@ public:
         if (ocjene.getTrenutno() != _ocjene->getTrenutno()) {
             return false;
         }
+        else if (ocjene.getOmoguciDupliranje() != _ocjene->getOmoguciDupliranje()) {
+            return false;
+        }
         
         for (int i = 0; i < ocjene.getTrenutno(); ++i) {
             if (*ocjene.getElement1(i) != *_ocjene->getElement1(i)) {
@@ -391,7 +397,7 @@ public:
     [[nodiscard]] float getAverageNumOfDaysBetweenGrades() const noexcept {
         int size{ _ocjene->getTrenutno() - 1 };
 
-        if (!size) {
+        if (size <= 0) {
             return 0.0;
         }
 
@@ -432,7 +438,7 @@ public:
     }
 
     [[nodiscard]] const Kolekcija<Datum*, int>& getOcjene() const noexcept { 
-        return _ocjene; 
+        return *_ocjene; 
     }
 
     [[nodiscard]] Kolekcija<Datum*, int>* getOcjeneCopy() const {
@@ -487,7 +493,7 @@ public:
         , _polozeniPredmeti { uspjeh.getPredmetiCopy() }
     {}
 
-    Uspjeh(const eRazred& razred, const Predmet& predmet, const char* const napomena)
+    Uspjeh(eRazred razred, const Predmet& predmet, const char* const napomena)
         : _razred { razred }
     {
         _polozeniPredmeti.AddElement(new Predmet{ predmet }, napomena);
@@ -638,7 +644,7 @@ public:
         return _imePrezime; 
     }
 
-    [[nodiscard]] Uspjeh* getUspjehForRazred(const eRazred& razred) {
+    [[nodiscard]] Uspjeh* getUspjehForRazred(eRazred razred) {
         auto uspjehZaPronaci{
             std::find_if(
                 std::begin(_uspjeh),
@@ -652,7 +658,7 @@ public:
         return (uspjehZaPronaci == std::end(_uspjeh)) ? nullptr : &(*uspjehZaPronaci);
     }
 
-    bool AddPredmet(const eRazred& razred, const Predmet& predmet, const char* const napomena) {
+    bool AddPredmet(eRazred razred, const Predmet& predmet, const char* const napomena) {
         if (predmet.getAverage() < 2.5) {
             return false;
         }
@@ -684,13 +690,14 @@ public:
             return 0.0;
         }
 
-        double sum{ 0.0 };
-
-        for (const auto& uspjeh : _uspjeh) {
-            sum += uspjeh.getAverage();
-        }
-
-        return sum / size;
+        return std::accumulate(
+            std::begin(_uspjeh),
+            std::end(_uspjeh),
+            0.0,
+            [](const double sum, const Uspjeh& uspjeh) {
+                return sum + uspjeh.getAverage();
+            }
+        ) / size;
     }
 
     [[nodiscard]] Kolekcija<Predmet, float> operator()(
@@ -739,8 +746,13 @@ private:
 
         emailThread.join();
 
-        if (uspjeh.getAverage() > 4.5 && getBrojTelefona() != invalidPhoneNum) {
-            sendSMS(uspjeh);
+        if (uspjeh.getAverage() > 4.5) {
+            if (getBrojTelefona() != invalidPhoneNum) {
+                sendSMS(uspjeh);
+            }
+            else {
+                std::cout << "BROJ TELEFONA NIJE VALIDAN\n";
+            }
         }
     }
 
@@ -772,13 +784,13 @@ const char* GetOdgovorNaDrugoPitanje() {
 
 void main() {
 
-    //cout << PORUKA;
-    //cin.get();
+    cout << PORUKA;
+    cin.get();
 
-    //cout << GetOdgovorNaPrvoPitanje() << endl;
-    //cin.get();
-    //cout << GetOdgovorNaDrugoPitanje() << endl;
-    //cin.get();
+    cout << GetOdgovorNaPrvoPitanje() << endl;
+    cin.get();
+    cout << GetOdgovorNaDrugoPitanje() << endl;
+    cin.get();
 
     Datum
         datum19062021(19, 6, 2021),

@@ -32,7 +32,7 @@ const char* crt = "\n-------------------------------------------\n";
 enum Karakteristike { NARUDZBA, KVALITET, PAKOVANJE, ISPORUKA };
 
 // Functions I defined below
-std::ostream& operator<<(std::ostream& os, const Karakteristike& karakteristike) {
+std::ostream& operator<<(std::ostream& os, Karakteristike karakteristike) {
 	switch (karakteristike) {
 	case Karakteristike::NARUDZBA:
 		os << "NARUDZBA";
@@ -293,7 +293,7 @@ public:
 		return !(*this == rhs);
 	}
 
-	void DodajKomentarKarakteristike(const Karakteristike& karakteristike, const char* const komentar) {
+	void DodajKomentarKarakteristike(Karakteristike karakteristike, const char* const komentar) {
 		if (daLiJeKarakteristikaVecOcjenjena(karakteristike)) {
 			throw std::runtime_error("Karakteristika je vec komentarisana");
 		}
@@ -301,7 +301,7 @@ public:
 		_komentariKarakteristika.AddElement(karakteristike, komentar);
 	}
 
-	[[nodiscard]] bool daLiJeKarakteristikaVecOcjenjena(const Karakteristike& karakteristike) const noexcept {
+	[[nodiscard]] bool daLiJeKarakteristikaVecOcjenjena(Karakteristike karakteristike) const noexcept {
 		for (int i = 0; i < _komentariKarakteristika.getTrenutno(); ++i) {
 			if (karakteristike == _komentariKarakteristika.getElement1(i)) {
 				return true;
@@ -385,7 +385,6 @@ public:
 	[[nodiscard]] const Datum& getDatumRodjenja() const noexcept { 
 		return _datumRodjenja; 
 	}
-
 };
 
 class Kupac : public Osoba {
@@ -400,8 +399,7 @@ public:
 		_emailAdresa = GetNizKaraktera(emailAdresa);
 		_kupovine = new Rjecnik<float, ZadovoljstvoKupca>(false);
 	}
-	~Kupac()
-	{
+	~Kupac() override {
 		delete[] _emailAdresa; _emailAdresa = nullptr;
 		delete _kupovine; _kupovine = nullptr;
 	}
@@ -561,11 +559,23 @@ private:
 
 const char* GetOdgovorNaPrvoPitanje() {
 	cout << "Pitanje -> Nabrojite i ukratko pojasnite osnovne razlike izmedju list i vector klase?\n";
-	return "Odgovor -> OVDJE UNESITE VAS ODGOVOR";
+	return "Odgovor -> Vektor cuva niz, sto znaci da su elementi jedni za drugim u memoriji, list-a cuva pokazivac "
+		"na sljedeci element, sto znaci da elementi nisu jedni za drugim u memoriji, zbog cega list nema operator[]"
+		" dok vektor ima. Vektor moze imati potencijalno memorije alocirane unapred da ne mora vise puta alocirati "
+		"i dealocirati memoriju kod manjih dodavanja. Zbog ovoga takoder iteratori dobiveni od list-e vazi sve dok se "
+		"ne dealocira, dok od vektora ne vaze jer je moguce da nakon prosirenja taj iterator pokazuje na dealocirani "
+		"blok memorije. Pristup individualnom elementu list-e je skupo dok kod vektora nije zbog prijasnje navedenog "
+		"nacina na koji se njihovi clanovi cuvaju. U list-e je jeftinije dodavati element nego u vektor.";
 }
 const char* GetOdgovorNaDrugoPitanje() {
 	cout << "Pitanje -> Pojasnite opcije vezane za preslikavanje (vrijednosti, referenci, dostupnost) parametara prilikom koristenja lambda funkcija?\n";
-	return "Odgovor -> OVDJE UNESITE VAS ODGOVOR";
+	return "Odgovor -> Preslikavanje parametara po vrijednosti [=] znaci da sve varijable koje spominjemo u tijelu lambde ce biti kopirane "
+		" po vrijednosti, modificiranje njih nece dovesti do promjene orginala. Preslikavanje parametara po referenci [&] znaci da sve "
+		" varijable koje spominjemo u tijelu lambde ce biti kopirane po referenci, modificiranje njih ce dovesti do promjene orginala. "
+		" Preslikavanje parametara po dostupnosti znaci da mozemo u [] izlistati koje varijable zelimo prenjeti u lambdu i kako, npr."
+		" [&var1, var2] ovdje je var1 po referenci preslikano, dok je var2 po vrijednosti.";
+	// Nisam siguran sta je dostupnost jer prevod na nas jezik inace goes smoothly, pa sam predpostavio da je to kada se uradi nesto na fazon
+	// [&variable, variable2]
 }
 
 void main() {
@@ -684,7 +694,6 @@ void main() {
 	denis->SacuvajBodove();
 	//metoda UcitajBodove ucitava sadrzaj fajla pod nazivom emailKorisnika.txt i njegove vrijednosti pohranjuje/dodaje u vector _bodovi (zadrzavajuci postojece bodove).  
 	denis->UcitajBodove();
-	denis->Info();
 	//metoda GetKupovineByKomentar treba da pronadje i vrati sve karakteristike proizvoda i komentare kupaca koji sadrze vrijednost proslijedjenog parametra
 	Rjecnik<Karakteristike, const char*> osteceniProizvodi = denis->GetKupovineByKomentar("ostecen");
 	cout << crt << "Rezultat pretrage -> " << crt << osteceniProizvodi << crt;

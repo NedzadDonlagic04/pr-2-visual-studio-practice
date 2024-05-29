@@ -33,7 +33,7 @@ const char* crt = "\n-------------------------------------------\n";
 enum Kriteriji { CISTOCA, USLUGA, LOKACIJA, UDOBNOST };
 
 // Functions I defined below
-std::ostream& operator<<(std::ostream& os, const Kriteriji& kriteriji) {
+std::ostream& operator<<(std::ostream& os, Kriteriji kriteriji) {
     switch(kriteriji) {
     case Kriteriji::CISTOCA:
         os << "CISTOCA";
@@ -48,7 +48,7 @@ std::ostream& operator<<(std::ostream& os, const Kriteriji& kriteriji) {
         os << "UDOBNOST";
         break;
     default:
-            os << "Kriteriji ne postoji";
+        os << "Kriteriji ne postoji";
     }
 
     return os;
@@ -75,9 +75,9 @@ std::ostream& operator<<(std::ostream& os, const Kriteriji& kriteriji) {
 
 const std::string invalidPassportId{ "NOT VALID" };
 [[nodiscard]] bool ValidirajBrojPasosa(const std::string& passportID) {
-    std::regex passportIDValidation{ "^[A-Z]{1,2}\\d{3,4}[-\\s]?\\d{2,4}$" };
+    std::regex passportIDValidation{ "[A-Z]{1,2}\\d{3,4}[-\\s]?\\d{2,4}" };
 
-    return std::regex_search(passportID, passportIDValidation);
+    return std::regex_match(passportID, passportIDValidation);
 }
 
 [[nodiscard]] int getCharacterCountInFile(const std::string& filePath) {
@@ -136,8 +136,7 @@ public:
         _omoguciDupliranje = omoguciDupliranje;
     }
     ~Kolekcija() {
-        delete[]_elementi1; _elementi1 = nullptr;
-        delete[]_elementi2; _elementi2 = nullptr;
+        clearArrays();
         delete _trenutno; _trenutno = nullptr;
     }
     T1& getElement1(int lokacija)const { return _elementi1[lokacija]; }
@@ -170,8 +169,7 @@ public:
         _omoguciDupliranje = rhs._omoguciDupliranje;
         *_trenutno = rhs.getTrenutno();
 
-        delete[] _elementi1;
-        delete[] _elementi2;
+        clearArrays();
 
         _elementi1 = new T1[getTrenutno()]{};
         _elementi2 = new T2[getTrenutno()]{};
@@ -214,8 +212,7 @@ public:
         temp1[getTrenutno()] = element1;
         temp2[getTrenutno()] = element2;
 
-        delete[] _elementi1;
-        delete[] _elementi2;
+        clearArrays();
 
         _elementi1 = temp1;
         _elementi2 = temp2;
@@ -247,8 +244,7 @@ public:
             temp2[i + 1] = getElement2(i);
         }
 
-        delete[] _elementi1;
-        delete[] _elementi2;
+        clearArrays();
 
         _elementi1 = temp1;
         _elementi2 = temp2;
@@ -258,7 +254,11 @@ public:
         return *this;
     }
 
-
+private:
+    void clearArrays() {
+        delete[]_elementi1; _elementi1 = nullptr;
+        delete[]_elementi2; _elementi2 = nullptr;
+    }
 };
 class Datum {
     int* _dan, * _mjesec, * _godina;
@@ -355,7 +355,7 @@ public:
         return *_ocjeneKriterija; 
     }
 
-    [[nodiscard]] bool daLiJeKriterijiVecOcjenjen(const Kriteriji& kriteriji) const noexcept {
+    [[nodiscard]] bool daLiJeKriterijiVecOcjenjen(Kriteriji kriteriji) const noexcept {
         for (int i = 0; i < _ocjeneKriterija->getTrenutno(); ++i) {
             if (kriteriji == _ocjeneKriterija->getElement1(i)) {
                 return true;
@@ -405,7 +405,7 @@ public:
         return os;
     }
 
-    void AddOcjenuKriterija(const Kriteriji& kriteriji, const int ocjena) {
+    void AddOcjenuKriterija(Kriteriji kriteriji, const int ocjena) {
         if (daLiJeKriterijiVecOcjenjen(kriteriji)) {
             throw std::exception("Kriterij je vec ocijenjen!");
         }
@@ -416,8 +416,6 @@ public:
         _ocjeneKriterija->AddElement(kriteriji, ocjena);
     }
 };
-
-
 
 class Gost {
     unique_ptr<char[]> _imePrezime;
