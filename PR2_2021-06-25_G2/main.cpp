@@ -671,7 +671,7 @@ public:
             std::begin(_polozeniPojasevi),
             std::end(_polozeniPojasevi),
             0.0,
-            [&](const double sum, const Polaganje& polaganje) {
+            [](const double sum, const Polaganje& polaganje) {
                 return sum + polaganje.getAverage();
             }
         ) / size;
