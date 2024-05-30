@@ -232,7 +232,7 @@ public:
     }
 
     // Methods I added below
-    Datum& operator=(const Datum& rhs) {
+    Datum& operator=(const Datum& rhs) noexcept {
         *_dan = rhs.getDan();
         *_mjesec = rhs.getMjesec();
         *_godina = rhs.getGodina();
@@ -507,7 +507,7 @@ public:
         return temp;
     }
 
-    [[nodiscard]] const Pojas& getPojas() const noexcept { 
+    [[nodiscard]] Pojas getPojas() const noexcept { 
         return _pojas; 
     }
 
@@ -656,7 +656,7 @@ public:
             return false;
         }
 
-        _polozeniPojasevi.push_back(Polaganje{ pojas, tehnika, napomena });
+        _polozeniPojasevi.push_back({ pojas, tehnika, napomena });
         sendMail(_polozeniPojasevi.back());
         return true;
     }

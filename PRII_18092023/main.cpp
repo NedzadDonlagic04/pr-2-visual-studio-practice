@@ -222,7 +222,7 @@ public:
         , _godina { new int { datum.getGodina() } }
     {}
 
-    Datum& operator=(const Datum& rhs) {
+    Datum& operator=(const Datum& rhs) noexcept {
         *_dan = rhs.getDan();
         *_mjesec = rhs.getMjesec();
         *_godina = rhs.getGodina();
@@ -507,7 +507,7 @@ public:
         return _pitanjaOdgovori; 
     }
 
-    [[nodiscard]] const Predmet& getPredmet() const noexcept { 
+    [[nodiscard]] Predmet getPredmet() const noexcept { 
         return *_predmet; 
     }
 
@@ -758,6 +758,7 @@ private:
     void sendMail(const Ispit& ispit) {
         std::thread emailThread{
             [&]() {
+                std::this_thread::sleep_for(2s);
                 const auto& originaPrecision{ std::cout.precision() };
                 std::cout << std::setprecision(2) << std::fixed;
                 

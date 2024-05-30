@@ -475,6 +475,8 @@ public:
 
     // Methods I added below
     Ispit(const Ispit& ispit)
+        : _predmet { ispit.getPredmet() }
+        , _pitanjaOdgovori{ ispit.getPitanjaOdgovore() }
     {}
 
     Ispit& operator=(const Ispit& rhs) {
@@ -508,7 +510,7 @@ public:
         return _pitanjaOdgovori;
     }
 
-    [[nodiscard]] const Predmet& getPredmet() const noexcept {
+    [[nodiscard]] Predmet getPredmet() const noexcept {
         return _predmet;
     }
 

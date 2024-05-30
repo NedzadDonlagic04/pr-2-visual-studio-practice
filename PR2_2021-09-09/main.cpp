@@ -230,7 +230,7 @@ public:
 		, _godina { new int { datum.getGodina() } }
 	{}
 
-	Datum& operator=(const Datum& rhs) {
+	Datum& operator=(const Datum& rhs) noexcept {
 		*_dan = rhs.getDan();
 		*_mjesec = rhs.getMjesec();
 		*_godina = rhs.getGodina();
@@ -501,7 +501,7 @@ public:
 		return _polozeneTehnike; 
 	}
 	
-	[[nodiscard]] const Pojas& getPojas() const noexcept { 
+	[[nodiscard]] Pojas getPojas() const noexcept { 
 		return _pojas; 
 	}
 
@@ -698,7 +698,7 @@ public:
 			return false;
 		}
 
-		_polozeniPojasevi.push_back(Polaganje{ pojas, tehnika });
+		_polozeniPojasevi.push_back({ pojas, tehnika });
 		sendMail(_polozeniPojasevi.back());
 		return true;
 	}

@@ -211,7 +211,7 @@ public:
 		, _godina { new int { datum.getGodina() } }
 	{}
 
-	Datum& operator=(const Datum& rhs) {
+	Datum& operator=(const Datum& rhs) noexcept {
 		*_dan = rhs.getDan();
 		*_mjesec = rhs.getMjesec();
 		*_godina = rhs.getGodina();
@@ -527,7 +527,7 @@ public:
 		) / size;
 	}
 	
-	[[nodiscard]] const Pojas& getPojas() const noexcept { 
+	[[nodiscard]] Pojas getPojas() const noexcept { 
 		return _pojas; 
 	}
 

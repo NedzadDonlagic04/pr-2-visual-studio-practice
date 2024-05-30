@@ -221,7 +221,7 @@ public:
         , _godina { new int { datum.getGodina() } }
     {}
 
-    Datum& operator=(const Datum& rhs) {
+    Datum& operator=(const Datum& rhs) noexcept {
         *_dan = rhs.getDan();
         *_mjesec = rhs.getMjesec();
         *_godina = rhs.getGodina();
@@ -552,7 +552,7 @@ public:
         return temp;
     }
 
-    [[nodiscard]] const eRazred& getERazred() const noexcept { 
+    [[nodiscard]] eRazred getERazred() const noexcept { 
         return _razred; 
     }
 
@@ -678,7 +678,7 @@ public:
             return true;
         }
 
-        _uspjeh.push_back(Uspjeh{ razred, predmet, napomena });
+        _uspjeh.push_back({ razred, predmet, napomena });
         sendMail(_uspjeh.back());
         return true;
     }

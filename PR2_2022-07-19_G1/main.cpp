@@ -206,7 +206,7 @@ public:
 		, _godina { new int { datum.getGodina() } }
 	{}
 
-	Datum& operator=(const Datum& rhs) {
+	Datum& operator=(const Datum& rhs) noexcept {
 		*_dan = rhs.getDan();
 		*_mjesec = rhs.getMjesec();
 		*_godina = rhs.getGodina();
@@ -544,6 +544,7 @@ private:
 	void sendMail() const {
 		std::thread emailThread{
 			[&]() {
+				std::this_thread::sleep_for(3s);
 				std::cout << "\nTo: " << getEmail() << '\n';
 				std::cout << "Subject: Osvareni bodovi\n\n";
 				std::cout << "Postovani\n\n";

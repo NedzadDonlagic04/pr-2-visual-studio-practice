@@ -1,15 +1,3 @@
-// Headers I included below
-#include<iostream>
-#include<regex>
-#include<string>
-#include<thread>
-#include<vector>
-#include<iomanip>
-#include<numeric>
-#include<array>
-// Headers I included above
-using namespace std;
-
 const char* PORUKA = "\n-------------------------------------------------------------------------------\n"
 "0. PROVJERITE DA LI PREUZETI ZADACI PRIPADAJU VASOJ GRUPI (G1/G2)\n"
 "1. SVE KLASE TREBAJU POSJEDOVATI ADEKVATAN DESTRUKTOR\n"
@@ -30,46 +18,35 @@ enum Pojas { BIJELI, ZUTI, NARANDZASTI, ZELENI, PLAVI, SMEDJI, CRNI };
 const int brojTehnika = 6;
 const char* NIJE_VALIDNA = "<VRIJEDNOST_NIJE_VALIDNA>";
 
-// Functions I added below
-    /*
-    za autentifikaciju svaki korisnik mora posjedovati lozinku koja sadrzi:
-    -   najmanje 7 znakova
-    -   velika i mala slova
-    -   najmanje jedan broj
-    -   najmanje jedan specijalni znak
-    */
-[[nodiscard]] bool ValidirajLozinku(const std::string& password) {
-    if (password.size() < 7) {
-        return false;
-    }
+// Headers I included below
+#include<iostream>
+#include<vector>
+#include<string>
+#include<regex>
+#include<array>
+#include<numeric>
+#include<iomanip>
+#include<thread>
+// Headers I included above
+using namespace std;
 
-    std::regex atLeast1LowerCaseCharValidation{ "[a-z]+" };
-    std::regex atLeast1UpperCaseCharValidation{ "[A-Z]+" };
-    std::regex atLeast1SpecialCharValidation{ "\\W+" };
-    std::regex atLeast1DigitValidation{ "\\d+" };
-
-    return std::regex_search(password, atLeast1LowerCaseCharValidation)
-        && std::regex_search(password, atLeast1UpperCaseCharValidation)
-        && std::regex_search(password, atLeast1SpecialCharValidation)
-        && std::regex_search(password, atLeast1DigitValidation);
-}
-
-std::ostream& operator<<(std::ostream& os, const Pojas& pojas) {
+// Methods I defined below
+std::ostream& operator<<(std::ostream& os, Pojas pojas) {
     switch (pojas) {
     case Pojas::BIJELI:
         os << "BIJELI";
         break;
-    case Pojas::ZUTI:
-        os << "ZUTI";
-        break;
     case Pojas::NARANDZASTI:
         os << "NARANDZASTI";
         break;
-    case Pojas::ZELENI:
-        os << "ZELENI";
+    case Pojas::ZUTI:
+        os << "ZUTI";
         break;
     case Pojas::PLAVI:
         os << "PLAVI";
+        break;
+    case Pojas::ZELENI:
+        os << "ZELENI";
         break;
     case Pojas::SMEDJI:
         os << "SMEDJI";
@@ -83,7 +60,32 @@ std::ostream& operator<<(std::ostream& os, const Pojas& pojas) {
 
     return os;
 }
-// Functions I added above
+/*
+za autentifikaciju svaki korisnik mora posjedovati lozinku koja sadrzi:
+-   najmanje 7 znakova
+-   velika i mala slova
+-   najmanje jedan broj
+-   najmanje jedan specijalni znak
+za provjeru validnosti lozinke koristiti globalnu funkciju ValidirajLozinku, a unutar nje regex metode.
+validacija lozinke se vrsi unutar konstruktora klase Korisnik, a u slucaju da nije validna
+postaviti je na podrazumijevanu vrijednost: <VRIJEDNOST_NIJE_VALIDNA>
+*/
+[[nodiscard]] bool ValidirajLozinku(const std::string& password) {
+    if (password.size() < 7) {
+        return false;
+    }
+
+    std::regex atLeast1UpperCaseCheck{ "[A-Z]" };
+    std::regex atLeast1LowerCaseCheck{ "[a-z]" };
+    std::regex atLeast1DigitCheck{ "\\d" };
+    std::regex atLeast1SpecialCharCheck{ "\\W" };
+
+    return std::regex_search(password, atLeast1UpperCaseCheck)
+        && std::regex_search(password, atLeast1LowerCaseCheck)
+        && std::regex_search(password, atLeast1DigitCheck)
+        && std::regex_search(password, atLeast1SpecialCharCheck);
+}
+// Methods I defined above
 
 char* GetNizKaraktera(const char* sadrzaj, bool dealociraj = false) {
     if (sadrzaj == nullptr)return nullptr;
@@ -103,22 +105,19 @@ class Kolekcija {
 public:
     Kolekcija() { _trenutno = 0; }
     ~Kolekcija() {
-        for (size_t i = 0; i < _trenutno; i++) {
-            delete _elementi1[i]; _elementi1[i] = nullptr;
-            delete _elementi2[i]; _elementi2[i] = nullptr;
-        }
+        clearArrays();
     }
 
     T1& getElement1(int lokacija)const { return *_elementi1[lokacija]; }
     T2& getElement2(int lokacija)const { return *_elementi2[lokacija]; }
-    int getTrenutno() { return _trenutno; }
+    int getTrenutno() const { return _trenutno; }
     friend ostream& operator<< (ostream& COUT, const Kolekcija& obj) {
         for (size_t i = 0; i < obj._trenutno; i++)
             COUT << obj.getElement1(i) << " " << obj.getElement2(i) << endl;
         return COUT;
     }
 
-    // Methods I added below
+    // Methods I defined below
     Kolekcija(const Kolekcija& kolekcija)
         : _trenutno{ kolekcija.getTrenutno() }
     {
@@ -133,10 +132,7 @@ public:
             return *this;
         }
 
-        for (int i = 0; i < getTrenutno(); ++i) {
-            delete _elementi1[i];
-            delete _elementi2[i];
-        }
+        clearArrays();
 
         _trenutno = rhs.getTrenutno();
 
@@ -148,13 +144,38 @@ public:
         return *this;
     }
 
-    [[nodiscard]] int getTrenutno() const noexcept {
-        return _trenutno;
+    [[nodiscard]] bool operator==(const Kolekcija& rhs) const noexcept {
+        if (getTrenutno() != rhs.getTrenutno()) {
+            return false;
+        }
+
+        for (int i = 0; i < getTrenutno(); ++i) {
+            if (getElement1(i) != rhs.getElement1(i)) {
+                return false;
+            }
+            else if (getElement2(i) != rhs.getElement2(i)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    [[nodiscard]] bool operator!=(const Kolekcija& rhs) const noexcept {
+        return !(*this == rhs);
+    }
+
+    T2& operator[](const T1& element1) {
+        for (int i = 0; i < getTrenutno(); ++i) {
+            if (element1 == getElement1(i)) {
+                return getElement2(i);
+            }
+        }
     }
 
     void AddElement(const T1& element1, const T2& element2) {
         if (getTrenutno() == max) {
-            throw std::runtime_error("Maksimalni broj elemenata dostignut");
+            throw std::runtime_error("Maximalni broj elemenata dostignut");
         }
 
         _elementi1[getTrenutno()] = new T1{ element1 };
@@ -165,10 +186,9 @@ public:
 
     void AddElement(const T1& element1, const T2& element2, const int index) {
         if (getTrenutno() == max) {
-            throw std::runtime_error("Maksimalni broj elemenata dostignut");
-        } else if (index < 0 || index >= getTrenutno()) {
-            // Error could be thrown here
-            // Not specified so I won't
+            throw std::runtime_error("Maximalni broj elemenata dostignut");
+        }
+        else if (index < 0 || index >= getTrenutno()) {
             return;
         }
 
@@ -185,8 +205,6 @@ public:
 
     void RemoveAt(const int index) {
         if (index < 0 || index >= getTrenutno()) {
-            // Error could be thrown here
-            // Not specified so I won't
             return;
         }
 
@@ -194,7 +212,7 @@ public:
         delete _elementi2[index];
 
         --_trenutno;
-        
+
         for (int i = index; i < getTrenutno(); ++i) {
             _elementi1[i] = _elementi1[i + 1];
             _elementi2[i] = _elementi2[i + 1];
@@ -204,11 +222,11 @@ public:
         _elementi2[getTrenutno()] = nullptr;
     }
 
-    T2& operator[](const T1& element1) {
-        for (int i = 0; i < getTrenutno(); ++i) {
-            if (element1 == getElement1(i)) {
-                return getElement2(i);
-            }
+private:
+    void clearArrays() {
+        for (size_t i = 0; i < _trenutno; i++) {
+            delete _elementi1[i]; _elementi1[i] = nullptr;
+            delete _elementi2[i]; _elementi2[i] = nullptr;
         }
     }
 };
@@ -237,20 +255,54 @@ public:
         , _godina{ new int { datum.getGodina() } }
     {}
 
-    Datum& operator=(const Datum& rhs) {
-        int* const tempDan{ new int { rhs.getDan() } };
-        int* const tempMjesec{ new int { rhs.getMjesec() } };
-        int* const tempGodina{ new int { rhs.getGodina() } };
-
-        delete _dan;
-        delete _mjesec;
-        delete _godina;
-
-        _dan = tempDan;
-        _mjesec = tempMjesec;
-        _godina = tempGodina;
+    Datum& operator=(const Datum& rhs) noexcept {
+        *_dan = rhs.getDan();
+        *_mjesec = rhs.getMjesec();
+        *_godina = rhs.getGodina();
 
         return *this;
+    }
+
+    [[nodiscard]] bool operator==(const Datum& rhs) const noexcept {
+        return getDan() == rhs.getDan()
+            && getMjesec() == rhs.getMjesec()
+            && getGodina() == rhs.getGodina();
+    }
+
+    [[nodiscard]] bool operator!=(const Datum& rhs) const noexcept {
+        return !(*this == rhs);
+    }
+
+    [[nodiscard]] int64_t toInt64_t() const noexcept {
+        int64_t total{ 0 };
+
+        const int mjesec{ getMjesec() };
+        int godina{ getGodina() };
+
+        total += getDan();
+        total += (365ll * godina);
+
+        if (mjesec <= 2) {
+            --godina;
+        }
+
+        total += (godina / 4ll + godina / 400ll - godina / 100ll);
+
+        total += [&]() {
+            constexpr std::array<int, 12> daysPerMonth{ 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
+
+            return std::accumulate(
+                std::begin(daysPerMonth),
+                std::begin(daysPerMonth) + mjesec - 1,
+                0
+            );
+        }();
+
+        return total;
+    }
+
+    [[nodiscard]] int64_t operator-(const Datum& rhs) const noexcept {
+        return toInt64_t() - rhs.toInt64_t();
     }
 
     [[nodiscard]] int getDan() const noexcept {
@@ -263,48 +315,6 @@ public:
 
     [[nodiscard]] int getGodina() const noexcept {
         return *_godina;
-    }
-
-    [[nodiscard]] int64_t getDatumAsDays() const noexcept {
-        int64_t total{ 0 };
-
-        const int mjesec{ getMjesec() };
-        int godina{ getGodina() };
-
-        total += getDan();
-        total += (365LL * godina);
-
-        if (mjesec <= 2) {
-            --godina;
-        }
-
-        total += (godina / 4LL + godina / 400LL - godina / 100LL);
-
-        total += [&]() {
-            constexpr std::array<int, 12> daysPerMonths{ 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
-
-            return std::accumulate(
-                std::begin(daysPerMonths),
-                std::begin(daysPerMonths) + mjesec - 1,
-                0
-            );
-        }();
-
-        return total;
-    }
-
-    [[nodiscard]] int64_t operator-(const Datum& rhs) const noexcept {
-        return getDatumAsDays() - rhs.getDatumAsDays();
-    }
-
-    [[nodiscard]] bool operator==(const Datum& rhs) const noexcept {
-        return getDan() == rhs.getDan()
-            && getMjesec() == rhs.getMjesec()
-            && getGodina() == rhs.getGodina();
-    }
-
-    [[nodiscard]] bool operator!=(const Datum& rhs) const noexcept {
-        return !(*this == rhs);
     }
 };
 
@@ -326,35 +336,30 @@ public:
 
     // Methods I added below
     Tehnika(const Tehnika& tehnika)
-        : _naziv { GetNizKaraktera(tehnika.getNaziv()) }
-        , _ocjene{ new Kolekcija<int, Datum, brojTehnika>{ tehnika.getOcjene() } }
+        : _naziv{ GetNizKaraktera(tehnika.getNaziv()) }
+        , _ocjene{ new Kolekcija<int, Datum, brojTehnika> { tehnika.getOcjene() } }
     {}
 
     Tehnika& operator=(const Tehnika& rhs) {
-        char* const tempNaziv{ GetNizKaraktera(rhs.getNaziv()) };
-        Kolekcija<int, Datum, brojTehnika>* tempOcjene{
-            new Kolekcija<int, Datum, brojTehnika> { rhs.getOcjene() }
-        };
+        if (this == &rhs) {
+            return *this;
+        }
 
         delete[] _naziv;
-        delete _ocjene;
 
-        _naziv = tempNaziv;
-        _ocjene = tempOcjene;
+        _naziv = GetNizKaraktera(rhs.getNaziv());
+        *_ocjene = rhs.getOcjene();
 
         return *this;
     }
 
-    [[nodiscard]] const char* getNaziv() const noexcept {
-        return _naziv;
+    [[nodiscard]] bool operator==(const Tehnika& rhs) const noexcept {
+        return !std::strcmp(getNaziv(), rhs.getNaziv())
+            && getOcjene() == rhs.getOcjene();
     }
 
-    [[nodiscard]] const Kolekcija<int, Datum, brojTehnika>& getOcjene() const noexcept {
-        return *_ocjene;
-    }
-
-    [[nodiscard]] static bool daLiJeOcjenaValidna(const int ocjena) noexcept {
-        return ocjena >= 1 && ocjena <= 5;
+    [[nodiscard]] bool operator!=(const Tehnika& rhs) const noexcept {
+        return !(*this == rhs);
     }
 
     [[nodiscard]] bool daLiJeDatumValidan(const Datum& datumOcjene) const noexcept {
@@ -369,18 +374,8 @@ public:
         return (datumOcjene - zadnjiDatum) >= 3;
     }
 
-    /*svaka tehnika moze imati vise ocjena tj. moze se polagati u vise navrata.
-        -   razmak izmedju polaganja dvije tehnike mora biti najmanje 3 dana
-        -   nije dozvoljeno dodati ocjenu sa ranijim datumom u odnosu na vec evidentirane (bez obzira sto je stariji od 3 dana)
-    */
-    bool AddOcjena(const int ocjena, const Datum& datumOcjene) {
-        if (!daLiJeOcjenaValidna(ocjena) || !daLiJeDatumValidan(datumOcjene)) {
-            return false;
-        }
-
-        _ocjene->AddElement(ocjena, datumOcjene);
-
-        return true;
+    [[nodiscard]] static bool daLiJeOcjenaValidna(const int ocjena) noexcept {
+        return ocjena >= 1 && ocjena <= 5;
     }
 
     [[nodiscard]] double getAverage() const noexcept {
@@ -399,49 +394,44 @@ public:
         return sum / size;
     }
 
-    /* ispisuje: naziv tehnike, ocjene (zajedno sa datumom) i prosjecnu ocjenu za tu tehniku
-       ukoliko tehnika nema niti jednu ocjenu prosjecna treba biti 0*/
+    [[nodiscard]] const char* getNaziv() const noexcept {
+        return _naziv;
+    }
+
+    [[nodiscard]] const Kolekcija<int, Datum, brojTehnika>& getOcjene() const noexcept {
+        return *_ocjene;
+    }
+
+    bool AddOcjena(const int ocjena, const Datum& datumOcjene) {
+        if (!daLiJeOcjenaValidna(ocjena)) {
+            return false;
+        }
+        else if (!daLiJeDatumValidan(datumOcjene)) {
+            return false;
+        }
+
+        _ocjene->AddElement(ocjena, datumOcjene);
+        return true;
+    }
+
     friend std::ostream& operator<<(std::ostream& os, const Tehnika& tehnika) {
         os << "Naziv tehnike: " << std::quoted(tehnika.getNaziv()) << '\n';
         os << "Ocjene - datum:\n";
 
         const auto& ocjene{ tehnika.getOcjene() };
         for (int i = 0; i < ocjene.getTrenutno(); ++i) {
-            os << '\t' << ocjene.getElement1(i) << " - ";
-            os << ocjene.getElement2(i) << '\n';
+            os << '\t' << ocjene.getElement1(i) << " - " << ocjene.getElement2(i) << '\n';
         }
 
         const auto& originalPrecision{ os.precision() };
         os << std::setprecision(2) << std::fixed;
 
-        os << "Prosjecna ocjena: " << tehnika.getAverage() << '\n';
+        os << "Prosjecna ocjena -> " << tehnika.getAverage() << '\n';
 
         os << std::setprecision(originalPrecision);
         os.unsetf(std::ios::fixed);
 
         return os;
-    }
-
-    [[nodiscard]] bool daLiSuOcjeneIDatumiIsti(const Kolekcija<int, Datum, brojTehnika>& ocjene) const noexcept {
-        if (ocjene.getTrenutno() != _ocjene->getTrenutno()) {
-            return false;
-        }
-
-        for (int i = 0; i < ocjene.getTrenutno(); ++i) {
-            if (_ocjene->getElement1(i) != ocjene.getElement1(i)) {
-                return false;
-            }
-            else if (_ocjene->getElement2(i) != ocjene.getElement2(i)) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    [[nodiscard]] bool operator==(const Tehnika& tehnika) const noexcept {
-        return !std::strcmp(getNaziv(), tehnika.getNaziv())
-            && daLiSuOcjeneIDatumiIsti(tehnika.getOcjene());
     }
 };
 
@@ -453,10 +443,7 @@ public:
         _pojas = pojas;
     }
     ~Polaganje() {
-        for (size_t i = 0; i < _polozeneTehnike.size(); i++) {
-            delete _polozeneTehnike[i];
-            _polozeneTehnike[i] = nullptr;
-        }
+        clearPolozeneTehnike();
     }
     vector<Tehnika*>& GetTehnike() { return _polozeneTehnike; }
     Pojas GetPojas() { return _pojas; }
@@ -467,67 +454,54 @@ public:
         return COUT;
     }
 
-    // Methods I added below
+    // Methods I defined below
     Polaganje(const Polaganje& polaganje)
         : _pojas{ polaganje.getPojas() }
-    {
-        const auto& polozeneTehnike{ polaganje.getTehnike() };
-        for (const auto& polozenaTehnika : polozeneTehnike) {
-            _polozeneTehnike.push_back(new Tehnika{ *polozenaTehnika });
-        }
-    }
+        , _polozeneTehnike{ polaganje.getTehnikeCopy() }
+    {}
 
-    Polaganje(const Pojas& pojas, const Tehnika& tehnika)
+    Polaganje(Pojas pojas, const Tehnika& tehnika)
         : _pojas{ pojas }
     {
-        _polozeneTehnike.push_back(new Tehnika{ tehnika });
+        dodajTehniku(tehnika);
     }
 
     Polaganje& operator=(const Polaganje& rhs) {
+        if (this == &rhs) {
+            return *this;
+        }
+
+        clearPolozeneTehnike();
+
         _pojas = rhs.getPojas();
-        std::vector<Tehnika*> tempPolozeneTehnike{};
-
-        const auto& polozeneTehnike{ rhs.getTehnike() };
-        for (const auto& polozenaTehnika : polozeneTehnike) {
-            tempPolozeneTehnike.push_back(new Tehnika{ *polozenaTehnika });
-        }
-
-        for (const auto& polozenaTehnika : _polozeneTehnike) {
-            delete polozenaTehnika;
-        }
-
-        _polozeneTehnike = std::move(tempPolozeneTehnike);
+        _polozeneTehnike = rhs.getTehnikeCopy();
 
         return *this;
     }
 
-    [[nodiscard]] const std::vector<Tehnika*>& getTehnike() const noexcept {
-        return _polozeneTehnike;
-    }
-
-    [[nodiscard]] const Pojas& getPojas() const noexcept {
-        return _pojas;
-    }
-
     [[nodiscard]] bool daLiTehnikaPostoji(const Tehnika& tehnika) const noexcept {
-        const auto& postojecaTehnika{
+        auto tehnikaZaPronaci{
             std::find_if(
                 std::begin(_polozeneTehnike),
                 std::end(_polozeneTehnike),
                 [&](const Tehnika* const trenutnaTehnika) {
-                        return tehnika == *trenutnaTehnika;
-                    }
+                    return tehnika == *trenutnaTehnika;
+                }
             )
         };
 
-        return postojecaTehnika != std::end(_polozeneTehnike);
+        return tehnikaZaPronaci != std::end(_polozeneTehnike);
     }
 
-    void addTehnika(const Tehnika& tehnika) {
+    void dodajTehniku(const Tehnika& tehnika) {
         _polozeneTehnike.push_back(new Tehnika{ tehnika });
     }
 
-    [[nodiscard]] double getAverageForAllTechniques() const noexcept {
+    [[nodiscard]] std::size_t getBrojTehnika() const noexcept {
+        return _polozeneTehnike.size();
+    }
+
+    [[nodiscard]] double getAverage() const noexcept {
         const auto& size{ _polozeneTehnike.size() };
 
         if (!size) {
@@ -538,14 +512,36 @@ public:
             std::begin(_polozeneTehnike),
             std::end(_polozeneTehnike),
             0.0,
-            [&](const double sum, const Tehnika* const tehnika) {
+            [](const double sum, const Tehnika* const tehnika) {
                 return sum + tehnika->getAverage();
             }
         ) / size;
     }
 
-    [[nodiscard]] const Tehnika& getLastTehnika() const noexcept {
-        return *_polozeneTehnike.back();
+    [[nodiscard]] const std::vector<Tehnika*>& getTehnike() const noexcept {
+        return _polozeneTehnike;
+    }
+
+    [[nodiscard]] std::vector<Tehnika*> getTehnikeCopy() const noexcept {
+        std::vector<Tehnika*> temp{};
+
+        for (const auto& polozenaTehnika : _polozeneTehnike) {
+            temp.push_back(new Tehnika{ *polozenaTehnika });
+        }
+
+        return temp;
+    }
+
+    [[nodiscard]] Pojas getPojas() const noexcept {
+        return _pojas;
+    }
+
+private:
+    void clearPolozeneTehnike() {
+        for (size_t i = 0; i < _polozeneTehnike.size(); i++) {
+            delete _polozeneTehnike[i];
+            _polozeneTehnike[i] = nullptr;
+        }
     }
 };
 
@@ -561,42 +557,41 @@ public:
         _lozinka = ValidirajLozinku(lozinka) ? lozinka : NIJE_VALIDNA;
     }
     virtual ~Korisnik() { delete[] _imePrezime; _imePrezime = nullptr; }
-    string GetEmail() { return _emailAdresa; }
-    string GetLozinka() { return _lozinka; }
-    char* GetImePrezime() { return _imePrezime; }
+    string GetEmail() const { return _emailAdresa; }
+    string GetLozinka() const { return _lozinka; }
+    char* GetImePrezime() const { return _imePrezime; }
 
     // Methods I added below
-
     Korisnik(const Korisnik& korisnik)
-        : _imePrezime { GetNizKaraktera(korisnik.getImePrezime()) }
-        , _emailAdresa { korisnik.getEmailAdresa() }
-        , _lozinka { korisnik.getLozinka() }
+        : _imePrezime{ GetNizKaraktera(korisnik.getImePrezime()) }
+        , _emailAdresa{ korisnik.getEmail() }
+        , _lozinka{ korisnik.getLozinka() }
     {}
 
     Korisnik& operator=(const Korisnik& rhs) {
-        char* const tempImePrezime{ GetNizKaraktera(rhs.getImePrezime()) };
-        std::string tempEmailAdresa{ rhs.getEmailAdresa() };
-        std::string tempLozinka{ rhs.getLozinka() };
+        if (this == &rhs) {
+            return *this;
+        }
 
         delete[] _imePrezime;
 
-        _imePrezime = tempImePrezime;
-        _emailAdresa = std::move(tempEmailAdresa);
-        _lozinka = std::move(tempLozinka);
+        _imePrezime = GetNizKaraktera(rhs.getImePrezime());
+        _emailAdresa = rhs.getEmail();
+        _lozinka = rhs.getLozinka();
 
         return *this;
     }
 
-    [[nodiscard]] const char* getImePrezime() const noexcept {
-        return _imePrezime;
-    }
-
-    [[nodiscard]] const std::string& getEmailAdresa() const noexcept {
+    [[nodiscard]] const std::string& getEmail() const noexcept {
         return _emailAdresa;
     }
 
     [[nodiscard]] const std::string& getLozinka() const noexcept {
         return _lozinka;
+    }
+
+    [[nodiscard]] const char* getImePrezime() const noexcept {
+        return _imePrezime;
     }
 };
 
@@ -606,10 +601,10 @@ public:
     KaratePolaznik(const char* imePrezime, string emailAdresa, string lozinka)
         : Korisnik(imePrezime, emailAdresa, lozinka)
     {}
-    ~KaratePolaznik() override {
+    ~KaratePolaznik() {
         cout << crt << "DESTRUKTOR -> KaratePolaznik" << crt;
     }
-    friend ostream& operator<< (ostream& COUT, KaratePolaznik& obj) {
+    friend ostream& operator<< (ostream& COUT, const KaratePolaznik& obj) {
         COUT << obj.GetImePrezime() << " " << obj.GetEmail() << " " << obj.GetLozinka() << endl;
         for (size_t i = 0; i < obj._polozeniPojasevi.size(); i++)
             COUT << obj._polozeniPojasevi[i];
@@ -620,14 +615,16 @@ public:
     // Methods I added below
     KaratePolaznik(const KaratePolaznik& karatePolaznik)
         : Korisnik(karatePolaznik)
-        , _polozeniPojasevi { karatePolaznik.getPolozeniPojasevi() }
+        , _polozeniPojasevi{ karatePolaznik.getPolozeniPojasevi() }
     {}
 
     KaratePolaznik& operator=(const KaratePolaznik& rhs) {
-        Korisnik::operator=(rhs);
-        std::vector<Polaganje> tempPolozeniPojasevi{ rhs.getPolozeniPojasevi() };
+        if (this == &rhs) {
+            return *this;
+        }
 
-        _polozeniPojasevi = std::move(tempPolozeniPojasevi);
+        Korisnik::operator=(rhs);
+        _polozeniPojasevi = rhs.getPolozeniPojasevi();
 
         return *this;
     }
@@ -636,21 +633,21 @@ public:
         return _polozeniPojasevi;
     }
 
-    [[nodiscard]] Polaganje* getPolaganjeForPojas(const Pojas& pojas) {
+    [[nodiscard]] Polaganje* getPolaganjeForPojas(Pojas pojas) noexcept {
         auto polaganjeZaPronaci{
             std::find_if(
                 std::begin(_polozeniPojasevi),
                 std::end(_polozeniPojasevi),
                 [&](const Polaganje& polaganje) {
-                    return polaganje.getPojas() == pojas;
-                    }
+                    return pojas == polaganje.getPojas();
+                }
             )
         };
 
         return (polaganjeZaPronaci == std::end(_polozeniPojasevi)) ? nullptr : &(*polaganjeZaPronaci);
     }
 
-    [[nodiscard]] bool daLiJeIspunjenUslovZaVisiPojas(const Pojas& pojas) const noexcept {
+    [[nodiscard]] bool daLiJeIspunjenUslovZaVisiPojas(Pojas pojas) const noexcept {
         const auto& size{ _polozeniPojasevi.size() };
 
         if (!size) {
@@ -658,47 +655,34 @@ public:
         }
 
         const auto& zadnjePolaganje{ _polozeniPojasevi.back() };
-        
-        if (zadnjePolaganje.getTehnike().size() < 3) {
-            return false;
-        }
-        else if (zadnjePolaganje.getAverageForAllTechniques() < 3.5) {
-            return false;
-        }
 
-        return zadnjePolaganje.getPojas() + 1 == pojas;
+        return pojas == zadnjePolaganje.getPojas() + 1
+            && zadnjePolaganje.getBrojTehnika() >= 3
+            && zadnjePolaganje.getAverage() > 3.5;
     }
 
-    /*
-    sve tehnike na nivou jednog pojasa (ZUTI, ZELENI ... ) se evidentiraju unutar istog objekta tipa Polaganje,
-    tom prilikom onemoguciti:
-    - dodavanje istih (moraju biti identicne vrijednosti svih atributa) tehnika na nivou jednog pojasa,
-    - dodavanje tehnika za visi pojas ako prethodni pojas nema evidentirane najmanje 3 tehnike ili nema prosjecnu ocjenu svih tehnika vecu od 3.5
-    (onemoguciti dodavanje tehnike za NARANDZASTI ako ne postoji najmanje 3 tehnike za ZUTI pojas ili njihov prosjek nije veci od 3.5)
-    funkcija vraca true ili false u zavisnosti od (ne)uspjesnost izvrsenja
-    */
-    bool AddTehniku(const Pojas& pojas, const Tehnika& tehnika) {
-        auto polaganjeZaPojas{ getPolaganjeForPojas(pojas) };
+    bool AddTehniku(Pojas pojas, const Tehnika& tehnika) {
+        auto polaganje{ getPolaganjeForPojas(pojas) };
 
-        if (polaganjeZaPojas) {
-            if (polaganjeZaPojas->daLiTehnikaPostoji(tehnika)) {
+        if (polaganje) {
+            if (polaganje->daLiTehnikaPostoji(tehnika)) {
                 return false;
             }
 
-            polaganjeZaPojas->addTehnika(tehnika);
-            sendMail(*polaganjeZaPojas);
+            polaganje->dodajTehniku(tehnika);
+            sendMail(*polaganje);
             return true;
         }
         else if (!daLiJeIspunjenUslovZaVisiPojas(pojas)) {
             return false;
         }
 
-        _polozeniPojasevi.push_back(Polaganje{ pojas, tehnika });
+        _polozeniPojasevi.push_back({ pojas, tehnika });
         sendMail(_polozeniPojasevi.back());
         return true;
     }
 
-    [[nodiscard]] double getAverageForAllPolaganja() const noexcept {
+    [[nodiscard]] double getAverage() const noexcept {
         const auto& size{ _polozeniPojasevi.size() };
 
         if (!size) {
@@ -709,35 +693,26 @@ public:
             std::begin(_polozeniPojasevi),
             std::end(_polozeniPojasevi),
             0.0,
-            [&](const double sum, const Polaganje& polaganje) {
-                return sum + polaganje.getAverageForAllTechniques();
+            [](const double sum, const Polaganje& polaganje) {
+                return sum + polaganje.getAverage();
             }
         ) / size;
     }
+
 private:
-    /*nakon evidentiranja tehnike na bilo kojem pojasu kandidatu se salje email sa porukom:
-    FROM:info@karate.ba
-    TO: emailKorisnika
-    Postovani ime i prezime, evidentirana vam je thenika X za Y pojas. Dosadasnji uspjeh (prosjek ocjena)
-    na pojasu Y iznosi F, a ukupni uspjeh (prosjek ocjena) na svim pojasevima iznosi Z.
-    Pozdrav.
-    KARATE Team.
-    slanje email poruka implemenitrati koristeci zasebne thread-ove.
-    */
     void sendMail(const Polaganje& polaganje) const {
         std::thread emailThread{
             [&]() {
                 const auto& originalPrecision{ std::cout.precision() };
                 std::cout << std::setprecision(2) << std::fixed;
 
-                std::cout << "FROM:info@karate.ba\n";
-                std::cout << "TO: " << getEmailAdresa() << '\n';
-                std::cout << "Postovani " << getImePrezime() << ", evidentirana vam je thenika ";
-                std::cout << std::quoted(polaganje.getLastTehnika().getNaziv());
-                std::cout << " za " << polaganje.getPojas() << " pojas. Dosadasnji uspjeh (prosjek ocjena)\n";
-                std::cout << "na pojasu " << polaganje.getPojas() << " iznosi " << polaganje.getAverageForAllTechniques();
-                std::cout << ", a ukupni uspjeh (prosjek ocjena) na svim pojasevima iznosi " << getAverageForAllPolaganja();
-                std::cout << ".\nPozdrav.\nKARATE Team.\n";
+                std::cout << "FROM : info@karate.ba\n";
+                std::cout << "TO: " << getEmail() << '\n';
+                std::cout << "Postovani " << getImePrezime() << ", evidentirana vam je thenika " << polaganje.getTehnike().back()->getNaziv();
+                std::cout << " za " << polaganje.getPojas() << " pojas.Dosadasnji uspjeh(prosjek ocjena)\n";
+                std::cout << "na pojasu " << polaganje.getPojas() << " iznosi " << polaganje.getAverage();
+                std::cout << ", a ukupni uspjeh(prosjek ocjena) na svim pojasevima iznosi " << getAverage() << ".\n";
+                std::cout << "Pozdrav.\nKARATE Team.\n";
 
                 std::cout << std::setprecision(originalPrecision);
                 std::cout.unsetf(std::ios::fixed);
@@ -748,18 +723,13 @@ private:
     }
 };
 
-
 const char* GetOdgovorNaPrvoPitanje() {
     cout << "Pitanje -> Pojasnite ulogu operatora reinterpret_cast.\n";
-    return "Odgovor -> reinterpret_cast operator kada pretvara jedan tip podatka u drugi samo tretira set bitova kao da su taj drugi tip podatka, "
-        "za razliku od cast-a kao sto je static_cast koji ce promjeniti set bitova da vrijednost se pravilno predstavi u drugom tipu podatka."
-        "Zbog cega je veoma lahko preko ovog cast-a doci do nedefinisanog ponasanja unutar programa. ";
+    return "Odgovor -> OVDJE UNESITE VAS ODGOVOR";
 }
 const char* GetOdgovorNaDrugoPitanje() {
     cout << "Pitanje -> Ukratko opisite znacaj i vrste pametnih pokazivaca.\n";
-    return "Odgovor -> Pametni pokazivac je tip podatka koji pruza funkcionalnost pointera sa automatskim memory management. Kada se smart pointer"
-        " vise ne koristi (ode izvan opsega ili pozivom metode kao sto je reset) memorija je dealocirana. Neki od tipova koji dodu kao dio "
-        " standardne biblioteke su std::unique_ptr, std::shared_ptr, std::weak_ptr i std::auto_ptr.";
+    return "Odgovor -> OVDJE UNESITE VAS ODGOVOR";
 }
 void main() {
 
