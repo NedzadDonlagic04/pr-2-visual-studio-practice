@@ -4,6 +4,7 @@ using namespace std;
 // Headers I included below
 #include<vector>
 #include<iomanip>
+#include<numeric>
 #include<regex>
 #include<string>
 #include<memory>
@@ -573,13 +574,14 @@ public:
     }
 
     [[nodiscard]] std::string getAllMailsConcated(const std::string& delimiter = ";") const noexcept {
-        std::string temp{};
-
-        for (const auto& gost : _gosti) {
-            temp += gost.getEmail() + delimiter;
-        }
-
-        return temp;
+        return std::accumulate(
+            std::begin(_gosti),
+            std::end(_gosti),
+            std::string(),
+            [&](const std::string& concatedMails, const Gost& gost) {
+                return concatedMails + gost.getEmail() + delimiter;
+            }
+        );
     }
 
     [[nodiscard]] bool daLiSeDenisNalaziUFajlu(const std::string& filePath) const noexcept {
