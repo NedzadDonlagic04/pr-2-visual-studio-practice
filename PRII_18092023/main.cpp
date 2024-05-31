@@ -489,7 +489,7 @@ public:
     Ispit(Predmet predmet, const Pitanje& pitanje)
         : _predmet{ new Predmet { predmet } }
     {
-        _pitanjaOdgovori.push_back(pitanje);
+        dodajPitanje(pitanje);
     }
 
     Ispit& operator=(const Ispit& rhs) {

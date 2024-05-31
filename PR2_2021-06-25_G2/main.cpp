@@ -470,7 +470,7 @@ public:
     Polaganje(Pojas pojas, const Tehnika& tehnika, const std::string& napomena)
         : _pojas { pojas }
     {
-        _polozeneTehnike.AddElement(new Tehnika{ tehnika }, napomena);
+        dodajTehnikuINapomenu(tehnika, napomena);
     }
 
     ~Polaganje(){

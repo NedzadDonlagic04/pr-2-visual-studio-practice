@@ -496,7 +496,7 @@ public:
     Uspjeh(eRazred razred, const Predmet& predmet, const char* const napomena)
         : _razred { razred }
     {
-        _polozeniPredmeti.AddElement(new Predmet{ predmet }, napomena);
+        dodajPredmetINapomenu(predmet, napomena);
     }
 
     ~Uspjeh() {

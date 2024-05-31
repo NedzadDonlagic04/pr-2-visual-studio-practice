@@ -458,7 +458,7 @@ public:
 	Polaganje(Pojas pojas, const Tehnika& tehnika)
 		: _pojas{ pojas }
 	{
-		_polozeneTehnike.push_back(new Tehnika{ tehnika });
+		addTehnika(tehnika);
 	}
 
 	Polaganje& operator=(const Polaganje& rhs) {
