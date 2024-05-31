@@ -758,13 +758,13 @@ const char* GetOdgovorNaDrugoPitanje() {
 }
 void main() {
 
-    //cout << PORUKA;
-    //cin.get();
+    cout << PORUKA;
+    cin.get();
 
-    //cout << GetOdgovorNaPrvoPitanje() << endl;
-    //cin.get();
-    //cout << GetOdgovorNaDrugoPitanje() << endl;
-    //cin.get();
+    cout << GetOdgovorNaPrvoPitanje() << endl;
+    cin.get();
+    cout << GetOdgovorNaDrugoPitanje() << endl;
+    cin.get();
 
     Datum   datum19062020(19, 6, 2020),
         datum20062020(20, 6, 2020),
