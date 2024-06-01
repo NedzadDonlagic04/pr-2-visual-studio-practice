@@ -515,7 +515,7 @@ public:
 				_bodovi.push_back(std::stoi(line));
 			}
 			catch (const std::exception& err) {
-				// std::cout << "Error -> " << err.what() << '\n';
+				// std::cerr << "Error -> " << err.what() << '\n';
 			}
 		}
 	}
