@@ -73,7 +73,6 @@ class Rjecnik {
 public:
 	Rjecnik(bool omoguciDupliranje = true) {
 		_omoguciDupliranje = omoguciDupliranje;
-
 	}
 	~Rjecnik() {
 		clearResources();
