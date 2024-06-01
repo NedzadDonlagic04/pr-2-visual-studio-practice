@@ -690,7 +690,9 @@ public:
 
         const auto& zadnjiIspit{ *_polozeniPredmeti.back() };
 
-        return zadnjiIspit.getPredmet() + 1 == predmet && zadnjiIspit.getBrojPitanje() >= 3 && zadnjiIspit.getAverage() > 3.5;
+        return zadnjiIspit.getPredmet() + 1 == predmet 
+            && zadnjiIspit.getBrojPitanje() >= 3 
+            && zadnjiIspit.getAverage() > 3.5;
     }
 
     bool AddPitanje(Predmet predmet, const Pitanje& pitanje) {
@@ -805,7 +807,8 @@ const char* GetOdgovorNaDrugoPitanje() {
         "Sada ako uzmemo Base* base = new Derived {}; i pozovemo base->Info(); imamo mogucnost pristupiti metodi Info"
         " iz najnasljedenije klase. Prednosti nasljedivanja su u tome sto nam dozvoljava da pomocu pokazivaca na baznu "
         " klasu imamo mogucnost da radimo sa svim objektima koji su je naslijedili, to moze dovesti do manje ponavljanja koda"
-        " i fleksibilniji rad sa klasama.";
+        "i fleksibilniji rad sa klasama. Takoder ako ta 1 metoda sto je virtual nije destruktor, potrebno ce biti i "
+        "destruktor proglasiti virtual.";
 }
 void main() {
 
