@@ -570,10 +570,10 @@ const char* GetOdgovorNaPrvoPitanje() {
 const char* GetOdgovorNaDrugoPitanje() {
 	cout << "Pitanje -> Pojasnite opcije vezane za preslikavanje (vrijednosti, referenci, dostupnost) parametara prilikom koristenja lambda funkcija?\n";
 	return "Odgovor -> Preslikavanje parametara po vrijednosti [=] znaci da sve varijable koje spominjemo u tijelu lambde ce biti kopirane "
-		" po vrijednosti, modificiranje njih nece dovesti do promjene orginala. Preslikavanje parametara po referenci [&] znaci da sve "
-		" varijable koje spominjemo u tijelu lambde ce biti kopirane po referenci, modificiranje njih ce dovesti do promjene orginala. "
-		" Preslikavanje parametara po dostupnosti znaci da mozemo u [] izlistati koje varijable zelimo prenjeti u lambdu i kako, npr."
-		" [&var1, var2] ovdje je var1 po referenci preslikano, dok je var2 po vrijednosti.";
+		"po vrijednosti, modificiranje njih nece dovesti do promjene orginala. Preslikavanje parametara po referenci [&] znaci da sve "
+		"varijable koje spominjemo u tijelu lambde ce biti kopirane po referenci, modificiranje njih ce dovesti do promjene orginala. "
+		"Preslikavanje parametara po dostupnosti znaci da mozemo u [] izlistati koje varijable zelimo prenjeti u lambdu i kako, npr. "
+		"[&var1, var2] ovdje je var1 po referenci preslikano, dok je var2 po vrijednosti.";
 	// Nisam siguran sta je dostupnost jer prevod na nas jezik inace goes smoothly, pa sam predpostavio da je to kada se uradi nesto na fazon
 	// [&variable, variable2]
 }
