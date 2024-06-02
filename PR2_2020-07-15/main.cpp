@@ -31,6 +31,26 @@ const char* NIJE_VALIDNA = "<VRIJEDNOST_NIJE_VALIDNA>";
 using namespace std;
 
 // Methods I defined below
+Pojas& operator++(Pojas& pojas) noexcept {
+    pojas = std::min(Pojas::CRNI, static_cast<Pojas>(pojas + 1));
+    return pojas;
+}
+
+Pojas& operator--(Pojas& pojas) noexcept {
+    pojas = std::max(Pojas::ZUTI, static_cast<Pojas>(pojas - 1));
+    return pojas;
+}
+
+Pojas& operator++(Pojas& pojas, int) noexcept {
+    pojas = std::min(Pojas::CRNI, static_cast<Pojas>(pojas + 1));
+    return pojas;
+}
+
+Pojas& operator--(Pojas& pojas, int) noexcept {
+    pojas = std::max(Pojas::ZUTI, static_cast<Pojas>(pojas - 1));
+    return pojas;
+}
+
 std::ostream& operator<<(std::ostream& os, Pojas pojas) {
     switch (pojas) {
     case Pojas::BIJELI:
@@ -60,16 +80,7 @@ std::ostream& operator<<(std::ostream& os, Pojas pojas) {
 
     return os;
 }
-/*
-za autentifikaciju svaki korisnik mora posjedovati lozinku koja sadrzi:
--   najmanje 7 znakova
--   velika i mala slova
--   najmanje jedan broj
--   najmanje jedan specijalni znak
-za provjeru validnosti lozinke koristiti globalnu funkciju ValidirajLozinku, a unutar nje regex metode.
-validacija lozinke se vrsi unutar konstruktora klase Korisnik, a u slucaju da nije validna
-postaviti je na podrazumijevanu vrijednost: <VRIJEDNOST_NIJE_VALIDNA>
-*/
+
 [[nodiscard]] bool ValidirajLozinku(const std::string& password) {
     if (password.size() < 7) {
         return false;
@@ -597,6 +608,9 @@ public:
 
 class KaratePolaznik : public Korisnik {
     vector<Polaganje> _polozeniPojasevi;
+
+    // Data member below is one I added
+    Pojas m_sljedeciPojasZaDodati{ Pojas::ZUTI };
 public:
     KaratePolaznik(const char* imePrezime, string emailAdresa, string lozinka)
         : Korisnik(imePrezime, emailAdresa, lozinka)
@@ -633,6 +647,10 @@ public:
         return _polozeniPojasevi;
     }
 
+    [[nodiscard]] Pojas getSljedeciPojasZaDodati() const noexcept {
+        return m_sljedeciPojasZaDodati;
+    }
+
     [[nodiscard]] Polaganje* getPolaganjeForPojas(Pojas pojas) noexcept {
         auto polaganjeZaPronaci{
             std::find_if(
@@ -648,6 +666,10 @@ public:
     }
 
     [[nodiscard]] bool daLiJeIspunjenUslovZaVisiPojas(Pojas pojas) const noexcept {
+        if (pojas != getSljedeciPojasZaDodati()) {
+            return false;
+        }
+        
         const auto& size{ _polozeniPojasevi.size() };
 
         if (!size) {
@@ -656,8 +678,7 @@ public:
 
         const auto& zadnjePolaganje{ _polozeniPojasevi.back() };
 
-        return pojas == zadnjePolaganje.getPojas() + 1
-            && zadnjePolaganje.getBrojTehnika() >= 3
+        return zadnjePolaganje.getBrojTehnika() >= 3
             && zadnjePolaganje.getAverage() > 3.5;
     }
 
@@ -677,8 +698,7 @@ public:
             return false;
         }
 
-        _polozeniPojasevi.push_back({ pojas, tehnika });
-        sendMail(_polozeniPojasevi.back());
+        dodajNovoPolaganje(tehnika);
         return true;
     }
 
@@ -700,6 +720,16 @@ public:
     }
 
 private:
+    void dodajNovoPolaganje(const Tehnika& tehnika) {
+        _polozeniPojasevi.push_back({ getSljedeciPojasZaDodati(), tehnika });
+        sendMail(_polozeniPojasevi.back());
+        moveToNextPojas();
+    }
+
+    void moveToNextPojas() noexcept {
+        ++m_sljedeciPojasZaDodati;
+    }
+
     void sendMail(const Polaganje& polaganje) const {
         std::thread emailThread{
             [&]() {
@@ -725,11 +755,15 @@ private:
 
 const char* GetOdgovorNaPrvoPitanje() {
     cout << "Pitanje -> Pojasnite ulogu operatora reinterpret_cast.\n";
-    return "Odgovor -> OVDJE UNESITE VAS ODGOVOR";
+    return "Odgovor -> reinterpret_cast operator kada pretvara jedan tip podatka u drugi samo tretira set bitova kao da su taj drugi tip podatka, "
+        "za razliku od cast-a kao sto je static_cast koji ce promjeniti set bitova da vrijednost se pravilno predstavi u drugom tipu podatka."
+        "Zbog cega je veoma lahko preko ovog cast-a doci do nedefinisanog ponasanja unutar programa. ";
 }
 const char* GetOdgovorNaDrugoPitanje() {
     cout << "Pitanje -> Ukratko opisite znacaj i vrste pametnih pokazivaca.\n";
-    return "Odgovor -> OVDJE UNESITE VAS ODGOVOR";
+    return "Odgovor -> Pametni pokazivac je tip podatka koji pruza funkcionalnost pointera sa automatskim memory management. Kada se smart pointer"
+        " vise ne koristi (ode izvan opsega ili pozivom metode kao sto je reset) memorija je dealocirana. Neki od tipova koji dodu kao dio "
+        " standardne biblioteke su std::unique_ptr, std::shared_ptr, std::weak_ptr i std::auto_ptr.";
 }
 void main() {
 

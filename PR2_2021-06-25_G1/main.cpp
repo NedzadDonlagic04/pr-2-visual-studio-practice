@@ -775,11 +775,17 @@ private:
 
 const char* GetOdgovorNaPrvoPitanje() {
     cout << "Pitanje -> Pojasnite ulogu i nacin koristenja generickog tipa future<>?\n";
-    return "Odgovor -> OVDJE UNESITE VAS ODGOVOR";
+    return "Odgovor -> Genericki tip future<T> se koristi kao nacin pristupa podatku nekom koji ce se vjerovatno dobiti nekad u "
+        "buducnosti, izuzev nekoj gresci. Jedan primjer koristenja bi bio da dodjelimo std::future<T> objektu neku std::async "
+        "operaciju koja ce vratiti neku vrijednost T, ali nakon neke duge operacije, kasnije u programu mozemo pozvati get "
+        "metodu nad tom instacom std::future<T> objekta, sto ce functionisati slicno kako kod std::thread join metoda funkcionise "
+        ", main thread ce sacekati da se izvrsi ta std::async operacija i onda tek kad std::future<T> objekta vrati tu vrijednost "
+        "ce se main thread nastavljati izvrsavati.";
 }
 const char* GetOdgovorNaDrugoPitanje() {
     cout << "Pitanje -> Ukratko opisite na koji nacin se moze izbjeci pojavljivanje vise podobjekata bazne klase u slucaju visestrukog nasljedjivanja?\n";
-    return "Odgovor -> OVDJE UNESITE VAS ODGOVOR";
+    return "Odgovor -> Koristeci kljucne rijeci virtual prilikom nasljedivanja omogucava nam da se ne kreira vise podobjekata "
+        "bazne klase, s time da ostavlja duznost inicijalizacije te jedne instance podobjekta najizvedenijoj klasi.";
 }
 
 void main() {

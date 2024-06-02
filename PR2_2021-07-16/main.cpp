@@ -24,6 +24,26 @@ char* GetNizKaraktera(const char* sadrzaj) {
 }
 
 // Functions I defined below
+Pojas& operator++(Pojas& pojas) noexcept {
+	pojas = std::min(Pojas::CRNI, static_cast<Pojas>(pojas + 1));
+	return pojas;
+}
+
+Pojas& operator--(Pojas& pojas) noexcept {
+	pojas = std::max(Pojas::ZUTI, static_cast<Pojas>(pojas - 1));
+	return pojas;
+}
+
+Pojas& operator++(Pojas& pojas, int) noexcept {
+	pojas = std::min(Pojas::CRNI, static_cast<Pojas>(pojas + 1));
+	return pojas;
+}
+
+Pojas& operator--(Pojas& pojas, int) noexcept {
+	pojas = std::max(Pojas::ZUTI, static_cast<Pojas>(pojas - 1));
+	return pojas;
+}
+
 std::ostream& operator<<(std::ostream& os, Pojas pojas) {
 	switch (pojas) {
 	case Pojas::BIJELI:
@@ -285,7 +305,7 @@ public:
 		clearResources();
 	}
 	char* GetNaziv() { return _naziv; }
-	Kolekcija<int, Datum*, brojTehnika>& GetOcjene() { return _ocjene; }
+	Kolekcija<int, Datum*, brojTehnika> GetOcjene() { return _ocjene; }
 
 	// Methods I added below
 	Tehnika(const Tehnika& tehnika)
@@ -598,6 +618,9 @@ public:
 };
 class KaratePolaznik : public Korisnik {
 	vector<Polaganje*> _polozeniPojasevi;
+
+	// Data member below is one I added
+	Pojas m_sljedeciPojasZaDodati{ Pojas::ZUTI };
 public:
 	KaratePolaznik(const char* imePrezime, string emailAdresa, string
 		lozinka)
@@ -639,6 +662,10 @@ public:
 		return _polozeniPojasevi; 
 	}
 
+	[[nodiscard]] Pojas getSljedeciPojasZaDodati() const noexcept {
+		return m_sljedeciPojasZaDodati;
+	}
+
 	[[nodiscard]] std::vector<Polaganje*> getPolozeniPojaseviCopy() const noexcept {
 		std::vector<Polaganje*> temp{};
 
@@ -664,6 +691,10 @@ public:
 	}
 
 	[[nodiscard]] bool daLiJeIspunjenUslovZaVisiPojas(Pojas pojas) const noexcept {
+		if (pojas != getSljedeciPojasZaDodati()) {
+			return false;
+		}
+
 		const auto& size{ _polozeniPojasevi.size() };
 
 		if (!size) {
@@ -672,8 +703,7 @@ public:
 
 		const auto& zadnjePolaganje{ *_polozeniPojasevi.back() };
 
-		return pojas == zadnjePolaganje.getPojas() + 1
-			&& zadnjePolaganje.getBrojTehnika() >= 3
+		return zadnjePolaganje.getBrojTehnika() >= 3
 			&& zadnjePolaganje.getAverage() > 3.5;
 	}
 
@@ -693,8 +723,7 @@ public:
 			return false;
 		}
 
-		_polozeniPojasevi.push_back(new Polaganje{ pojas, tehnika });
-		sendMail(*_polozeniPojasevi.back());
+		dodajNovoPolaganje(tehnika);
 		return true;
 	}
 
@@ -716,6 +745,16 @@ public:
 	}
 
 private:
+	void dodajNovoPolaganje(const Tehnika& tehnika) {
+		_polozeniPojasevi.push_back(new Polaganje{ getSljedeciPojasZaDodati(), tehnika });
+		sendMail(*_polozeniPojasevi.back());
+		moveToNextPojas();
+	}
+
+	void moveToNextPojas() noexcept {
+		++m_sljedeciPojasZaDodati;
+	}
+
 	void sendMail(const Polaganje& polaganje) const {
 		std::thread emailThread{
 			[&]() {
@@ -756,7 +795,12 @@ const char* GetOdgovorNaPrvoPitanje() {
 }
 const char* GetOdgovorNaDrugoPitanje() {
 	cout << "Pitanje -> Ukratko opisite redoslijed kreiranja objekta bazne klase u slucaju visestrukog nasljedjivanja(prilikom instanciranja objekta najizvedenije klase), te koja su moguca rjesenja najznacajnijih problema ubtom kontekstu ? \n";
-	return "Odgovor -> OVDJE UNESITE VAS ODGOVOR";
+	return "Odgovor -> U slucaju visestrukog nasljedivanja bazna klasa ce se kreirati za svaku klasu koja je dio visestrukog nasljedivanja."
+		"Recimo da imamo baznu klasu Uredjaj koja je nasljedenja u klasu Skener, Printer i Fax, i te 3 klase su nasljedene u jednu klasu "
+		" PrinterSkenerFax, ova klasa bi imala 3 objekta tipa Uredjaj unutar sebe posto su 3 navedene klase sve naslijedile tu baznu."
+		"To stvara problem ambiguoznosti kod poziva metoda, pored toga sto kreira 3 objekta kada je potreban samo 1, koristeci virtualno "
+		"nasljedivanje ovo se rijesi tako sto se napravi samo jedna bazna klasa, ali je najvise nasljedena klasa (u mom primjeru ovo bi bila "
+		"PrinterSkenerFax klasa) duzna kreirati taj bazni objekat.";
 }
 void main() {
 	// PORUKA is missing again :(

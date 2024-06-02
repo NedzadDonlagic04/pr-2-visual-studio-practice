@@ -700,11 +700,13 @@ private:
 };
 const char* GetOdgovorNaPrvoPitanje() {
     cout << "Pitanje -> Na sta se odnosi pojam reprezentacije tipa?\n";
-    return "Odgovor -> OVDJE UNESITE VAS ODGOVOR";
+    return "Odgovor -> Reprezentacija tipa predstavlja nacin njihove pohrane cime se "
+        "omogucava izvrsenje aplikacije na racunaru.";
 }
 const char* GetOdgovorNaDrugoPitanje() {
     cout << "Pitanje -> Na koji nacin se moze izbjeci pojavljivanje vise podobjekata bazne klase u slucaju visestrukog nasljedjivanja?\n";
-    return "Odgovor -> OVDJE UNESITE VAS ODGOVOR";
+    return "Odgovor -> Koristenjem kljucne rijeci virtual tokom pisanja nasljedivanja, npr. "
+        "class Derived : public virtual Base {};";
 }
 
 void main() {

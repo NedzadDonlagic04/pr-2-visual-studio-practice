@@ -750,11 +750,16 @@ private:
 };
 const char* GetOdgovorNaPrvoPitanje() {
     cout << "Pitanje -> Pojasnite na koji nacin tip nasljedjivanja (javno, zasticeno, privatno) utjece na dostupnost atributa bazne klase unutar izvedene klase?\n";
-    return "Odgovor -> OVDJE UNESITE VAS ODGOVOR";
+    return "Odgovor -> Kada nasljedujemo javno dostupnost atributa bazne klase je:\n sve sto je public ostaje public\n "
+        "sve sto je protected ostaje protected\n sve sto je private postaje nepristupno\nKada nasljedujemo zasticeno "
+        "dostupnost atributa bazne klase je:\n sve sto je public postaje protected\n sve sto je protected ostaje protected\n "
+        "sve sto je private postaje nepristupno\nKada nasljedujemo privatno dostupnost atributa bazne klase je:\n sve sto "
+        "je public postaje private\n sve sto je protected postaje private\n sve sto je private postaje nepristupno\n";
 }
 const char* GetOdgovorNaDrugoPitanje() {
     cout << "Pitanje -> Ukratko pojasnite primjenu funkcija seekg i tellg?\n";
-    return "Odgovor -> OVDJE UNESITE VAS ODGOVOR";
+    return "Odgovor -> seekg omogucava da postavimo trenutnu lokaciju u datom input streamu, dok tellg daje trenutnu lokaciju u datom "
+        "input streamu.";
 }
 void main() {
 

@@ -570,6 +570,7 @@ class KaratePolaznik {
     string _brojTelefona;
     vector<Polaganje> _polozeniPojasevi;
 
+    // Data member below is one I added
     Pojas m_sljedeciPojasZaDodati{ Pojas::ZUTI };
 public:
     KaratePolaznik(const char* imePrezime, string emailAdresa, string brojTelefona) {
@@ -630,6 +631,10 @@ public:
         return _imePrezime;
     }
 
+    [[nodiscard]] Pojas getSljedeciPojasZaDodati() const noexcept {
+        return m_sljedeciPojasZaDodati;
+    }
+
     [[nodiscard]] Polaganje* getPolaganjeForPojas(Pojas pojas) {
         auto polaganjeZaPronaci{
             std::find_if(
@@ -645,7 +650,7 @@ public:
     }
 
     [[nodiscard]] bool daLiJePojasNaRedu(Pojas pojas) {
-        return pojas == m_sljedeciPojasZaDodati;
+        return pojas == getSljedeciPojasZaDodati();
     }
 
     bool AddTehniku(Pojas pojas, const Tehnika& tehnika, const std::string& napomena) {
@@ -668,7 +673,7 @@ public:
             return false;
         }
 
-        dodajNovoPolaganje(pojas, tehnika, napomena);
+        dodajNovoPolaganje(tehnika, napomena);
         return true;
     }
 
@@ -711,8 +716,8 @@ public:
     }
 
 private:
-    void dodajNovoPolaganje(Pojas pojas, const Tehnika& tehnika, const std::string& napomena) {
-        _polozeniPojasevi.push_back({ pojas, tehnika, napomena });
+    void dodajNovoPolaganje(const Tehnika& tehnika, const std::string& napomena) {
+        _polozeniPojasevi.push_back({ getSljedeciPojasZaDodati(), tehnika, napomena});
         sendMail(_polozeniPojasevi.back());
         moveToNextPojas();
     }

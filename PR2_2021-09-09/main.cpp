@@ -31,20 +31,24 @@ const int brojTehnika = 6;
 const char* NIJE_VALIDNA = "<VRIJEDNOST_NIJE_VALIDNA>";
 
 // Functions I defined below
-[[nodiscard]] bool ValidirajLozinku(const std::string& password) {
-	if (password.size() < 7) {
-		return false;
-	}
+Pojas& operator++(Pojas& pojas) noexcept {
+	pojas = std::min(Pojas::CRNI, static_cast<Pojas>(pojas + 1));
+	return pojas;
+}
 
-	std::regex atLeast1UpperCaseCheck{ "[A-Z]" };
-	std::regex atLeast1LowerCaseCheck{ "[a-z]" };
-	std::regex atLeast1DigitCheck{ "\\d" };
-	std::regex atLeast1SpecialCharCheck{ "\\W" };
+Pojas& operator--(Pojas& pojas) noexcept {
+	pojas = std::max(Pojas::ZUTI, static_cast<Pojas>(pojas - 1));
+	return pojas;
+}
 
-	return std::regex_search(password, atLeast1UpperCaseCheck)
-		&& std::regex_search(password, atLeast1LowerCaseCheck)
-		&& std::regex_search(password, atLeast1DigitCheck)
-		&& std::regex_search(password, atLeast1SpecialCharCheck);
+Pojas& operator++(Pojas& pojas, int) noexcept {
+	pojas = std::min(Pojas::CRNI, static_cast<Pojas>(pojas + 1));
+	return pojas;
+}
+
+Pojas& operator--(Pojas& pojas, int) noexcept {
+	pojas = std::max(Pojas::ZUTI, static_cast<Pojas>(pojas - 1));
+	return pojas;
 }
 
 std::ostream& operator<<(std::ostream& os, Pojas pojas) {
@@ -76,6 +80,23 @@ std::ostream& operator<<(std::ostream& os, Pojas pojas) {
 
 	return os;
 }
+
+[[nodiscard]] bool ValidirajLozinku(const std::string& password) {
+	if (password.size() < 7) {
+		return false;
+	}
+
+	std::regex atLeast1UpperCaseCheck{ "[A-Z]" };
+	std::regex atLeast1LowerCaseCheck{ "[a-z]" };
+	std::regex atLeast1DigitCheck{ "\\d" };
+	std::regex atLeast1SpecialCharCheck{ "\\W" };
+
+	return std::regex_search(password, atLeast1UpperCaseCheck)
+		&& std::regex_search(password, atLeast1LowerCaseCheck)
+		&& std::regex_search(password, atLeast1DigitCheck)
+		&& std::regex_search(password, atLeast1SpecialCharCheck);
+}
+
 // Functions I defined above
 
 char* GetNizKaraktera(const char* sadrzaj, bool dealociraj = false) {
@@ -611,6 +632,9 @@ public:
 
 class KaratePolaznik : public Korisnik {
 	vector<Polaganje> _polozeniPojasevi;
+
+	// Data member below is one I added
+	Pojas m_sljedeciPojasZaDodati{ Pojas::ZUTI };
 public:
 	KaratePolaznik(const char* imePrezime, string emailAdresa, string lozinka) 
 		: Korisnik(imePrezime, emailAdresa, lozinka)
@@ -656,6 +680,11 @@ public:
 		return _polozeniPojasevi; 
 	}
 
+
+	[[nodiscard]] Pojas getSljedeciPojasZaDodati() const noexcept {
+		return m_sljedeciPojasZaDodati;
+	}
+
 	[[nodiscard]] Polaganje* getPolaganjeForPojas(Pojas pojas) {
 		auto polaganjeZaPronaci{
 			std::find_if(
@@ -671,6 +700,10 @@ public:
 	}
 
 	[[nodiscard]] bool daLiJeIspunjenUslovZaVisiPojas(Pojas pojas) {
+		if (pojas != getSljedeciPojasZaDodati()) {
+			return false;
+		}
+		
 		const auto& size{ _polozeniPojasevi.size() };
 
 		if (!size) {
@@ -679,7 +712,8 @@ public:
 
 		const auto& zadnjiPojas{ _polozeniPojasevi.back() };
 
-		return zadnjiPojas.getPojas() + 1 == pojas && zadnjiPojas.getBrojTehnika() > 3 && zadnjiPojas.getAverage() > 3.5;
+		return zadnjiPojas.getBrojTehnika() > 3 
+			&& zadnjiPojas.getAverage() > 3.5;
 	}
 
 	bool AddTehniku(Pojas pojas, const Tehnika& tehnika) {
@@ -698,8 +732,7 @@ public:
 			return false;
 		}
 
-		_polozeniPojasevi.push_back({ pojas, tehnika });
-		sendMail(_polozeniPojasevi.back());
+		dodajNovoPolaganje(tehnika);
 		return true;
 	}
 
@@ -719,7 +752,18 @@ public:
 			}
 		) / size;
 	}
+
 private:
+	void dodajNovoPolaganje(const Tehnika& tehnika) {
+		_polozeniPojasevi.push_back({ getSljedeciPojasZaDodati(), tehnika });
+		sendMail(_polozeniPojasevi.back());
+		moveToNextPojas();
+	}
+
+	void moveToNextPojas() noexcept {
+		++m_sljedeciPojasZaDodati;
+	}
+
 	void sendMail(const Polaganje& polaganje) const {
 		std::thread emailThread {
 			[&]() {
