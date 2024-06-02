@@ -683,7 +683,7 @@ private:
     }
 
     void sendSMS(const Uspjeh& uspjeh) const {
-        std::thread smslThread{
+        std::thread smsThread{
             [&]() {
                 const auto& originalPrecision{ std::cout.precision() };
                 std::cout << std::setprecision(2) << std::fixed;
@@ -695,7 +695,7 @@ private:
             }
         };
 
-        smslThread.join();
+        smsThread.join();
     }
 };
 const char* GetOdgovorNaPrvoPitanje() {
