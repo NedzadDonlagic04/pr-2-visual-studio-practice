@@ -641,16 +641,16 @@ const char* GetOdgovorNaPrvoPitanje() {
     cout << "Pitanje -> Pojasnite osnovne preduslove koji moraju biti ispunjeni da bi se realizovao polimorfizam?\n";
     return "Odgovor -> Posto je polimorfizam koristenje jednog simbola da predstavi vise stvari, za najjednostavini primjer "
         "potrebno bi bilo kreirati abstraktnu klasu sa virtualnom metodom koja ce se naslijediti u drugu klasu koja ce "
-        " imati svoju implementaciju te metoda (override-a nju), nakon cega ako se naprave instance klasa poziv na istu "
-        " metodu ce dati drugacije rezultate. Moglo bi se reci da je function overloading jedan primjer polimorfizma.";
+        "imati svoju implementaciju te metoda (override-a nju), nakon cega ako se naprave instance klasa poziv na istu "
+        "metodu ce dati drugacije rezultate. Moglo bi se reci da je function overloading jedan primjer polimorfizma.";
 }
 const char* GetOdgovorNaDrugoPitanje() {
     cout << "Pitanje -> Pojasnite razloge koristenja kljucnih rijeci abstract i ciste virtualne metode, te razlike izmedju njih?\n";
     return "Odgovor -> Koristenje kljucne rijeci abstract ili ciste virtualne metode dovodi do toga da se ne moze napraviti instanca "
         "te klase, najcesce ona sluzi kao baza u hirarhiji nasljedivanja. Dok su ciste virtualne metode dio standarda za C++, abstract "
         "kljucna rijec nije, uvedena je kao dio VSovog C++-a. Efektivno pruzaju istu uslugu, a to je da se ne moze napraviti instanca "
-        " te klase dok se ne naslijedi, ciste virtualne metode bi zahtjevale implementaciju njihovu dok abstract samo zahtjeva nasljedivanje."
-        " Abstract se takoder moze koristiti na metode i klase, dok ciste virtualne metode su iskljucive za metode klase.";
+        "te klase dok se ne naslijedi, ciste virtualne metode bi zahtjevale implementaciju njihovu dok abstract samo zahtjeva nasljedivanje. "
+        "Abstract se takoder moze koristiti na metode i klase, dok ciste virtualne metode su iskljucive za metode klase.";
 }
 
 void main() {
