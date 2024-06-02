@@ -382,9 +382,8 @@ public:
     }
 
     [[nodiscard]] bool operator==(const Kupac& rhs) const noexcept {
-        return !std::strcmp(getImePrezime(), rhs.getImePrezime())
-            && getEmail() == rhs.getEmail()
-            && getJedinstveniKod() == rhs.getJedinstveniKod();
+        return getEmail() == rhs.getEmail()
+            || getJedinstveniKod() == rhs.getJedinstveniKod();
     }
 
     [[nodiscard]] bool operator!=(const Kupac& rhs) const noexcept {
@@ -589,10 +588,10 @@ private:
     }
 };
 const char* GetOdgovorNaPrvoPitanje() {
-    cout << "Pitanje -> \Nabrojite i ukratko pojasnite osnovne ios modove koji se koriste u radu sa fajlovima?\n";
+    cout << "Pitanje -> Nabrojite i ukratko pojasnite osnovne ios modove koji se koriste u radu sa fajlovima?\n";
     return "Odgovor -> ios::out - otvara fajl za citanje\n"
         "ios::in - otvara fajl za pisanje\n"
-        "ios::app - prije svakog pisanja u fajl odlazi na kraj njega \n"
+        "ios::app - prije svakog pisanja u fajl odlazi na kraj njega\n"
         "ios::ate - kada otvori fajl odlazi na kraj njega\n"
         "ios::trunc - otvara fajl, sve sto je bilo u fajlu prijasnje se brise\n"
         "ios::binary - otvara fajl u binarnom modu, podatci su spaseni onako kako su u memoriji\n";
