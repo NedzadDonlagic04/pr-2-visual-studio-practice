@@ -57,7 +57,7 @@ std::ostream& operator<<(std::ostream& os, Karakteristike karakteristika) {
 }
 
 const std::string notValid{ "NOT VALID" };
-[[nodiscard]] bool ValidirajJedinstveniKod(const std::string code) {
+[[nodiscard]] bool ValidirajJedinstveniKod(const std::string& code) {
     std::regex codeValidation{ "\\[[A-Z]{1,2}\\]\\d{3,4}[-\\s]?\\{[a-z]{2}\\}" };
 
     return std::regex_match(code, codeValidation);
@@ -177,8 +177,8 @@ public:
 private:
     void clearArrays() {
         for (int i = 0; i < getTrenutno(); ++i) {
-            delete _elementi1[i];
-            delete _elementi2[i];
+            delete _elementi1[i]; _elementi1[i] = nullptr;
+            delete _elementi2[i]; _elementi2[i] = nullptr;
         }
     }
 };
