@@ -155,6 +155,9 @@ public:
         if (index < 0 || index >= getTrenutno()) {
             return temp;
         }
+        else if (getTrenutno() == 0) {
+            return temp;
+        }
 
         temp.AddElement(getElement1(index), getElement2(index));
 

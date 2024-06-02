@@ -218,6 +218,9 @@ public:
         if (index < 0 || index >= getTrenutno()) {
             return;
         }
+        else if (getTrenutno() == 0) {
+            return;
+        }
 
         delete _elementi1[index];
         delete _elementi2[index];

@@ -195,6 +195,9 @@ public:
 		if (index < 0 || index >= getTrenutno()) {
 			return;
 		}
+		else if (getTrenutno() == 0) {
+			return;
+		}
 		
 		delete _elementi1[index];
 		delete _elementi2[index];
@@ -791,14 +794,14 @@ private:
 const char* GetOdgovorNaPrvoPitanje() {
 	cout << "Pitanje -> Pojasnite ulogu operatora reinterpret_cast.\n";
 	return "Odgovor -> reinterpret_cast operator kada pretvara jedan tip podatka u drugi samo tretira set bitova kao da su taj drugi tip podatka, "
-		"za razliku od cast-a kao sto je static_cast koji ce promjeniti set bitova da vrijednost se pravilno predstavi u drugom tipu podatka."
+		"za razliku od cast-a kao sto je static_cast koji ce promjeniti set bitova da vrijednost se pravilno predstavi u drugom tipu podatka. "
 		"Zbog cega je veoma lahko preko ovog cast-a doci do nedefinisanog ponasanja unutar programa. ";
 }
 const char* GetOdgovorNaDrugoPitanje() {
 	cout << "Pitanje -> Ukratko opisite znacaj i vrste pametnih pokazivaca.\n";
 	return "Odgovor -> Pametni pokazivac je tip podatka koji pruza funkcionalnost pointera sa automatskim memory management. Kada se smart pointer"
 		" vise ne koristi (ode izvan opsega ili pozivom metode kao sto je reset) memorija je dealocirana. Neki od tipova koji dodu kao dio "
-		" standardne biblioteke su std::unique_ptr, std::shared_ptr, std::weak_ptr i std::auto_ptr.";
+		"standardne biblioteke su std::unique_ptr, std::shared_ptr, std::weak_ptr i std::auto_ptr.";
 }
 void main() {
 
