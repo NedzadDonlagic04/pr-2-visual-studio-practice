@@ -488,7 +488,7 @@ public:
 		std::cout << *this;
 	}
 
-	void SacuvajBodove() {
+	void SacuvajBodove() const {
 		const std::string filePath{ std::string("./") + getEmail() + ".txt" };
 
 		std::ofstream file{ filePath, std::ios::out | std::ios::app };
