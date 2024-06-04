@@ -193,10 +193,10 @@ public:
 		_elementi2[getTrenutno()] = nullptr;
 	}
 
-	T2& operator[](const T1& element1) {
+	T1& operator[](const T2& element2) {
 		for (int i = 0; i < getTrenutno(); ++i) {
-			if (element1 == getElement1(i)) {
-				return getElement2(i);
+			if (element2 == getElement2(i)) {
+				return getElement1(i);
 			}
 		}
 	}
