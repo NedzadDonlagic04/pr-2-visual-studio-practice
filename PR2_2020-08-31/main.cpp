@@ -474,18 +474,6 @@ public:
     }
 
     // Methods I added below
-    Ispit(const Ispit& ispit)
-        : _predmet { ispit.getPredmet() }
-        , _pitanjaOdgovori{ ispit.getPitanjaOdgovore() }
-    {}
-
-    Ispit& operator=(const Ispit& rhs) {
-        _predmet = rhs.getPredmet();
-        _pitanjaOdgovori = rhs.getPitanjaOdgovore();
-
-        return *this;
-    }
-
     Ispit(Predmet predmet, const Pitanje& pitanje, const std::string& napomena)
         : _predmet{ predmet }
     {
