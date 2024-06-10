@@ -442,12 +442,12 @@ public:
             os << *ocjene.getElement2(i) << '\n';
         }
 
-        const auto& originaPrecision{ os.precision() };
+        const auto& originalPrecision{ os.precision() };
         os << std::setprecision(2) << std::fixed;
 
         os << "Prosjek ocjena -> " << pitanje.getAverage() << '\n';
 
-        os << std::setprecision(originaPrecision);
+        os << std::setprecision(originalPrecision);
         os.unsetf(std::ios::fixed);
         
         return os;
@@ -761,7 +761,7 @@ private:
         std::thread emailThread{
             [&]() {
                 std::this_thread::sleep_for(2s);
-                const auto& originaPrecision{ std::cout.precision() };
+                const auto& originalPrecision{ std::cout.precision() };
                 std::cout << std::setprecision(2) << std::fixed;
                 
                 std::cout << "FROM:info@kursevi.ba\n";
@@ -776,7 +776,7 @@ private:
                 std::cout << "Pozdrav.\n\n";
                 std::cout << "EDUTeam.\n";
 
-                std::cout << std::setprecision(originaPrecision);
+                std::cout << std::setprecision(originalPrecision);
                 std::cout.unsetf(std::ios::fixed);
             }
         };
