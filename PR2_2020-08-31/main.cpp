@@ -725,7 +725,7 @@ private:
                 std::cout << "TO : " << getEmail() << '\n';
                 std::cout << "Postovani " << getImePrezime() << ", evidentirana vam je pitanje.\n";
                 std::cout << "Dosadasnji uspjeh(prosjek ocjena)\n";
-                std::cout << "za pitanje iznosi " << ispit.getAverage() << ", a ukupni uspjeh(prosjek ocjena) na svim predmetima iznosi " << getAverage();
+                std::cout << "za predmet iznosi " << ispit.getAverage() << ", a ukupni uspjeh(prosjek ocjena) na svim predmetima iznosi " << getAverage();
                 std::cout << ".\nPozdrav.\nEDUTeam.\n";
 
                 std::cout << std::setprecision(originalPrecision);
