@@ -603,7 +603,10 @@ public:
         return false;
     }
 
-    [[nodiscard]] std::pair<int, int> GetBrojZnakova(const std::string& fileName, const std::string& strToFind) {
+    [[nodiscard]] std::pair<int, int> GetBrojZnakova(
+        const std::string& fileName, 
+        const std::string& strToFind
+    ) const {
         const std::string filePath{ "./" + fileName };
 
         if (daLiSeDenisNalaziUFajlu(filePath)) {
