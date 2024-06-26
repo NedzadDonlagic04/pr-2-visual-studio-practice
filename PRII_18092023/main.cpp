@@ -769,7 +769,7 @@ private:
                 std::cout << "Postovani " << getImePrezime() << ", evidentirano vam je pitanje ";
                 std::cout << std::quoted(ispit.getPitanjaOdgovore().back().getSadrzaj());
                 std::cout << " za predmet " << ispit.getPredmet() << '\n';
-                std::cout << "Dosadasnji uspjeh (prosjek ocjena)\n za pitanje ";
+                std::cout << "Dosadasnji uspjeh (prosjek ocjena)\n za predmet ";
                 std::cout << std::quoted(ispit.getPitanjaOdgovore().back().getSadrzaj());
                 std::cout << " iznosi " << ispit.getAverage() << ", a ukupni uspjeh (prosjek ocjena) na svim predmetima iznosi ";
                 std::cout << getAverage() << '\n';
