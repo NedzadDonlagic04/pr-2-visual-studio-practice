@@ -519,7 +519,7 @@ public:
 		}
 	}
 
-	Rjecnik<Karakteristike, const char*> GetKupovineByKomentar(const std::string& komentar) {
+	Rjecnik<Karakteristike, const char*> GetKupovineByKomentar(const std::string& dioKomentara) {
 		Rjecnik<Karakteristike, const char*> temp{};
 		
 		for (int i = 0; i < _kupovine->getTrenutno(); ++i) {
@@ -527,7 +527,8 @@ public:
 			const auto& komentariKarakteristike{ zadovoljstvoKupca.getKomentareKarakteristika() };
 
 			for (int i = 0; i < komentariKarakteristike.getTrenutno(); ++i) {
-				if (std::string(komentariKarakteristike.getElement2(i)).find(komentar) != std::string::npos) {
+				const std::string komentar{ komentariKarakteristike.getElement2(i) };
+				if (komentar.find(dioKomentara) != std::string::npos) {
 					temp.AddElement(
 						komentariKarakteristike.getElement1(i), 
 						komentariKarakteristike.getElement2(i)
