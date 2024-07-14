@@ -676,14 +676,15 @@ public:
         return true;
     }
 
-    [[nodiscard]] int operator()(const std::string& strToFind) const noexcept {
+    [[nodiscard]] int operator()(const std::string& dioNapomene) const noexcept {
         int counter{ 0 };
 
         for (const auto& ispit : _polozeniPredmeti) {
             const auto& pitanja{ ispit->getPitanjaOdgovore() };
 
             for (int i = 0; i < pitanja.getTrenutno(); ++i) {
-                if (pitanja.getElement2(i).find(strToFind) != std::string::npos) {
+                const std::string napomena{ pitanja.getElement2(i) };
+                if (napomena.find(dioNapomene) != std::string::npos) {
                     ++counter;
                 }
             }
