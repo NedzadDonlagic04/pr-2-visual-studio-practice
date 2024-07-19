@@ -238,7 +238,7 @@ public:
 		else if (start > end) {
 			throw std::runtime_error("Start index je veci od end indexa");
 			/*
-				Posto komentar ima dio kojia kaze "U slucaju da zahtijevani opseg ne postoji u kolekciji metoda treba baciti izuzetak"
+				Posto komentar ima dio koji kaze "U slucaju da zahtijevani opseg ne postoji u kolekciji metoda treba baciti izuzetak"
 				vjerujem da je naglaseno da se uzme u obzir da ne bude da se ide od 6 do 1
 				Iako da se ovo proslijedi nece se nista desiti jer uslov for petlje ispod nece se ispuniti, so yeah
 			*/
@@ -807,7 +807,7 @@ private:
 		const Igrac& igrac,
 		const Reprezentacija& reprezentacija1,
 		const Reprezentacija& reprezentacija2
-	) {
+	) const {
 		std::thread emailThread{
 			[&]() {
 				// DON'T FORGET TO UNCOMMENT THIS
@@ -833,7 +833,14 @@ private:
 
 const char* GetOdgovorNaPrvoPitanje() {
 	cout << "Pitanje -> Pojasnite osnovne preduslove koji moraju biti ispunjeni da bi se realizovao polimorfizam(navesti kratki primjer) ? \n";
-	return "Odgovor -> OVDJE UNESITE VAS ODGOVOR";
+	return "Odgovor -> Da bi se realizovao polimorfizam potrebna je makar 1 metoda da bude deklarisana sa kljucnom rijeci virtual."
+		"Recimo imamo klase Base i Derived, u klasi Base definisemo virtual void Info() {}, u klasi Derived definisemo "
+		"void Info() override {} (naravno pored ovog je potrebno deklarisati virtualnim destruktor Base klase)."
+		"Sada ako uzmemo Base* base = new Derived {}; i pozovemo base->Info(); imamo mogucnost pristupiti metodi Info"
+		" iz najnasljedenije klase. Prednosti nasljedivanja su u tome sto nam dozvoljava da pomocu pokazivaca na baznu "
+		" klasu imamo mogucnost da radimo sa svim objektima koji su je naslijedili, to moze dovesti do manje ponavljanja koda"
+		"i fleksibilniji rad sa klasama. Takoder ako ta 1 metoda sto je virtual nije destruktor, potrebno ce biti i "
+		"destruktor proglasiti virtual.";
 }
 const char* GetOdgovorNaDrugoPitanje() {
 	cout << "Pitanje -> Pojasnite razloge koristenja kljucnih rijeci abstract i ciste virtualne metode, te razlike izmedju njih ? \n";
