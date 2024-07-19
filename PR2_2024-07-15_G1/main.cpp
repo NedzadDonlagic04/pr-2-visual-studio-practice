@@ -771,6 +771,7 @@ public:
 			os << crt;
 
 			os << Prventstvo::getPlayersWhoScoredGoalsForReprezentacije(reprezentacija1, reprezentacija2);
+			os << crt;
 		}
 
 		return os;
