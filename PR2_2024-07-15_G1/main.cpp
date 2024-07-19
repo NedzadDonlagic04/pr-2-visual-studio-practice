@@ -719,7 +719,7 @@ public:
 		return false;
 	}
 
-	[[nodiscard]] static std::string getPlayersWhoScoredGoalsForReprezentacije(
+	[[nodiscard]] static std::string getPlayersWhoScoredGoalsForReprezentacijeSideBySide(
 		const Reprezentacija& reprezentacija1,
 		const Reprezentacija& reprezentacija2
 	) {
@@ -770,7 +770,7 @@ public:
 			os << reprezentacija2.getDrzava() << ' ' << reprezentacija2.getBrojPogodaka();
 			os << crt;
 
-			os << Prventstvo::getPlayersWhoScoredGoalsForReprezentacije(reprezentacija1, reprezentacija2);
+			os << Prventstvo::getPlayersWhoScoredGoalsForReprezentacijeSideBySide(reprezentacija1, reprezentacija2);
 			os << crt;
 		}
 
