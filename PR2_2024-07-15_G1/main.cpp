@@ -523,6 +523,7 @@ public:
 
 	// Methods I added below
 	Reprezentacija(const Reprezentacija& reprezentacija) = default;
+	~Reprezentacija() = default;
 
 	Reprezentacija& operator=(const Reprezentacija& rhs) {
 		if (this == &rhs) {
@@ -623,6 +624,7 @@ public:
 	Prventstvo() = default;
 	Prventstvo(const Prventstvo& prventstvo) = default;
 	Prventstvo& operator=(const Prventstvo& rhs) = default;
+	~Prventstvo() = default;
 
 	[[nodiscard]] const Kolekcija<Reprezentacija, Reprezentacija, 20>& getUtakmice() const noexcept {
 		return _utakmice;
