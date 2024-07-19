@@ -812,7 +812,7 @@ private:
 		std::thread emailThread{
 			[&]() {
 				// DON'T FORGET TO UNCOMMENT THIS
-				// std::this_thread::sleep_for(2s);
+				std::this_thread::sleep_for(2s);
 				std::cout << "\nTo: " << igrac.getID() << "@euro2024.com\n";
 				std::cout << "From: info@euro2024.com\n";
 				std::cout << "Subject: Informacija\n";
