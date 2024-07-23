@@ -741,11 +741,13 @@ public:
 		for (const auto& igrac : igraci2) {
 			for (std::size_t i = 0; i < igrac.getBrojPogodaka(); ++i) {
 				if (endLinePos != std::string::npos) {
-					playerNamesSideBySide.insert(endLinePos, std::string(" ") + igrac.getImePrezime());
+					playerNamesSideBySide.insert(endLinePos, std::string("\t") + igrac.getImePrezime());
+					endLinePos = playerNamesSideBySide.find('\n', endLinePos + 1);
 					endLinePos = playerNamesSideBySide.find('\n', endLinePos + 1);
 					continue;
 				}
 
+				playerNamesSideBySide += "\t\t";
 				playerNamesSideBySide += igrac.getImePrezime();
 				playerNamesSideBySide += '\n';
 			}
@@ -814,7 +816,7 @@ private:
 		std::thread emailThread{
 			[&]() {
 				// DON'T FORGET TO UNCOMMENT THIS LINE BELOW
-				std::this_thread::sleep_for(2s);
+				//std::this_thread::sleep_for(2s);
 				std::cout << "\nTo: " << igrac.getID() << "@euro2024.com\n";
 				std::cout << "From: info@euro2024.com\n";
 				std::cout << "Subject: Informacija\n";
@@ -951,6 +953,22 @@ void main() {
 	{
 		cout << obj.what() << '\n';
 	}
+	
+	// To see output if sides were reversed comment the chunk above
+	// and uncomment chunk below
+	//ENG.AddIgrac(denis);
+	//ENG.AddIgrac(jasmin);
+	//BIH.AddIgrac(goran);
+	//BIH.AddIgrac(adil);
+	//try
+	//{
+	//	//onemoguciti dodavanje istih igraca - provjeravati ID, baciti izuzetak
+	//	ENG.AddIgrac(denis);
+	//}
+	//catch (exception& obj)
+	//{
+	//	cout << obj.what() << '\n';
+	//}
 	Prventstvo euro2024;
 	euro2024.AddUtakmicu(BIH, ENG);
 	try
