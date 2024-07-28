@@ -249,18 +249,6 @@ public:
 	Rjecnik<Karakteristike, const char*>& GetKomentareKarakteristika() { return _komentariKarakteristika; }
 
 	// Methods I added below
-	ZadovoljstvoKupca(const ZadovoljstvoKupca& zadovoljstvoKupca)
-		: _ocjena { zadovoljstvoKupca.getOcjena() }
-		, _komentariKarakteristika { zadovoljstvoKupca.getKomentareKarakteristika() }
-	{}
-
-	ZadovoljstvoKupca& operator=(const ZadovoljstvoKupca& zadovoljstvoKupca) {
-		_ocjena = zadovoljstvoKupca.getOcjena();
-		_komentariKarakteristika = zadovoljstvoKupca.getKomentareKarakteristika();
-
-		return *this;
-	}
-
 	[[nodiscard]] bool daLiSuJednakiKomentariKarakteristika(
 		const Rjecnik<Karakteristike, const char*>& komentariKarakteristika
 	) const noexcept {
