@@ -703,6 +703,9 @@ public:
 		if (!reprezentacija1 || !reprezentacija2) {
 			return false;
 		}
+		else if (!daLiSuReprezentacijeVecSusreleSe(*reprezentacija1, *reprezentacija2)) {
+			return false;
+		}
 
 		auto igrac{ 
 			getIgracByIDOrNameFromReprezentacije(idIliImeIgraca, *reprezentacija1, *reprezentacija2) 
@@ -741,9 +744,13 @@ public:
 		for (const auto& igrac : igraci2) {
 			for (std::size_t i = 0; i < igrac.getBrojPogodaka(); ++i) {
 				if (endLinePos != std::string::npos) {
-					playerNamesSideBySide.insert(endLinePos, std::string("\t") + igrac.getImePrezime());
+					std::string strToInsert{ std::string("\t") + igrac.getImePrezime() };
+
+					playerNamesSideBySide.insert(endLinePos, strToInsert);
+					
+					endLinePos += strToInsert.size();
 					endLinePos = playerNamesSideBySide.find('\n', endLinePos + 1);
-					endLinePos = playerNamesSideBySide.find('\n', endLinePos + 1);
+					
 					continue;
 				}
 
