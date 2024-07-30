@@ -724,48 +724,65 @@ public:
 		return false;
 	}
 
-	[[nodiscard]] static std::string getPlayersWhoScoredGoalsForReprezentacijeSideBySide(
-		const Reprezentacija& reprezentacija1,
-		const Reprezentacija& reprezentacija2
+	[[nodiscard]] static std::string getPlayersWhoScoredGoalsSideBySide(
+		const std::vector<Igrac>& igraci1,
+		const std::vector<Igrac>& igraci2
 	) {
-		const auto& igraci1{ reprezentacija1.getIgraci() };
-		const auto& igraci2{ reprezentacija2.getIgraci() };
+		std::string imenaIPrezimenaIgraca{};
+		std::string imeIPrezimeIgraca1{};
+		std::string imeIPrezimeIgraca2{};
 
-		std::string playerNamesSideBySide{};
+		auto igrac1It{ std::begin(igraci1) };
+		auto igrac2It{ std::begin(igraci2) };
 
-		for (const auto& igrac : igraci1) {
-			for (std::size_t i = 0; i < igrac.getBrojPogodaka(); ++i) {
-				playerNamesSideBySide += igrac.getImePrezime();
-				playerNamesSideBySide += '\n';
-			}
-		}
+		std::size_t pogodak1Brojac{ 0 };
+		std::size_t pogodak2Brojac{ 0 };
 
-		std::size_t endLinePos{ playerNamesSideBySide.find('\n') };
-		for (const auto& igrac : igraci2) {
-			for (std::size_t i = 0; i < igrac.getBrojPogodaka(); ++i) {
-				if (endLinePos != std::string::npos) {
-					std::string strToInsert{ std::string("\t") + igrac.getImePrezime() };
-
-					playerNamesSideBySide.insert(endLinePos, strToInsert);
-					
-					endLinePos += strToInsert.size();
-					endLinePos = playerNamesSideBySide.find('\n', endLinePos + 1);
-					
-					continue;
+		auto getNextIgracName{
+			[](
+				std::vector<Igrac>::const_iterator& igracIt,
+				std::vector<Igrac>::const_iterator igracEnd,
+				std::size_t& pogodakIndex
+			) {
+				if (igracIt == igracEnd) {
+					return "";
+				}
+				else if (pogodakIndex == igracIt->getBrojPogodaka()) {
+					pogodakIndex = 0;
+					++igracIt;
+					return "";
 				}
 
-				playerNamesSideBySide += "\t\t";
-				playerNamesSideBySide += igrac.getImePrezime();
-				playerNamesSideBySide += '\n';
+				++pogodakIndex;
+
+				return igracIt->getImePrezime();
 			}
-		}
+		};
+
+		do {
+			imeIPrezimeIgraca1 = getNextIgracName(igrac1It, std::end(igraci1), pogodak1Brojac);
+			imeIPrezimeIgraca2 = getNextIgracName(igrac2It, std::end(igraci2), pogodak2Brojac);
+
+			imenaIPrezimenaIgraca += imeIPrezimeIgraca1;
+
+			if (!imeIPrezimeIgraca1.empty()) {
+				imenaIPrezimenaIgraca += '\t';
+				imeIPrezimeIgraca2 += '\n';
+			}
+			else if (!imeIPrezimeIgraca2.empty()) {
+				imenaIPrezimenaIgraca += "\t\t";
+				imeIPrezimeIgraca2 += '\n';
+			}
+
+			imenaIPrezimenaIgraca += imeIPrezimeIgraca2;
+		} while (igrac1It != std::end(igraci1) || igrac2It != std::end(igraci2));
 
 		// To remove the unnecessary '\n' at the end
-		if (!playerNamesSideBySide.empty()) {
-			playerNamesSideBySide.pop_back();
+		if (!imenaIPrezimenaIgraca.empty()) {
+			imenaIPrezimenaIgraca.pop_back();
 		}
 
-		return playerNamesSideBySide;
+		return imenaIPrezimenaIgraca;
 	}
 
 	friend std::ostream& operator<<(std::ostream& os, const Prventstvo& prventstvo) {
@@ -781,7 +798,7 @@ public:
 			os << reprezentacija2.getDrzava() << ' ' << reprezentacija2.getBrojPogodaka();
 			os << crt;
 
-			os << Prventstvo::getPlayersWhoScoredGoalsForReprezentacijeSideBySide(reprezentacija1, reprezentacija2);
+			os << Prventstvo::getPlayersWhoScoredGoalsSideBySide(reprezentacija1.getIgraci(), reprezentacija2.getIgraci());
 			os << crt;
 		}
 
@@ -961,8 +978,8 @@ void main() {
 		cout << obj.what() << '\n';
 	}
 	
-	// To see output if sides were reversed comment the chunk above
-	// and uncomment chunk below
+	//// To see output if sides were reversed comment the chunk above
+	//// and uncomment chunk below
 	//ENG.AddIgrac(denis);
 	//ENG.AddIgrac(jasmin);
 	//BIH.AddIgrac(goran);
