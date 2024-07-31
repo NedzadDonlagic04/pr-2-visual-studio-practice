@@ -611,6 +611,18 @@ public:
 
 		return temp;
 	}
+
+	[[nodiscard]] std::vector<std::reference_wrapper<const Igrac>> getIgraciThatScores() const {
+		std::vector<std::reference_wrapper<const Igrac>> igraci{};
+		
+		for (auto& igrac : _igraci) {
+			for (std::size_t i = 0; i < igrac.getBrojPogodaka(); ++i) {
+				igraci.push_back(igrac);
+			}
+		}
+
+		return igraci;
+	}
 };
 
 class Prventstvo {
@@ -725,64 +737,40 @@ public:
 	}
 
 	[[nodiscard]] static std::string getPlayersWhoScoredGoalsSideBySide(
-		const std::vector<Igrac>& igraci1,
-		const std::vector<Igrac>& igraci2
+		const std::vector<std::reference_wrapper<const Igrac>>& igraci1,
+		const std::vector<std::reference_wrapper<const Igrac>>& igraci2
 	) {
-		std::string imenaIPrezimenaIgraca{};
-		std::string imeIPrezimeIgraca1{};
-		std::string imeIPrezimeIgraca2{};
-
+		std::string playerNamesSideBySide{};
+		
 		auto igrac1It{ std::begin(igraci1) };
 		auto igrac2It{ std::begin(igraci2) };
+		bool anyIgraci1Left{ igrac1It != std::end(igraci1) };
+		bool anyIgraci2Left{ igrac2It != std::end(igraci2) };
 
-		std::size_t pogodak1Brojac{ 0 };
-		std::size_t pogodak2Brojac{ 0 };
-
-		auto getNextIgracName{
-			[](
-				std::vector<Igrac>::const_iterator& igracIt,
-				std::vector<Igrac>::const_iterator igracEnd,
-				std::size_t& pogodakIndex
-			) {
-				if (igracIt == igracEnd) {
-					return "";
-				}
-				else if (pogodakIndex == igracIt->getBrojPogodaka()) {
-					pogodakIndex = 0;
-					++igracIt;
-					return "";
-				}
-
-				++pogodakIndex;
-
-				return igracIt->getImePrezime();
-			}
-		};
-
-		do {
-			imeIPrezimeIgraca1 = getNextIgracName(igrac1It, std::end(igraci1), pogodak1Brojac);
-			imeIPrezimeIgraca2 = getNextIgracName(igrac2It, std::end(igraci2), pogodak2Brojac);
-
-			imenaIPrezimenaIgraca += imeIPrezimeIgraca1;
-
-			if (!imeIPrezimeIgraca1.empty()) {
-				imenaIPrezimenaIgraca += '\t';
-				imeIPrezimeIgraca2 += '\n';
-			}
-			else if (!imeIPrezimeIgraca2.empty()) {
-				imenaIPrezimenaIgraca += "\t\t";
-				imeIPrezimeIgraca2 += '\n';
+		while (anyIgraci1Left || anyIgraci2Left) {
+			if (anyIgraci1Left) {
+				playerNamesSideBySide += igrac1It->get().getImePrezime();
+				++igrac1It;
 			}
 
-			imenaIPrezimenaIgraca += imeIPrezimeIgraca2;
-		} while (igrac1It != std::end(igraci1) || igrac2It != std::end(igraci2));
+			if (anyIgraci2Left) {
+				playerNamesSideBySide += ((anyIgraci1Left) ? "\t" : "\t\t");
+				playerNamesSideBySide += igrac2It->get().getImePrezime();
+				++igrac2It;
+			}
 
-		// To remove the unnecessary '\n' at the end
-		if (!imenaIPrezimenaIgraca.empty()) {
-			imenaIPrezimenaIgraca.pop_back();
+			playerNamesSideBySide += '\n';
+
+			anyIgraci1Left = igrac1It != std::end(igraci1);
+			anyIgraci2Left = igrac2It != std::end(igraci2);
 		}
 
-		return imenaIPrezimenaIgraca;
+
+		if (!playerNamesSideBySide.empty()) {
+			playerNamesSideBySide.pop_back();
+		}
+
+		return playerNamesSideBySide;
 	}
 
 	friend std::ostream& operator<<(std::ostream& os, const Prventstvo& prventstvo) {
@@ -798,7 +786,7 @@ public:
 			os << reprezentacija2.getDrzava() << ' ' << reprezentacija2.getBrojPogodaka();
 			os << crt;
 
-			os << Prventstvo::getPlayersWhoScoredGoalsSideBySide(reprezentacija1.getIgraci(), reprezentacija2.getIgraci());
+			os << Prventstvo::getPlayersWhoScoredGoalsSideBySide(reprezentacija1.getIgraciThatScores(), reprezentacija2.getIgraciThatScores());
 			os << crt;
 		}
 
