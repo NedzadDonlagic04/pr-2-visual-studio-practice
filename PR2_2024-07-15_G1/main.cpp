@@ -668,6 +668,10 @@ public:
 		if (daLiSuReprezentacijeVecSusreleSe(reprezentacija1, reprezentacija2)) {
 			throw std::runtime_error("Reprezentacije su se vec jednom susrele na ovom prvenstvu");
 		}
+		else if (reprezentacija1.getDrzava() == reprezentacija2.getDrzava()) {
+			// No point in setting a match if the countries are the same
+			return;
+		}
 
 		_utakmice.AddElement(reprezentacija1, reprezentacija2);
 	}
