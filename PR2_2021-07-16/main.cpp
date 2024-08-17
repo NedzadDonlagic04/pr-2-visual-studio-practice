@@ -646,6 +646,7 @@ public:
 	KaratePolaznik(const KaratePolaznik& karatePolaznik)
 		: Korisnik(karatePolaznik)
 		, _polozeniPojasevi { karatePolaznik.getPolozeniPojaseviCopy() }
+		, m_sljedeciPojasZaDodati{ karatePolaznik.getSljedeciPojasZaDodati() }
 	{}
 
 	KaratePolaznik& operator=(const KaratePolaznik& rhs) {
@@ -657,6 +658,7 @@ public:
 
 		Korisnik::operator=(rhs);
 		_polozeniPojasevi = rhs.getPolozeniPojaseviCopy();
+		m_sljedeciPojasZaDodati = rhs.getSljedeciPojasZaDodati();
 
 		return *this;
 	}

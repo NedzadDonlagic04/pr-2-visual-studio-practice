@@ -598,6 +598,7 @@ public:
         , _emailAdresa{ karatePolaznik.getEmail() }
         , _brojTelefona{ karatePolaznik.getBrojTelefona() }
         , _polozeniPojasevi{ karatePolaznik.getPolozeniPojasevi() }
+        , m_sljedeciPojasZaDodati{ karatePolaznik.getSljedeciPojasZaDodati() }
     {}
 
     KaratePolaznik& operator=(const KaratePolaznik& rhs) {
@@ -611,6 +612,7 @@ public:
         _emailAdresa = rhs.getEmail();
         _brojTelefona = rhs.getBrojTelefona();
         _polozeniPojasevi = rhs.getPolozeniPojasevi();
+        m_sljedeciPojasZaDodati = rhs.getSljedeciPojasZaDodati();
 
         return *this;
     }
