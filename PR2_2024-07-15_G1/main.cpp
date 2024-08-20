@@ -195,7 +195,7 @@ public:
 	}
 
 	Kolekcija InsertAt(const int index, const T1& element1, const T2& element2) {
-		if (getTrenutno() == max || index < 0 || index >= getTrenutno()) {
+		if (getTrenutno() == max || index < 0 || index > getTrenutno()) {
 			return *this;
 		}
 

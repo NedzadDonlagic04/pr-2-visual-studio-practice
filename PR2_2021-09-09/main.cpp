@@ -176,7 +176,7 @@ public:
 		if (getTrenutno() == max) {
 			throw std::runtime_error("Maximalni broj elemenata dostignut");
 		}
-		else if (index < 0 || index >= getTrenutno()) {
+		else if (index < 0 || index > getTrenutno()) {
 			return;
 		}
 

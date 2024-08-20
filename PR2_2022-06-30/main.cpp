@@ -225,7 +225,7 @@ public:
         if (!_omoguciDupliranje && daLiElementPostoji(element1, element2)) {
             throw std::exception("Dupliranje elemenata nije dozvoljeno");
         }
-        else if (index < 0 || index >= getTrenutno()) {
+        else if (index < 0 || index > getTrenutno()) {
             return *this;
         }
 
