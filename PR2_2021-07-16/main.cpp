@@ -534,7 +534,7 @@ public:
 	}
 
 	[[nodiscard]] double getAverage() const noexcept {
-		const auto& size{ _polozeneTehnike.size() };
+		const auto& size{ getBrojTehnika() };
 
 		if (!size) {
 			return 0.0;
