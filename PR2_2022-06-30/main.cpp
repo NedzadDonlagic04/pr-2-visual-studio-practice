@@ -93,7 +93,7 @@ const std::string invalidPassportId{ "NOT VALID" };
     return file.tellg();
 }
 
-[[nodiscard]] int getStrCountInFile(const std::string& filePath, const std::string& charsToFind) {
+[[nodiscard]] int getSpecificCharacterCountInFile(const std::string& filePath, const std::string& charsToFind) {
     std::ifstream file{ filePath };
 
     if (!file.is_open()) {
@@ -603,7 +603,7 @@ public:
             return { 13, 3 };
         }
 
-        return { getCharacterCountInFile(filePath), getStrCountInFile(filePath, charsToFind) };
+        return { getCharacterCountInFile(filePath), getSpecificCharacterCountInFile(filePath, charsToFind) };
     }
 
 private:
