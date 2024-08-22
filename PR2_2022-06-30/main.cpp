@@ -93,30 +93,20 @@ const std::string invalidPassportId{ "NOT VALID" };
     return file.tellg();
 }
 
-[[nodiscard]] int getStrInStrCount(const std::string& strToFind, const std::string& src) {
-    int counter{ 0 };
-    std::size_t endPos{ src.find(strToFind) };
-
-    while (endPos != std::string::npos) {
-        endPos = src.find(strToFind, endPos + 1);
-        ++counter;
-    }
-
-    return counter;
-}
-
-[[nodiscard]] int getStrCountInFile(const std::string& filePath, const std::string& strToFind) {
+[[nodiscard]] int getStrCountInFile(const std::string& filePath, const std::string& charsToFind) {
     std::ifstream file{ filePath };
 
     if (!file.is_open()) {
         return 0;
     }
 
-    std::string line{};
+    char sign{};
     int counter{ 0 };
 
-    while (std::getline(file, line)) {
-        counter += getStrInStrCount(strToFind, line);
+    while (file >> sign) {
+        if (charsToFind.find(sign) != std::string::npos) {
+            ++counter;
+        }
     }
 
     return counter;
@@ -605,7 +595,7 @@ public:
 
     [[nodiscard]] std::pair<int, int> GetBrojZnakova(
         const std::string& fileName, 
-        const std::string& strToFind
+        const std::string& charsToFind
     ) const {
         const std::string filePath{ "./" + fileName };
 
@@ -613,7 +603,7 @@ public:
             return { 13, 3 };
         }
 
-        return { getCharacterCountInFile(filePath), getStrCountInFile(filePath, strToFind) };
+        return { getCharacterCountInFile(filePath), getStrCountInFile(filePath, charsToFind) };
     }
 
 private:
