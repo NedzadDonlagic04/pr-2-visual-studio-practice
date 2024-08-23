@@ -66,7 +66,7 @@ ukoliko broj telefona nije u validnom formatu, njegova vrijednost se postavlja n
 const std::string invalidPhoneNum{ "NOT VALID" };
 
 [[nodiscard]] bool ValidirajBrojTelefona(const std::string& phoneNum) {
-    std::regex phoneNumValidation{ "\\+\\d{2,3}0?\\d{4,5}[\\s-]?\\d{2,3}" };
+    std::regex phoneNumValidation{ "\\+\\d{2,3}0?6\\d{3,4}[\\s-]?\\d{2,3}" };
 
     return std::regex_match(phoneNum, phoneNumValidation);
 }
