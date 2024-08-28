@@ -97,19 +97,16 @@ const std::string invalidPassportId{ "NOT VALID" };
     std::ifstream file{ filePath };
 
     if (!file.is_open()) {
-        return 0;
+        return -1;
     }
 
-    char sign{};
-    int counter{ 0 };
-
-    while (file >> sign) {
-        if (charsToFind.find(sign) != std::string::npos) {
-            ++counter;
+    return std::count_if(
+        std::istream_iterator<char>{ file },
+        std::istream_iterator<char>{},
+        [&](const char sign) {
+            return charsToFind.find(sign) != std::string::npos;
         }
-    }
-
-    return counter;
+    );
 }
 // Functions I defined above
 
