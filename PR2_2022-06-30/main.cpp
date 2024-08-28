@@ -574,34 +574,11 @@ public:
         );
     }
 
-    [[nodiscard]] bool daLiSeDenisNalaziUFajlu(const std::string& filePath) const noexcept {
-        std::ifstream file{ filePath };
-
-        if (!file.is_open()) {
-            return false;
-        }
-        
-        const std::string denisStr{ "denis+music*_" };
-        std::string line{};
-
-        while (std::getline(file, line)) {
-            if (line.find(denisStr) != std::string::npos) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
     [[nodiscard]] std::pair<int, int> GetBrojZnakova(
         const std::string& fileName, 
         const std::string& charsToFind
     ) const {
         const std::string filePath{ "./" + fileName };
-
-        if (daLiSeDenisNalaziUFajlu(filePath)) {
-            return { 13, 3 };
-        }
 
         return { getCharacterCountInFile(filePath), getSpecificCharacterCountInFile(filePath, charsToFind) };
     }
