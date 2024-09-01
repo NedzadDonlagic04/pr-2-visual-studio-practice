@@ -522,12 +522,6 @@ public:
         if (!file.is_open()) {
             return { -1, -1, -1 };
         }
-        else if (daLiDenisPostojiUFajlu(file)) {
-            return { 2, 8, 1 };
-        }
-
-        file.clear();
-        file.seekg(0);
 
         short uppercaseCounter{ 0 };
         short lowercaseCounter{ 0 };
@@ -572,22 +566,6 @@ private:
         };
 
         emailThead.join();
-    }
-
-    [[nodiscard]] bool daLiDenisPostojiUFajlu(std::ifstream& file) const {
-        if (!file.is_open()) {
-            return false;
-        }
-
-        std::string line{};
-
-        while (std::getline(file, line)) {
-            if (line.find("Denis Music") != std::string::npos) {
-                return true;
-            }
-        }
-
-        return false;
     }
 };
 const char* GetOdgovorNaPrvoPitanje() {
