@@ -727,17 +727,13 @@ public:
 			getIgracByIDOrNameFromReprezentacije(idIliImeIgraca, *reprezentacija1, *reprezentacija2) 
 		};
 
-		if (igrac) {
-			if (igrac->daLiJePogodakDodan(pogodak)) {
-				return false;
-			}
-
-			igrac->AddPogodak(pogodak);
-			sendMail(*igrac, *reprezentacija1, *reprezentacija2);
-			return true;
+		if (!igrac || igrac->daLiJePogodakDodan(pogodak)) {
+			return false;
 		}
 
-		return false;
+		igrac->AddPogodak(pogodak);
+		sendMail(*igrac, *reprezentacija1, *reprezentacija2);
+		return true;
 	}
 
 	[[nodiscard]] static std::string getPlayersWhoScoredGoalsSideBySide(
