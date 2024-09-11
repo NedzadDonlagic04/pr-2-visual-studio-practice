@@ -349,6 +349,7 @@ public:
 	~Pogodak()
 	{
 		delete[] _napomena; _napomena = nullptr;
+		delete _vrijemePogotka; _vrijemePogotka = nullptr;
 	}
 	Vrijeme GetVrijemePogotka() { return *_vrijemePogotka; }
 	char* GetNapomena() { return _napomena; }
