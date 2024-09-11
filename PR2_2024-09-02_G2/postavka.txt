@@ -121,11 +121,11 @@ public:
 	}
 };
 
-class Reprezentacija {
+class DrzavaTim {
 	Drzava _drzava;
 	vector<Igrac> _igraci;
 public:
-	Reprezentacija(Drzava drzava) {
+	DrzavaTim(Drzava drzava) {
 		_drzava = drzava;
 	}
 	Drzava GetDrzava() { return _drzava; }
@@ -133,9 +133,9 @@ public:
 };
 
 class Prventstvo {
-	Kolekcija<Reprezentacija, Reprezentacija, 20> _utakmice;
+	Kolekcija<DrzavaTim, DrzavaTim, 20> _utakmice;
 public:
-	Kolekcija<Reprezentacija, Reprezentacija, 20>& GetUtakmice() {
+	Kolekcija<DrzavaTim, DrzavaTim, 20>& GetUtakmice() {
 		return _utakmice;
 	}
 };
@@ -220,7 +220,7 @@ void main() {
 		drugiPogodak(drugiPogodak202319, "podaci o drugom pogotku"),
 		treciPogodak(treciPogodak205108, "podaci o trecem pogotku"),
 		cetvrtiPogodak(cetvrtiPogodak210654, "podaci o cetvrtom pogotku");
-	Reprezentacija BIH(BOSNA_I_HERCEGOVINA), ENG(ENGLESKA);
+	DrzavaTim BIH(BOSNA_I_HERCEGOVINA), ENG(ENGLESKA);
 	BIH.AddIgrac(denis);
 	BIH.AddIgrac(jasmin);
 	ENG.AddIgrac(goran);

@@ -516,21 +516,21 @@ private:
 };
 int Igrac::_id = 1;
 
-class Reprezentacija {
+class DrzavaTim {
 	Drzava _drzava;
 	vector<Igrac> _igraci;
 public:
-	Reprezentacija(Drzava drzava = BOSNA_I_HERCEGOVINA) {
+	DrzavaTim(Drzava drzava = BOSNA_I_HERCEGOVINA) {
 		_drzava = drzava;
 	}
 	Drzava GetDrzava() { return _drzava; }
 	vector<Igrac>& GetIgraci() { return _igraci; }
 
 	// Methods I added below
-	Reprezentacija(const Reprezentacija& reprezentacija) = default;
-	~Reprezentacija() = default;
+	DrzavaTim(const DrzavaTim& reprezentacija) = default;
+	~DrzavaTim() = default;
 
-	Reprezentacija& operator=(const Reprezentacija& rhs) {
+	DrzavaTim& operator=(const DrzavaTim& rhs) {
 		if (this == &rhs) {
 			return *this;
 		}
@@ -549,7 +549,7 @@ public:
 		return _igraci;
 	}
 
-	[[nodiscard]] bool daLiIgracPostojiUReprezentaciji(const Igrac& igracZaPronaci) const noexcept {
+	[[nodiscard]] bool daLiIgracPostojiUDrzavaTim(const Igrac& igracZaPronaci) const noexcept {
 		auto pronadeniIgrac{
 			std::find(
 				std::begin(getIgraci()),
@@ -562,19 +562,19 @@ public:
 	}
 
 	void AddIgrac(const Igrac& igrac) {
-		if (daLiIgracPostojiUReprezentaciji(igrac)) {
+		if (daLiIgracPostojiUDrzavaTim(igrac)) {
 			throw std::runtime_error("Igrac vec dodan u reprezentaciju");
 		}
 
 		_igraci.push_back(igrac);
 	}
 
-	[[nodiscard]] bool operator==(const Reprezentacija& rhs) const noexcept {
+	[[nodiscard]] bool operator==(const DrzavaTim& rhs) const noexcept {
 		return getDrzava() == rhs.getDrzava()
 			&& getIgraci() == rhs.getIgraci();
 	}
 
-	[[nodiscard]] bool operator!=(const Reprezentacija& rhs) const noexcept {
+	[[nodiscard]] bool operator!=(const DrzavaTim& rhs) const noexcept {
 		return !(*this == rhs);
 	}
 
@@ -631,9 +631,9 @@ public:
 };
 
 class Prventstvo {
-	Kolekcija<Reprezentacija, Reprezentacija, 20> _utakmice;
+	Kolekcija<DrzavaTim, DrzavaTim, 20> _utakmice;
 public:
-	Kolekcija<Reprezentacija, Reprezentacija, 20>& GetUtakmice() {
+	Kolekcija<DrzavaTim, DrzavaTim, 20>& GetUtakmice() {
 		return _utakmice;
 	}
 
@@ -643,22 +643,22 @@ public:
 	Prventstvo& operator=(const Prventstvo& rhs) = default;
 	~Prventstvo() = default;
 
-	[[nodiscard]] const Kolekcija<Reprezentacija, Reprezentacija, 20>& getUtakmice() const noexcept {
+	[[nodiscard]] const Kolekcija<DrzavaTim, DrzavaTim, 20>& getUtakmice() const noexcept {
 		return _utakmice;
 	}
 
-	[[nodiscard]] bool daLiSuReprezentacijeVecSusreleSe(
-		const Reprezentacija& reprezentacija1ZaPronaci,
-		const Reprezentacija& reprezentacija2ZaPronaci
+	[[nodiscard]] bool daLiSuSeDrzaveTimoviVecSusreli(
+		const DrzavaTim& drzavaTim1ZaPronaci,
+		const DrzavaTim& drzavaTim2ZaPronaci
 	) const noexcept {
 		for (int i = 0; i < _utakmice.getTrenutno(); ++i) {
-			const Reprezentacija& reprezentacija1{ _utakmice.getElement1(i) };
-			const Reprezentacija& reprezentacija2{ _utakmice.getElement2(i) };
+			const DrzavaTim& drzavaTim1{ _utakmice.getElement1(i) };
+			const DrzavaTim& drzavaTim2{ _utakmice.getElement2(i) };
 
-			if (reprezentacija1ZaPronaci == reprezentacija1 && reprezentacija2ZaPronaci == reprezentacija2) {
+			if (drzavaTim1ZaPronaci == drzavaTim1 && drzavaTim2ZaPronaci == drzavaTim2) {
 				return true;
 			}
-			else if (reprezentacija1ZaPronaci == reprezentacija2 && reprezentacija2ZaPronaci == reprezentacija1) {
+			else if (drzavaTim1ZaPronaci == drzavaTim2 && drzavaTim2ZaPronaci == drzavaTim1) {
 				return true;
 			}
 		}
@@ -667,48 +667,48 @@ public:
 	}
 
 	void AddUtakmicu(
-		const Reprezentacija& reprezentacija1,
-		const Reprezentacija& reprezentacija2
+		const DrzavaTim& drzavaTim1,
+		const DrzavaTim& drzavaTim2
 	) {
-		if (daLiSuReprezentacijeVecSusreleSe(reprezentacija1, reprezentacija2)) {
-			throw std::runtime_error("Reprezentacije su se vec jednom susrele na ovom prvenstvu");
+		if (daLiSuSeDrzaveTimoviVecSusreli(drzavaTim1, drzavaTim2)) {
+			throw std::runtime_error("Drzave tim su se vec jednom susrele na ovom prvenstvu");
 		}
-		else if (reprezentacija1.getDrzava() == reprezentacija2.getDrzava()) {
+		else if (drzavaTim1.getDrzava() == drzavaTim2.getDrzava()) {
 			// No point in setting a match if the countries are the same
 			return;
 		}
 
-		_utakmice.AddElement(reprezentacija1, reprezentacija2);
+		_utakmice.AddElement(drzavaTim1, drzavaTim2);
 	}
 
-	[[nodiscard]] Reprezentacija* getReprezentacijaForDrzava(Drzava drzava) noexcept {
+	[[nodiscard]] DrzavaTim* getDrzavaTimForDrzava(Drzava drzava) noexcept {
 		for (int i = 0; i < _utakmice.getTrenutno(); ++i) {
-			Reprezentacija& reprezentacija1{ _utakmice.getElement1(i) };
-			Reprezentacija& reprezentacija2{ _utakmice.getElement2(i) };
+			DrzavaTim& drzavaTim1{ _utakmice.getElement1(i) };
+			DrzavaTim& drzavaTim2{ _utakmice.getElement2(i) };
 
-			if (reprezentacija1.getDrzava() == drzava) {
-				return &reprezentacija1;
+			if (drzavaTim1.getDrzava() == drzava) {
+				return &drzavaTim1;
 			}
-			else if (reprezentacija2.getDrzava() == drzava) {
-				return &reprezentacija2;
+			else if (drzavaTim2.getDrzava() == drzava) {
+				return &drzavaTim2;
 			}
 		}
 
 		return nullptr;
 	}
 
-	[[nodiscard]] Igrac* getIgracByIDOrNameFromReprezentacije(
+	[[nodiscard]] Igrac* getIgracByIDOrNameFromDrzaveTimovi(
 		const std::string& idIliImeIgraca,
-		Reprezentacija& reprezentacija1,
-		Reprezentacija& reprezentacija2
+		DrzavaTim& drzavaTim1,
+		DrzavaTim& drzavaTim2
 	) noexcept {
-		Igrac* igrac1{ reprezentacija1.getIgracByIDOrName(idIliImeIgraca) };
+		Igrac* igrac1{ drzavaTim1.getIgracByIDOrName(idIliImeIgraca) };
 
 		if (igrac1) {
 			return igrac1;
 		}
 
-		Igrac* igrac2{ reprezentacija2.getIgracByIDOrName(idIliImeIgraca) };
+		Igrac* igrac2{ drzavaTim2.getIgracByIDOrName(idIliImeIgraca) };
 		return igrac2;
 	}
 
@@ -718,18 +718,18 @@ public:
 		const std::string& idIliImeIgraca,
 		const Pogodak& pogodak
 	) {
-		Reprezentacija* reprezentacija1{ getReprezentacijaForDrzava(drzava1) };
-		Reprezentacija* reprezentacija2{ getReprezentacijaForDrzava(drzava2) };
+		DrzavaTim* drzavaTim1{ getDrzavaTimForDrzava(drzava1) };
+		DrzavaTim* drzavaTim2{ getDrzavaTimForDrzava(drzava2) };
 
-		if (!reprezentacija1 || !reprezentacija2) {
+		if (!drzavaTim1 || !drzavaTim2) {
 			return false;
 		}
-		else if (!daLiSuReprezentacijeVecSusreleSe(*reprezentacija1, *reprezentacija2)) {
+		else if (!daLiSuSeDrzaveTimoviVecSusreli(*drzavaTim1, *drzavaTim2)) {
 			return false;
 		}
 
 		Igrac* igrac{
-			getIgracByIDOrNameFromReprezentacije(idIliImeIgraca, *reprezentacija1, *reprezentacija2)
+			getIgracByIDOrNameFromDrzaveTimovi(idIliImeIgraca, *drzavaTim1, *drzavaTim2)
 		};
 
 		if (!igrac || igrac->daLiJePogodakDodan(pogodak)) {
@@ -737,21 +737,21 @@ public:
 		}
 
 		igrac->AddPogodak(pogodak);
-		sendMail(*igrac, *reprezentacija1, *reprezentacija2);
+		sendMail(*igrac, *drzavaTim1, *drzavaTim2);
 		return true;
 	}
 
-	[[nodiscard]] static std::string getFormattedResultStrForReprezentacije(
-		const Reprezentacija& reprezentacija1,
-		const Reprezentacija& reprezentacija2
+	[[nodiscard]] static std::string getFormattedResultStrForDrzaveTimovi(
+		const DrzavaTim& drzavaTim1,
+		const DrzavaTim& drzavaTim2
 	) {
 		std::string formattedResult{};
 
-		std::string drzava1Str{ getDrzavaAsStr(reprezentacija1.getDrzava()) };
-		std::string drzava1Pogoci{ '(' + std::to_string(reprezentacija1.getBrojPogodaka()) + ')'};
+		std::string drzava1Str{ getDrzavaAsStr(drzavaTim1.getDrzava()) };
+		std::string drzava1Pogoci{ '(' + std::to_string(drzavaTim1.getBrojPogodaka()) + ')'};
 
-		std::string drzava2Str{ getDrzavaAsStr(reprezentacija2.getDrzava()) };
-		std::string drzava2Pogoci{ '(' + std::to_string(reprezentacija2.getBrojPogodaka()) + ')'};
+		std::string drzava2Str{ getDrzavaAsStr(drzavaTim2.getDrzava()) };
+		std::string drzava2Pogoci{ '(' + std::to_string(drzavaTim2.getBrojPogodaka()) + ')'};
 
 		formattedResult += drzava1Str;
 		formattedResult += " : ";
@@ -806,14 +806,14 @@ public:
 		const auto& utakmice{ prventstvo.getUtakmice() };
 
 		for (int i = 0; i < utakmice.getTrenutno(); ++i) {
-			const Reprezentacija& reprezentacija1{ utakmice.getElement1(i) };
-			const Reprezentacija& reprezentacija2{ utakmice.getElement2(i) };
+			const DrzavaTim& drzavaTim1{ utakmice.getElement1(i) };
+			const DrzavaTim& drzavaTim2{ utakmice.getElement2(i) };
 
 			os << crt;
-			os << Prventstvo::getFormattedResultStrForReprezentacije(reprezentacija1, reprezentacija2);
+			os << Prventstvo::getFormattedResultStrForDrzaveTimovi(drzavaTim1, drzavaTim2);
 			os << crt;
 
-			os << Prventstvo::getPlayersWhoScoredGoalsSideBySide(reprezentacija1.getIgraciThatScores(), reprezentacija2.getIgraciThatScores());
+			os << Prventstvo::getPlayersWhoScoredGoalsSideBySide(drzavaTim1.getIgraciThatScores(), drzavaTim2.getIgraciThatScores());
 			os << crt;
 		}
 
@@ -824,22 +824,22 @@ public:
 		std::vector<Igrac*> temp{};
 
 		for (int i = 0; i < _utakmice.getTrenutno(); ++i) {
-			Reprezentacija& reprezentacija1{ _utakmice.getElement1(i) };
-			Reprezentacija& reprezentacija2{ _utakmice.getElement2(i) };
+			DrzavaTim& drzavaTim1{ _utakmice.getElement1(i) };
+			DrzavaTim& drzavaTim2{ _utakmice.getElement2(i) };
 
-			auto igraciReprezentacije1{ reprezentacija1(brojPogodaka) };
-			auto igraciReprezentacije2{ reprezentacija2(brojPogodaka) };
+			auto igraciDrzaveTim1{ drzavaTim1(brojPogodaka) };
+			auto igraciDrzaveTim2{ drzavaTim2(brojPogodaka) };
 
 			temp.insert(
 				std::end(temp),
-				std::begin(igraciReprezentacije1),
-				std::end(igraciReprezentacije1)
+				std::begin(igraciDrzaveTim1),
+				std::end(igraciDrzaveTim1)
 			);
 
 			temp.insert(
 				std::end(temp),
-				std::begin(igraciReprezentacije2),
-				std::end(igraciReprezentacije2)
+				std::begin(igraciDrzaveTim2),
+				std::end(igraciDrzaveTim2)
 			);
 		}
 
@@ -849,8 +849,8 @@ public:
 private:
 	void sendMail(
 		const Igrac& igrac,
-		const Reprezentacija& reprezentacija1,
-		const Reprezentacija& reprezentacija2
+		const DrzavaTim& drzavaTim1,
+		const DrzavaTim& drzavaTim2
 	) const {
 		std::thread emailThread{
 			[&]() {
@@ -864,7 +864,7 @@ private:
 				std::cout << " je zabiljezio svoj " << igrac.getBrojPogodaka() << '\n';
 				std::cout << "pogodak na ovoj utakmici.\n";
 				std::cout << "Trenutni rezultat je:\n";
-				std::cout << Prventstvo::getFormattedResultStrForReprezentacije(reprezentacija1, reprezentacija2);
+				std::cout << Prventstvo::getFormattedResultStrForDrzaveTimovi(drzavaTim1, drzavaTim2);
 				std::cout << "\nPuno srece u nastavku susreta.\n\n";
 			}
 		};
@@ -953,7 +953,7 @@ void main() {
 		drugiPogodak(drugiPogodak202319, "podaci o drugom pogotku"),
 		treciPogodak(treciPogodak205108, "podaci o trecem pogotku"),
 		cetvrtiPogodak(cetvrtiPogodak210654, "podaci o cetvrtom pogotku");
-	Reprezentacija BIH(BOSNA_I_HERCEGOVINA), ENG(ENGLESKA);
+	DrzavaTim BIH(BOSNA_I_HERCEGOVINA), ENG(ENGLESKA);
 	BIH.AddIgrac(denis);
 	BIH.AddIgrac(jasmin);
 	ENG.AddIgrac(goran);
