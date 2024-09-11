@@ -697,24 +697,24 @@ public:
 		Reprezentacija& reprezentacija1,
 		Reprezentacija& reprezentacija2
 	) noexcept {
-		auto igrac1 { reprezentacija1.getIgracByIDOrName(idIliImeIgraca) };
-		
+		Igrac* igrac1{ reprezentacija1.getIgracByIDOrName(idIliImeIgraca) };
+
 		if (igrac1) {
 			return igrac1;
 		}
-		
-		auto igrac2{ reprezentacija2.getIgracByIDOrName(idIliImeIgraca) };
+
+		Igrac* igrac2{ reprezentacija2.getIgracByIDOrName(idIliImeIgraca) };
 		return igrac2;
 	}
 
 	bool AddPogodak(
-		Drzava drzava1, 
-		Drzava drzava2, 
-		const std::string& idIliImeIgraca, 
+		Drzava drzava1,
+		Drzava drzava2,
+		const std::string& idIliImeIgraca,
 		const Pogodak& pogodak
 	) {
-		auto reprezentacija1{ getReprezentacijaForDrzava(drzava1) };
-		auto reprezentacija2{ getReprezentacijaForDrzava(drzava2) };
+		Reprezentacija* reprezentacija1{ getReprezentacijaForDrzava(drzava1) };
+		Reprezentacija* reprezentacija2{ getReprezentacijaForDrzava(drzava2) };
 
 		if (!reprezentacija1 || !reprezentacija2) {
 			return false;
@@ -723,8 +723,8 @@ public:
 			return false;
 		}
 
-		auto igrac{ 
-			getIgracByIDOrNameFromReprezentacije(idIliImeIgraca, *reprezentacija1, *reprezentacija2) 
+		Igrac* igrac{
+			getIgracByIDOrNameFromReprezentacije(idIliImeIgraca, *reprezentacija1, *reprezentacija2)
 		};
 
 		if (!igrac || igrac->daLiJePogodakDodan(pogodak)) {
