@@ -189,9 +189,9 @@ public:
 		++(*_trenutno);
 	}
 
-	Kolekcija* InsertAt(const int index, const T1& element1, const T2& element2) {
+	Kolekcija InsertAt(const int index, const T1& element1, const T2& element2) {
 		if (getTrenutno() == max || index < 0 || index > getTrenutno()) {
-			return this;
+			return *this;
 		}
 
 		for (int i = getTrenutno(); i > index; --i) {
@@ -204,7 +204,7 @@ public:
 
 		++(*_trenutno);
 
-		return this;
+		return *this;
 	}
 
 	void RemoveAt(const int index) {
@@ -220,7 +220,7 @@ public:
 		}
 	}
 
-	Kolekcija* RemoveRange(const int start, const int end) {
+	Kolekcija RemoveRange(const int start, const int end) {
 		if (start < 0) {
 			throw std::runtime_error("Start index nije u opsegu");
 		}
@@ -236,14 +236,14 @@ public:
 			*/
 		}
 
-		Kolekcija* temp{ new Kolekcija{} };
+		Kolekcija removedElements{};
 
 		for (int i = start; i <= end; ++i) {
-			temp->AddElement(getElement1(start), getElement2(start));
+			removedElements.AddElement(getElement1(start), getElement2(start));
 			RemoveAt(start);
 		}
 
-		return temp;
+		return removedElements;
 	}
 };
 
@@ -764,7 +764,7 @@ public:
 			const Reprezentacija& reprezentacija2{ utakmice.getElement2(i) };
 
 			os << crt;
-			os << reprezentacija1.getDrzava() << ' ' << reprezentacija1.getBrojPogodaka();
+			os << reprezentacija1.getBrojPogodaka() << ' ' << reprezentacija1.getDrzava();
 			os << " : ";
 			os << reprezentacija2.getDrzava() << ' ' << reprezentacija2.getBrojPogodaka();
 			os << crt;
@@ -820,7 +820,7 @@ private:
 				std::cout << " je zabiljezio svoj " << igrac.getBrojPogodaka() << '\n';
 				std::cout << "pogodak na ovoj utakmici.\n";
 				std::cout << "Trenutni rezultat je:\n";
-				std::cout << reprezentacija1.getDrzava() << ' ' << reprezentacija1.getBrojPogodaka();
+				std::cout << reprezentacija1.getBrojPogodaka() << ' ' << reprezentacija1.getDrzava();
 				std::cout << " : ";
 				std::cout << reprezentacija2.getDrzava() << ' ' << reprezentacija2.getBrojPogodaka();
 				std::cout << "\nPuno srece u nastavku susreta.\n\n";
@@ -875,16 +875,16 @@ void main() {
 	2 2
 	* ....
 	*/
-	Kolekcija<int, int, 10>* kolekcija2 = kolekcija1.InsertAt(0, 10, 10);
-	cout << *kolekcija2 << crt;
+	Kolekcija<int, int, 10> kolekcija2 = kolekcija1.InsertAt(0, 10, 10);
+	cout << kolekcija2 << crt;
 	/*Metoda RemoveRange prihvata lokacija OD i DO, te u tom opsegu
    uklanja sve elemente iz kolekcije. U slucaju da zahtijevani opseg ne
    postoji u kolekciji
 	metoda treba baciti izuzetak. Na kraju, metoda treba da vrati
-   pokazivac na novi objekat tipa kolekcija koji sadrzi samo uklonjene
+   novi objekat tipa kolekcija koji sadrzi samo uklonjene
    elemente*/
-	Kolekcija<int, int, 10>* kolekcija3 = kolekcija1.RemoveRange(1, 3);
-	cout << *kolekcija3 << endl;
+	Kolekcija<int, int, 10> kolekcija3 = kolekcija1.RemoveRange(1, 3);
+	cout << kolekcija3 << endl;
 	cout << kolekcija1 << crt;
 	/*kolekcija3 bi trebala sadrzavati sljedece elemente:
 	0 0
@@ -896,7 +896,7 @@ void main() {
 	4 4
 	......
 	*/
-	kolekcija1 = *kolekcija3;
+	kolekcija1 = kolekcija3;
 	cout << kolekcija1;
 	Vrijeme
 		prviPogodak201633(20, 16, 33),
@@ -958,7 +958,7 @@ void main() {
 	U 20:35:16 sati igrac Jasmin Azemovic je zabiljezio svoj 1
    pogodak na ovoj utakmici.
 	Trenutni rezultat je:
-	BOSNA_I_HERCEGOVINA 2 : 0 ENGLESKA
+	2 BOSNA_I_HERCEGOVINA : ENGLESKA 0
 	Puno srece u nastavku susreta.
 	Neka bolji tim pobijedi.
 	*/
@@ -966,7 +966,7 @@ void main() {
 	cout << euro2024;
 	/*
 	-------------------------------------------
-	BOSNA_I_HERCEGOVINA 3 : 1 ENGLESKA
+	3 BOSNA_I_HERCEGOVINA : ENGLESKA 1
 	-------------------------------------------
 	Denis Music Goran Skondric
 	Jasmin Azemovic
