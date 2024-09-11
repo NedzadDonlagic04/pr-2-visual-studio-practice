@@ -268,7 +268,7 @@ void main() {
    pogodak na ovoj utakmici.
 	Trenutni rezultat je:
 	BOSNA_I_HERCEGOVINA : ENGLESKA
-		  (2)			    (0)
+		  (2)           (0)
 	Puno srece u nastavku susreta.
 	Neka bolji tim pobijedi.
 	*/
@@ -277,7 +277,7 @@ void main() {
 	/*
 	-------------------------------------------
 	BOSNA_I_HERCEGOVINA : ENGLESKA
-		  (3)			    (1)
+		  (3)           (1)
 	-------------------------------------------
 	Denis Music Goran Skondric
 	Jasmin Azemovic
