@@ -119,36 +119,50 @@ std::ostream& operator<<(std::ostream& os, Drzava drzava) {
 
 	return std::regex_match(id, idValidation);
 }
+
+[[nodiscard]] std::string addFrontBackPaddingToText(const std::string& str, const std::size_t width) {
+	if (str.size() > width) {
+		return str;
+	}
+
+	const std::size_t difference{ width - str.size() };
+	const std::size_t leftPadding{ difference / 2 };
+	const std::size_t rightPadding{ difference - leftPadding };
+
+	//std::cout << "difference -> " << difference << '\n';
+	//std::cout << "leftPadding -> " << leftPadding << '\n';
+	//std::cout << "rightPadding -> " << rightPadding << '\n';
+
+	return std::string(leftPadding, ' ') + str + std::string(rightPadding, ' ');
+}
+
+[[nodiscard]] std::string getDrzavaAsStr(Drzava drzava) {
+	std::ostringstream drzavaBuffer{};
+
+	drzavaBuffer << drzava;
+
+	return drzavaBuffer.str();
+}
 // Functions I added above
 
 template<class T1, class T2, int max>
 class Kolekcija {
 	T1 _elementi1[max]{};
 	T2 _elementi2[max]{};
-	int* _trenutno;
+	int _trenutno{ 0 };
 public:
-	Kolekcija() {
-		_trenutno = new int{ 0 };
-	}
-	~Kolekcija() {
-		delete _trenutno; _trenutno = nullptr;
-	}
-	T1 getElement1(int lokacija)const {
-		return _elementi1[lokacija];
-	}
-	T2 getElement2(int lokacija)const {
-		return _elementi2[lokacija];
-	}
-	int getTrenutno() const { return *_trenutno; }
 	friend ostream& operator<< (ostream& COUT, Kolekcija& obj) {
-		for (size_t i = 0; i < *obj._trenutno; i++)
+		for (size_t i = 0; i < obj._trenutno; i++)
 			COUT << obj.getElement1(i) << " " << obj.getElement2(i) << endl;
 		return COUT;
 	}
 
 	// Methods I added below
+	Kolekcija() = default;
+	~Kolekcija() = default;
+
 	Kolekcija(const Kolekcija& kolekcija)
-		: _trenutno{ new int { kolekcija.getTrenutno() } }
+		: _trenutno{ kolekcija.getTrenutno() }
 	{
 		for (int i = 0; i < getTrenutno(); ++i) {
 			_elementi1[i] = kolekcija.getElement1(i);
@@ -157,7 +171,7 @@ public:
 	}
 
 	Kolekcija& operator=(const Kolekcija& rhs) {
-		*_trenutno = rhs.getTrenutno();
+		_trenutno = rhs.getTrenutno();
 		for (int i = 0; i < getTrenutno(); ++i) {
 			_elementi1[i] = rhs.getElement1(i);
 			_elementi2[i] = rhs.getElement2(i);
@@ -166,12 +180,24 @@ public:
 		return *this;
 	}
 
-	T1& getElement1(int lokacija) {
+	[[nodiscard]] T1& getElement1(int lokacija) {
 		return _elementi1[lokacija];
 	}
 
-	T2& getElement2(int lokacija) {
+	[[nodiscard]] T2& getElement2(int lokacija) {
 		return _elementi2[lokacija];
+	}
+	
+	[[nodiscard]] T1 getElement1(int lokacija) const {
+		return _elementi1[lokacija];
+	}
+
+	[[nodiscard]] T2 getElement2(int lokacija) const {
+		return _elementi2[lokacija];
+	}
+
+	[[nodiscard]] int getTrenutno() const { 
+		return _trenutno; 
 	}
 
 	void AddElement(const T1& element1, const T2& element2) {
@@ -182,12 +208,12 @@ public:
 		_elementi1[getTrenutno()] = element1;
 		_elementi2[getTrenutno()] = element2;
 
-		++(*_trenutno);
+		++_trenutno;
 	}
 
-	Kolekcija* InsertAt(const int index, const T1& element1, const T2& element2) {
+	Kolekcija InsertAt(const int index, const T1& element1, const T2& element2) {
 		if (getTrenutno() == max || index < 0 || index > getTrenutno()) {
-			return this;
+			return *this;
 		}
 
 		for (int i = getTrenutno(); i > index; --i) {
@@ -198,9 +224,9 @@ public:
 		_elementi1[getTrenutno()] = element1;
 		_elementi2[getTrenutno()] = element2;
 
-		++(*_trenutno);
+		++_trenutno;
 
-		return this;
+		return *this;
 	}
 
 	void RemoveAt(const int index) {
@@ -208,7 +234,7 @@ public:
 			return;
 		}
 
-		--(*_trenutno);
+		--_trenutno;
 
 		for (int i = index; i < getTrenutno(); ++i) {
 			_elementi1[i] = _elementi1[i + 1];
@@ -715,6 +741,30 @@ public:
 		return true;
 	}
 
+	[[nodiscard]] static std::string getFormattedResultStrForReprezentacije(
+		const Reprezentacija& reprezentacija1,
+		const Reprezentacija& reprezentacija2
+	) {
+		std::string formattedResult{};
+
+		std::string drzava1Str{ getDrzavaAsStr(reprezentacija1.getDrzava()) };
+		std::string drzava1Pogoci{ '(' + std::to_string(reprezentacija1.getBrojPogodaka()) + ')'};
+
+		std::string drzava2Str{ getDrzavaAsStr(reprezentacija2.getDrzava()) };
+		std::string drzava2Pogoci{ '(' + std::to_string(reprezentacija2.getBrojPogodaka()) + ')'};
+
+		formattedResult += drzava1Str;
+		formattedResult += " : ";
+		formattedResult += drzava2Str;
+		formattedResult += '\n';
+
+		formattedResult += addFrontBackPaddingToText(drzava1Pogoci, drzava1Str.size());
+		formattedResult += "   ";
+		formattedResult += addFrontBackPaddingToText(drzava2Pogoci, drzava2Str.size());
+
+		return formattedResult;
+	}
+
 	[[nodiscard]] static std::string getPlayersWhoScoredGoalsSideBySide(
 		const std::vector<std::reference_wrapper<const Igrac>>& igraci1,
 		const std::vector<std::reference_wrapper<const Igrac>>& igraci2
@@ -760,9 +810,7 @@ public:
 			const Reprezentacija& reprezentacija2{ utakmice.getElement2(i) };
 
 			os << crt;
-			os << reprezentacija1.getDrzava() << ' ' << reprezentacija1.getBrojPogodaka();
-			os << " : ";
-			os << reprezentacija2.getDrzava() << ' ' << reprezentacija2.getBrojPogodaka();
+			os << Prventstvo::getFormattedResultStrForReprezentacije(reprezentacija1, reprezentacija2);
 			os << crt;
 
 			os << Prventstvo::getPlayersWhoScoredGoalsSideBySide(reprezentacija1.getIgraciThatScores(), reprezentacija2.getIgraciThatScores());
@@ -816,9 +864,7 @@ private:
 				std::cout << " je zabiljezio svoj " << igrac.getBrojPogodaka() << '\n';
 				std::cout << "pogodak na ovoj utakmici.\n";
 				std::cout << "Trenutni rezultat je:\n";
-				std::cout << reprezentacija1.getDrzava() << ' ' << reprezentacija1.getBrojPogodaka();
-				std::cout << " : ";
-				std::cout << reprezentacija2.getDrzava() << ' ' << reprezentacija2.getBrojPogodaka();
+				std::cout << Prventstvo::getFormattedResultStrForReprezentacije(reprezentacija1, reprezentacija2);
 				std::cout << "\nPuno srece u nastavku susreta.\n\n";
 			}
 		};
@@ -871,8 +917,8 @@ void main() {
 	2 2
 	* ....
 	*/
-	Kolekcija<int, int, 10>* kolekcija2 = kolekcija1.InsertAt(0, 10, 10);
-	cout << *kolekcija2 << crt;
+	Kolekcija<int, int, 10> kolekcija2 = kolekcija1.InsertAt(0, 10, 10);
+	cout << kolekcija2 << crt;
 	/*Metoda RemoveRange prihvata lokacija OD i DO, te u tom opsegu
    uklanja sve elemente iz kolekcije. U slucaju da zahtijevani opseg ne
    postoji u kolekciji
@@ -954,7 +1000,8 @@ void main() {
 	U 20:35:16 sati igrac Jasmin Azemovic je zabiljezio svoj 1
    pogodak na ovoj utakmici.
 	Trenutni rezultat je:
-	BOSNA_I_HERCEGOVINA 2 : 0 ENGLESKA
+	BOSNA_I_HERCEGOVINA : ENGLESKA
+		  (2)			    (0)
 	Puno srece u nastavku susreta.
 	Neka bolji tim pobijedi.
 	*/
@@ -962,7 +1009,8 @@ void main() {
 	cout << euro2024;
 	/*
 	-------------------------------------------
-	BOSNA_I_HERCEGOVINA 3 : 1 ENGLESKA
+	BOSNA_I_HERCEGOVINA : ENGLESKA
+		  (3)			    (1)
 	-------------------------------------------
 	Denis Music Goran Skondric
 	Jasmin Azemovic

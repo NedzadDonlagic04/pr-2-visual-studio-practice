@@ -46,22 +46,10 @@ template<class T1, class T2, int max>
 class Kolekcija {
 	T1 _elementi1[max];
 	T2 _elementi2[max];
-	int* _trenutno;
+	int _trenutno;
 public:
-	Kolekcija() {
-	}
-	~Kolekcija() {
-		delete _trenutno; _trenutno = nullptr;
-	}
-	T1 getElement1(int lokacija)const {
-		return _elementi1[lokacija];
-	}
-	T2 getElement2(int lokacija)const {
-		return _elementi2[lokacija];
-	}
-	int getTrenutno() const { return *_trenutno; }
 	friend ostream& operator<< (ostream& COUT, Kolekcija& obj) {
-		for (size_t i = 0; i < *obj._trenutno; i++)
+		for (size_t i = 0; i < obj._trenutno; i++)
 			COUT << obj.getElement1(i) << " " << obj.getElement2(i) << endl;
 		return COUT;
 	}
@@ -118,6 +106,9 @@ public:
 	{
 		delete[]_ID; _ID = nullptr;
 		delete[]_imePrezime; _imePrezime = nullptr;
+		for (size_t i = 0; i < _pogoci.size(); i++) {
+			delete _pogoci[i]; _pogoci[i] = nullptr;
+		}
 	}
 	char* GetImePrezime() { return _imePrezime; }
 	char* GetID() { return _ID; }
@@ -193,8 +184,8 @@ void main() {
 	2 2
 	* ....
 	*/
-	Kolekcija<int, int, 10>* kolekcija2 = kolekcija1.InsertAt(0, 10, 10);
-	cout << *kolekcija2 << crt;
+	Kolekcija<int, int, 10> kolekcija2 = kolekcija1.InsertAt(0, 10, 10);
+	cout << kolekcija2 << crt;
 	/*Metoda RemoveRange prihvata lokacija OD i DO, te u tom opsegu
    uklanja sve elemente iz kolekcije. U slucaju da zahtijevani opseg ne
    postoji u kolekciji
@@ -276,7 +267,8 @@ void main() {
 	U 20:35:16 sati igrac Jasmin Azemovic je zabiljezio svoj 1
    pogodak na ovoj utakmici.
 	Trenutni rezultat je:
-	BOSNA_I_HERCEGOVINA 2 : 0 ENGLESKA
+	BOSNA_I_HERCEGOVINA : ENGLESKA
+		  (2)			    (0)
 	Puno srece u nastavku susreta.
 	Neka bolji tim pobijedi.
 	*/
@@ -284,7 +276,8 @@ void main() {
 	cout << euro2024;
 	/*
 	-------------------------------------------
-	BOSNA_I_HERCEGOVINA 3 : 1 ENGLESKA
+	BOSNA_I_HERCEGOVINA : ENGLESKA
+		  (3)			    (1)
 	-------------------------------------------
 	Denis Music Goran Skondric
 	Jasmin Azemovic
