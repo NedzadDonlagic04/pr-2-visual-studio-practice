@@ -647,8 +647,8 @@ public:
 		const Reprezentacija& reprezentacija2ZaPronaci
 	) const noexcept {
 		for (int i = 0; i < _utakmice.getTrenutno(); ++i) {
-			const auto& reprezentacija1{ _utakmice.getElement1(i) };
-			const auto& reprezentacija2{ _utakmice.getElement2(i) };
+			const Reprezentacija& reprezentacija1{ _utakmice.getElement1(i) };
+			const Reprezentacija& reprezentacija2{ _utakmice.getElement2(i) };
 
 			if (reprezentacija1ZaPronaci == reprezentacija1 && reprezentacija2ZaPronaci == reprezentacija2) {
 				return true;
@@ -678,8 +678,8 @@ public:
 
 	[[nodiscard]] Reprezentacija* getReprezentacijaForDrzava(Drzava drzava) const noexcept {
 		for (int i = 0; i < _utakmice.getTrenutno(); ++i) {
-			auto& reprezentacija1{ _utakmice.getElement1(i) };
-			auto& reprezentacija2{ _utakmice.getElement2(i) };
+			Reprezentacija& reprezentacija1{ _utakmice.getElement1(i) };
+			Reprezentacija& reprezentacija2{ _utakmice.getElement2(i) };
 
 			if (reprezentacija1.getDrzava() == drzava) {
 				return &reprezentacija1;
@@ -777,8 +777,8 @@ public:
 		const auto& utakmice{ prventstvo.getUtakmice() };
 
 		for (int i = 0; i < utakmice.getTrenutno(); ++i) {
-			const auto& reprezentacija1{ utakmice.getElement1(i) };
-			const auto& reprezentacija2{ utakmice.getElement2(i) };
+			const Reprezentacija& reprezentacija1{ utakmice.getElement1(i) };
+			const Reprezentacija& reprezentacija2{ utakmice.getElement2(i) };
 
 			os << crt;
 			os << reprezentacija1.getDrzava() << ' ' << reprezentacija1.getBrojPogodaka();
@@ -797,8 +797,8 @@ public:
 		std::vector<Igrac*> temp{};
 
 		for (int i = 0; i < _utakmice.getTrenutno(); ++i) {
-			auto& reprezentacija1{ _utakmice.getElement1(i) };
-			auto& reprezentacija2{ _utakmice.getElement2(i) };
+			Reprezentacija& reprezentacija1{ _utakmice.getElement1(i) };
+			Reprezentacija& reprezentacija2{ _utakmice.getElement2(i) };
 
 			auto igraciReprezentacije1{ reprezentacija1(start, end) };
 			auto igraciReprezentacije2{ reprezentacija2(start, end) };
