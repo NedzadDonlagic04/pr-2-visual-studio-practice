@@ -108,7 +108,7 @@ class Igrac {
 	static int _id;
 	char* _ID; // za inicijalizaciju _ID-a iskoristiti funkciju GenerisiID i vrijednost statickog clana _id
 	char* _imePrezime;
-	vector<Pogodak> _pogoci;
+	vector<Pogodak*> _pogoci;
 public:
 	Igrac(const char* imePrezime)
 	{
@@ -121,7 +121,7 @@ public:
 	}
 	char* GetImePrezime() { return _imePrezime; }
 	char* GetID() { return _ID; }
-	vector<Pogodak>& GetPogoci() { return _pogoci; }
+	vector<Pogodak*>& GetPogoci() { return _pogoci; }
 	friend ostream& operator<< (ostream& COUT, Igrac& obj) {
 		COUT << *obj._ID << " -> " << obj._imePrezime;
 		for (size_t i = 0; i < obj._pogoci.size(); i++)

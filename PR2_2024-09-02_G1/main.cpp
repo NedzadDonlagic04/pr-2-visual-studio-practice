@@ -376,7 +376,7 @@ class Igrac {
 	static int _id;
 	char* _ID; // za inicijalizaciju _ID-a iskoristiti funkciju GenerisiID i vrijednost statickog clana _id
 	char* _imePrezime;
-	vector<Pogodak> _pogoci;
+	vector<Pogodak*> _pogoci;
 public:
 	Igrac(const char* imePrezime)
 		: _ID{ GenerisiID(imePrezime, _id++) }
@@ -388,7 +388,7 @@ public:
 	}
 	char* GetImePrezime() { return _imePrezime; }
 	char* GetID() { return _ID; }
-	vector<Pogodak>& GetPogoci() { return _pogoci; }
+	vector<Pogodak*>& GetPogoci() { return _pogoci; }
 	friend ostream& operator<< (ostream& COUT, Igrac& obj) {
 		COUT << obj._ID << " -> " << obj._imePrezime;
 		for (size_t i = 0; i < obj._pogoci.size(); i++)
@@ -401,7 +401,7 @@ public:
 	Igrac(const Igrac& igrac)
 		: _ID{ GetNizKaraktera(igrac.getID()) }
 		, _imePrezime{ GetNizKaraktera(igrac.getImePrezime()) }
-		, _pogoci{ igrac.getPogoci() }
+		, _pogoci{ igrac.getPogociCopy() }
 	{}
 
 	Igrac& operator=(const Igrac& rhs) {
@@ -413,7 +413,7 @@ public:
 
 		_ID = GetNizKaraktera(rhs.getID());
 		_imePrezime = GetNizKaraktera(rhs.getImePrezime());
-		_pogoci = rhs.getPogoci();
+		_pogoci = rhs.getPogociCopy();
 
 		return *this;
 	}
@@ -426,8 +426,18 @@ public:
 		return _ID;
 	}
 
-	[[nodiscard]] const std::vector<Pogodak>& getPogoci() const noexcept {
+	[[nodiscard]] const std::vector<Pogodak*>& getPogoci() const noexcept {
 		return _pogoci;
+	}
+
+	[[nodiscard]] std::vector<Pogodak*> getPogociCopy() const noexcept {
+		std::vector<Pogodak*> temp{};
+
+		for (const auto& pogodak : _pogoci) {
+			temp.push_back(new Pogodak(*pogodak));
+		}
+
+		return temp;
 	}
 
 	[[nodiscard]] bool operator==(const Igrac& rhs) const noexcept {
@@ -451,8 +461,8 @@ public:
 			std::find_if(
 				std::begin(getPogoci()),
 				std::end(getPogoci()),
-				[&](const Pogodak& pogodak) {
-						return pogodak == pogodakZaPronaci;
+				[&](const Pogodak* const pogodak) {
+						return *pogodak == pogodakZaPronaci;
 				}
 			)
 		};
@@ -461,38 +471,25 @@ public:
 	}
 
 	void AddPogodak(const Pogodak& pogodak) {
-		_pogoci.push_back(pogodak);
+		_pogoci.push_back(new Pogodak{ pogodak });
 	}
 
 	[[nodiscard]] const Pogodak& getZadnjiPogodak() const noexcept {
-		return _pogoci.back();
+		return *_pogoci.back();
 	}
 
 	[[nodiscard]] std::size_t getBrojPogodaka() const noexcept {
 		return _pogoci.size();
 	}
 
-	[[nodiscard]] bool daLiJePogodakPostignutUIntervalu(
-		const Vrijeme& start,
-		const Vrijeme& end
-	) const noexcept {
-		auto pronadeniPogodak{
-			std::find_if(
-				std::begin(getPogoci()),
-				std::end(getPogoci()),
-				[&](const Pogodak& pogodak) {
-						return pogodak.getVrijemePogotka() >= start && pogodak.getVrijemePogotka() <= end;
-				}
-			)
-		};
-
-		return pronadeniPogodak != std::end(getPogoci());
-	}
-
 private:
 	void clearResources() {
 		delete[] _ID; _ID = nullptr;
 		delete[] _imePrezime; _imePrezime = nullptr;
+		for (auto& pogodak : _pogoci) {
+			delete pogodak;
+			pogodak = nullptr;
+		}
 	}
 };
 int Igrac::_id = 1;
