@@ -954,7 +954,7 @@ void main() {
 	//nakon svakog evidentiranog pogotka, svim igracima te utakmice (pod pretpostavkom da su validne email adrese sa ID - ovima igraca),
 	//u zasebnom thread-u, poslati email, u razmaku od 2 sekunde, sa sljedecim sadrzajem :
 	/*
-	To: ID#000-1@euro2024.com
+	To: D000M1@euro2024.com
 	From: info@euro2024.com
 	Subject: Informacija
 	Postovani,
