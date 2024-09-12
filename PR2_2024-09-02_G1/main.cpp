@@ -1,12 +1,3 @@
-/*
-	BIG DISCLAIMER
-
-	Ja nisam izlazio na ovaj rok, samo sam prikupio odredene informacije kroz pricu
-	drugih studenata i slika koje su nekako uslikane tokom ispita. Moguce je da postoji
-	mnogo vise razlicitih stvari nego sto sam naveo ovdje.
-	Teoretska pitanja sam obrisao jer o njima nisam cuo nista.
-*/
-
 #include <iostream>
 using namespace std;
 const char* PORUKA = "\n------------------------------------------------------------------------------ - \n"
@@ -41,7 +32,9 @@ const char* crt = "\n-------------------------------------------\n";
 #include<algorithm>
 // Headers I included above
 
-enum Drzava { ENGLESKA, SPANIJA, HOLANDIJA, FRANCUSKA, BOSNA_I_HERCEGOVINA };
+enum Drzava {
+	ENGLESKA, SPANIJA, HOLANDIJA, FRANCUSKA, BOSNA_I_HERCEGOVINA
+};
 
 char* GetNizKaraktera(const char* sadrzaj, bool dealociraj = false) {
 	if (sadrzaj == nullptr)return nullptr;
@@ -113,10 +106,10 @@ std::ostream& operator<<(std::ostream& os, Drzava drzava) {
 }
 
 [[nodiscard]] bool ValidirajID(const std::string& id) {
-	std::regex oneDigitValidation  { "[A-Z]000[A-Z]\\d" };
-	std::regex twoDigitValidation  { "[A-Z]00[A-Z]\\d{2}" };
+	std::regex oneDigitValidation{ "[A-Z]000[A-Z]\\d" };
+	std::regex twoDigitValidation{ "[A-Z]00[A-Z]\\d{2}" };
 	std::regex threeDigitValidation{ "[A-Z]0[A-Z]\\d{3}" };
-	std::regex fourDigitValidation { "[A-Z][A-Z]\\d{4}" };
+	std::regex fourDigitValidation{ "[A-Z][A-Z]\\d{4}" };
 
 	return std::regex_match(id, oneDigitValidation)
 		|| std::regex_match(id, twoDigitValidation)
@@ -131,18 +124,11 @@ class Kolekcija {
 	T2 _elementi2[max]{};
 	int* _trenutno;
 public:
-	Kolekcija() {
-		_trenutno = new int{ 0 };
-	}
 	~Kolekcija() {
 		delete _trenutno; _trenutno = nullptr;
 	}
-	T1 getElement1(int lokacija)const {
-		return _elementi1[lokacija];
-	}
-	T2 getElement2(int lokacija)const {
-		return _elementi2[lokacija];
-	}
+	T1& getElement1(int lokacija) { return _elementi1[lokacija]; }
+	T2& getElement2(int lokacija) { return _elementi2[lokacija]; }
 	int getTrenutno() const { return *_trenutno; }
 	friend ostream& operator<< (ostream& COUT, Kolekcija& obj) {
 		for (size_t i = 0; i < *obj._trenutno; i++)
@@ -151,6 +137,10 @@ public:
 	}
 
 	// Methods I added below
+	Kolekcija() {
+		_trenutno = new int{ 0 };
+	}
+
 	Kolekcija(const Kolekcija& kolekcija)
 		: _trenutno{ new int { kolekcija.getTrenutno() } }
 	{
@@ -170,11 +160,11 @@ public:
 		return *this;
 	}
 
-	T1& getElement1(int lokacija) {
+	T1 getElement1(int lokacija) const {
 		return _elementi1[lokacija];
 	}
 
-	T2& getElement2(int lokacija) {
+	T2 getElement2(int lokacija) const {
 		return _elementi2[lokacija];
 	}
 
@@ -319,20 +309,18 @@ class Pogodak {
 	Vrijeme* _vrijemePogotka;
 	char* _napomena;
 public:
-	Pogodak(Vrijeme vrijeme, const char* napomena) :
-		_vrijemePogotka(new Vrijeme(vrijeme))
-	{
+	Pogodak(Vrijeme vrijeme, const char* napomena) {
 		_napomena = GetNizKaraktera(napomena);
+		_vrijemePogotka = new Vrijeme(vrijeme);
 	}
-	~Pogodak()
-	{
+	~Pogodak() {
 		delete[] _napomena; _napomena = nullptr;
 		delete _vrijemePogotka; _vrijemePogotka = nullptr;
 	}
 	Vrijeme GetVrijemePogotka() { return *_vrijemePogotka; }
 	char* GetNapomena() { return _napomena; }
 	friend ostream& operator<< (ostream& COUT, const Pogodak& obj) {
-		COUT << obj._vrijemePogotka << " -> " << obj._napomena;
+		COUT << *obj._vrijemePogotka << " -> " << obj._napomena;
 		return COUT;
 	}
 
@@ -375,11 +363,11 @@ public:
 
 class Igrac {
 	static int _id;
-	char* _ID; // za inicijalizaciju _ID-a iskoristiti funkciju GenerisiID i vrijednost statickog clana _id
+	char* _ID; // za inicijalizaciju _ID-a iskoristiti funkciju GenerisiID tj.atributa _imePrezime(inicijala imena i prezimena) i statickog clana _id
 	char* _imePrezime;
 	vector<Pogodak*> _pogoci;
 public:
-	Igrac(const char* imePrezime)
+	Igrac(const char* imePrezime) 
 		: _ID{ GenerisiID(imePrezime, _id++) }
 	{
 		_imePrezime = GetNizKaraktera(imePrezime);
@@ -393,12 +381,11 @@ public:
 	friend ostream& operator<< (ostream& COUT, Igrac& obj) {
 		COUT << obj._ID << " -> " << obj._imePrezime;
 		for (size_t i = 0; i < obj._pogoci.size(); i++)
-			cout << obj._pogoci[i] << endl;
+			cout << *obj._pogoci[i] << endl;
 		return COUT;
 	}
 
 	// Methods I added below
-
 	Igrac(const Igrac& igrac)
 		: _ID{ GetNizKaraktera(igrac.getID()) }
 		, _imePrezime{ GetNizKaraktera(igrac.getImePrezime()) }
@@ -588,7 +575,7 @@ public:
 		std::vector<Igrac*> temp{};
 
 		for (auto& igrac : _igraci) {
-			if (igrac.getBrojPogodaka() == brojPogodaka) {
+			if (igrac.getBrojPogodaka() >= brojPogodaka) {
 				temp.push_back(&igrac);
 			}
 		}
@@ -608,7 +595,6 @@ public:
 		return igraci;
 	}
 };
-
 class Prventstvo {
 	Kolekcija<Reprezentacija, Reprezentacija, 20> _utakmice;
 public:
@@ -765,9 +751,9 @@ public:
 			const Reprezentacija& reprezentacija2{ utakmice.getElement2(i) };
 
 			os << crt;
-			os << reprezentacija1.getBrojPogodaka() << ' ' << reprezentacija1.getDrzava();
+			os << '(' << reprezentacija1.getBrojPogodaka() << ") " << reprezentacija1.getDrzava();
 			os << " : ";
-			os << reprezentacija2.getDrzava() << ' ' << reprezentacija2.getBrojPogodaka();
+			os << reprezentacija2.getDrzava() << " (" << reprezentacija2.getBrojPogodaka() << ')';
 			os << crt;
 
 			os << Prventstvo::getPlayersWhoScoredGoalsSideBySide(reprezentacija1.getIgraciThatScores(), reprezentacija2.getIgraciThatScores());
@@ -821,9 +807,9 @@ private:
 				std::cout << " je zabiljezio svoj " << igrac.getBrojPogodaka() << '\n';
 				std::cout << "pogodak na ovoj utakmici.\n";
 				std::cout << "Trenutni rezultat je:\n";
-				std::cout << reprezentacija1.getBrojPogodaka() << ' ' << reprezentacija1.getDrzava();
+				std::cout << '(' << reprezentacija1.getBrojPogodaka() << ") " << reprezentacija1.getDrzava();
 				std::cout << " : ";
-				std::cout << reprezentacija2.getDrzava() << ' ' << reprezentacija2.getBrojPogodaka();
+				std::cout << reprezentacija2.getDrzava() << " (" << reprezentacija2.getBrojPogodaka() << ')';
 				std::cout << "\nPuno srece u nastavku susreta.\n\n";
 			}
 		};
@@ -832,40 +818,58 @@ private:
 	}
 };
 
+const char* GetOdgovorNaPrvoPitanje() {
+	cout << "Pitanje -> Pojasnite osnovne preduslove koji moraju biti ispunjeni da bi se realizovao polimorfizam(navesti kratki primjer) ? \n";
+	return "Odgovor -> OVDJE UNESITE VAS ODGOVOR";
+}
+
+const char* GetOdgovorNaDrugoPitanje() {
+	cout << "Pitanje -> Pojasnite razloge koristenja kljucnih rijeci abstract i ciste virtualne metode, te razlike izmedju njih ? \n";
+	return "Odgovor -> OVDJE UNESITE VAS ODGOVOR";
+}
+
 void main() {
 	cout << PORUKA;
 	cin.get();
-	
+	cout << GetOdgovorNaPrvoPitanje() << endl;
+	cin.get();
+	cout << GetOdgovorNaDrugoPitanje() << endl;
+	cin.get();
 	/*
-	Globalna funkcija GenerisiID vraca ID igraca na osnovu vrijednosti proslijedjenih parametara. Funkcija generise
-	ID sa maksimalno 4 cifre, ne racunajuci inicijale, tj. prva slova imena i prezimena.
-	Podrazumijeva se da ce uvijek biti proslijedjene validne vrijednosti parametara. Ukoliko se proslijede
-	mala pocetna slova imena ili prezimena, potrebno ih je konvertovati u velika.
-	U okviru generisanog ID-a, proslijedjena cjelobrojna vrijednost treba biti u obrnutom redoslijedu cifara.
+	Globalna funkcija GenerisiID vraca ID igraca na osnovu vrijednosti
+   proslijedjenih parametara. Funkcija generise
+	ID sa maksimalno 4 cifre, ne racunajuci inicijale tj. prva slova
+   imena i prezimena.
+	Podrazumijeva se da ce uvijek biti proslijedjene validne
+   vrijednosti parametara. Ukoliko se proslijede
+	mala pocetna slova imena ili prezimena, potrebno ih je
+   konvertovati u velika.
+	U okviru generisanog ID-a, proslijedjena cjelobrojna vrijednost
+   treba biti u obrnutom redoslijedu cifara.
 	*/
 	cout << GenerisiID("Denis Music", 3) << endl;//treba vratiti D000M3
-	cout << GenerisiID("jasmin azemovic", 14) << endl;//treba vratiti J00A41
-	cout << GenerisiID("Goran skondric", 156) << endl;//treba vratiti G0S651
-	cout << GenerisiID("emina Junuz", 1798) << endl;//treba vratiti EJ8971
+	cout << GenerisiID("Jasmin Azemovic", 14) << endl;//treba vratiti J00A41
+	cout << GenerisiID("Goran Skondric", 156) << endl;//treba vratiti G0S651
+	cout << GenerisiID("emina junuz", 1798) << endl;//treba vratiti EJ8971
 
 	//Za validaciju ID-a koristiti funkciju ValidirajID koja treba, koristeci regex, osigurati postivanje osnovnih pravila
-	//Vezanih za format koja su definisana u prethodnom dijelu zadatka.
+	//vezanih za format koja su definisana u prethodnom dijelu zadatka.
 	if (ValidirajID("D000M3"))
 		cout << "ID VALIDAN" << endl;
 	if (ValidirajID("J00A41"))
 		cout << "ID VALIDAN" << endl;
 	if (!ValidirajID("G00S651"))
 		cout << "ID NIJE VALIDAN" << endl;
-	if (!ValidirajID("ej8971"))
+	if (!ValidirajID("Ej8971"))
 		cout << "ID NIJE VALIDAN" << endl;
 	int kolekcijaTestSize = 9;
 	Kolekcija<int, int, 10> kolekcija1;
 	for (int i = 0; i < kolekcijaTestSize; i++)
 		kolekcija1.AddElement(i, i);//dodaje vrijednosti u kolekciju
 	cout << kolekcija1 << crt;
-	/* metoda InsertAt treba da doda vrijednosti drugog i treceg
-   parametra na lokaciju koja je definisana prvim parametrom. Povratna
-   vrijednost metode je pokazivac na pozivaoca metode (u konkretnom slucaju objekat
+	/* metoda InsertAt treba da doda vrijednosti prvog i drugog
+   parametra na lokaciju koja je definisana trecim parametrom. Povratna
+   vrijednost metode je objekat (pozivaoc metode, u konkretnom slucaju objekat
    kolekcija1) u okviru koga su, na definisanu lokaciju, dodati
    zahtijevani parametri.
 	Nakon izvrsenja metode InsertAt, oba objekta, kolekcija1 i
@@ -876,14 +880,18 @@ void main() {
 	2 2
 	* ....
 	*/
-	Kolekcija<int, int, 10> kolekcija2 = kolekcija1.InsertAt(0, 10, 10);
+	Kolekcija<int, int, 10> kolekcija2 = kolekcija1.InsertAt(10, 10, 0);
 	cout << kolekcija2 << crt;
 	/*Metoda RemoveRange prihvata lokacija OD i DO, te u tom opsegu
    uklanja sve elemente iz kolekcije. U slucaju da zahtijevani opseg ne
-   postoji u kolekciji
-	metoda treba baciti izuzetak. Na kraju, metoda treba da vrati
-   novi objekat tipa kolekcija koji sadrzi samo uklonjene
+   postoji u kolekciji metoda treba baciti izuzetak. Na kraju, metoda treba da vrati
+   pokazivac na novi objekat tipa kolekcija koji sadrzi samo uklonjene
    elemente*/
+
+	// A bit of a correction here
+	// Komentar iznad trazi da se vrati pokazivac, medutim to je izgleda ostalo od
+	// veoma slicnog roka
+
 	Kolekcija<int, int, 10> kolekcija3 = kolekcija1.RemoveRange(1, 3);
 	cout << kolekcija3 << endl;
 	cout << kolekcija1 << crt;
@@ -906,6 +914,7 @@ void main() {
 		cetvrtiPogodak210654(21, 6, 54);
 	Igrac denis("Denis Music"), jasmin("Jasmin Azemovic"),
 		goran("Goran Skondric"), adil("Adil Joldic");
+
 	if (strcmp(denis.GetID(), "D000M1") == 0 && strcmp(jasmin.GetID(), "J000A2") == 0)
 		cout << "ID se uspjesno generise!" << endl;
 	Pogodak prviPogodak(prviPogodak201633, "podaci o prvom pogotku"),
@@ -919,8 +928,7 @@ void main() {
 	ENG.AddIgrac(adil);
 	try
 	{
-		//onemoguciti dodavanje istih igraca - provjeravati ID, baciti izuzetak
-		BIH.AddIgrac(denis);
+		BIH.AddIgrac(denis);//onemoguciti dodavanje istih igraca - provjeravati ID
 	}
 	catch (exception& obj)
 	{
@@ -930,8 +938,7 @@ void main() {
 	euro2024.AddUtakmicu(BIH, ENG);
 	try
 	{
-		//onemoguciti ponovne susrete drzave tokom istog prvenstva, baciti izuzetak
-		euro2024.AddUtakmicu(BIH, ENG);
+		euro2024.AddUtakmicu(BIH, ENG);//onemoguciti ponovne susrete drzava tokom istog prvenstva
 	}
 	catch (exception& obj)
 	{
@@ -950,7 +957,7 @@ void main() {
 	if (euro2024.AddPogodak(BOSNA_I_HERCEGOVINA, ENGLESKA, "Goran Skondric", cetvrtiPogodak))
 		cout << "Pogodak uspjesno dodat" << endl;
 	//nakon svakog evidentiranog pogotka, svim igracima te utakmice (pod pretpostavkom da su validne email adrese sa ID - ovima igraca),
-	//u zasebnom thread-u, poslati email, u razmaku od 2 sekunde, sa sljedecim sadrzajem :
+	//u zasebnom thread-u, poslati email. u razmaku od 2 sekunde, sa sljedecim sadrzajem :
 	/*
 	To: D000M1@euro2024.com
 	From: info@euro2024.com
@@ -959,7 +966,7 @@ void main() {
 	U 20:35:16 sati igrac Jasmin Azemovic je zabiljezio svoj 1
    pogodak na ovoj utakmici.
 	Trenutni rezultat je:
-	2 BOSNA_I_HERCEGOVINA : ENGLESKA 0
+	BOSNA_I_HERCEGOVINA 2 : 0 ENGLESKA
 	Puno srece u nastavku susreta.
 	Neka bolji tim pobijedi.
 	*/
@@ -967,14 +974,14 @@ void main() {
 	cout << euro2024;
 	/*
 	-------------------------------------------
-	3 BOSNA_I_HERCEGOVINA : ENGLESKA 1
+	(3) BOSNA_I_HERCEGOVINA : ENGLESKA (1)
 	-------------------------------------------
 	Denis Music Goran Skondric
 	Jasmin Azemovic
 	Jasmin Azemovic
 	-------------------------------------------
 	*/
-	//vraca sve igrace koji su na takmicenju postigli broj pogodaka proslijeden
+	//vraca sve igrace koji su na takmicenju postigli broj pogodaka koji je veci ili jednak proslijedjenoj vrijednosti
 	vector<Igrac*> igraci = euro2024(2);
 	for (size_t i = 0; i < igraci.size(); i++)
 		cout << igraci[i]->GetImePrezime() << endl;
