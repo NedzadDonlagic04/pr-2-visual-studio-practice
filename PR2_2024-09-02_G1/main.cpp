@@ -71,7 +71,7 @@ std::ostream& operator<<(std::ostream& os, Drzava drzava) {
 	return os;
 }
 
-[[nodiscard]] int reverseNum(int num) {
+[[nodiscard]] int reverseNum(int num) noexcept {
 	int reversedNum{ 0 };
 
 	while (num != 0) {
