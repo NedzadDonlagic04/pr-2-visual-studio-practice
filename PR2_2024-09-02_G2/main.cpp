@@ -129,6 +129,7 @@ std::ostream& operator<<(std::ostream& os, Drzava drzava) {
 	const std::size_t leftPadding{ difference / 2 };
 	const std::size_t rightPadding{ difference - leftPadding };
 
+	// Used for debugging
 	//std::cout << "difference -> " << difference << '\n';
 	//std::cout << "leftPadding -> " << leftPadding << '\n';
 	//std::cout << "rightPadding -> " << rightPadding << '\n';
