@@ -381,7 +381,7 @@ public:
 	friend ostream& operator<< (ostream& COUT, Igrac& obj) {
 		COUT << obj._ID << " -> " << obj._imePrezime;
 		for (size_t i = 0; i < obj._pogoci.size(); i++)
-			cout << *obj._pogoci[i] << endl;
+			COUT << *obj._pogoci[i] << endl;
 		return COUT;
 	}
 
