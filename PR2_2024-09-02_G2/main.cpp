@@ -354,7 +354,7 @@ public:
 	Vrijeme GetVrijemePogotka() { return *_vrijemePogotka; }
 	char* GetNapomena() { return _napomena; }
 	friend ostream& operator<< (ostream& COUT, const Pogodak& obj) {
-		COUT << obj._vrijemePogotka << " -> " << obj._napomena;
+		COUT << *obj._vrijemePogotka << " -> " << obj._napomena;
 		return COUT;
 	}
 
