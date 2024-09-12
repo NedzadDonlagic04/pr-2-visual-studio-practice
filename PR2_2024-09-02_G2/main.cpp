@@ -454,7 +454,7 @@ public:
 		return _pogoci;
 	}	
 	
-	[[nodiscard]] std::vector<Pogodak*> getPogociCopy() const noexcept {
+	[[nodiscard]] std::vector<Pogodak*> getPogociCopy() const {
 		std::vector<Pogodak*> temp{};
 
 		for (const auto& pogodak : _pogoci) {
