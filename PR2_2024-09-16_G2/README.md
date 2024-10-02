@@ -1,5 +1,7 @@
 # problem-description
 
+Many thanks to the individuals who helped me collect all the information, wouldn't have been able to do it alone
+
 The problem for this exam was similar to https://github.com/FITCommunity/Programiranje-2/blob/master/Ispiti/2022-06-30/PR2_2022-06-30_Postavka.cpp
 
 Slight difference were:
