@@ -293,8 +293,8 @@ public:
 			constexpr std::array<int, 12> daysPerMonth{ 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
 
 			return std::accumulate(
-				std::begin(daysPerMonth),
-				std::begin(daysPerMonth) + mjesec - 1,
+				std::cbegin(daysPerMonth),
+				std::cbegin(daysPerMonth) + mjesec - 1,
 				0
 			);
 		}();
@@ -551,8 +551,8 @@ public:
 		}
 
 		return std::accumulate(
-			std::begin(_polozeneTehnike),
-			std::end(_polozeneTehnike),
+			std::cbegin(_polozeneTehnike),
+			std::cend(_polozeneTehnike),
 			0.0,
 			[](const double sum, const Tehnika* const tehnika) {
 				return sum + tehnika->getAverage();
@@ -749,8 +749,8 @@ public:
 		}
 
 		return std::accumulate(
-			std::begin(_polozeniPojasevi),
-			std::end(_polozeniPojasevi),
+			std::cbegin(_polozeniPojasevi),
+			std::cend(_polozeniPojasevi),
 			0.0,
 			[](const double sum, const Polaganje& polaganje) {
 				return sum + polaganje.getAverage();

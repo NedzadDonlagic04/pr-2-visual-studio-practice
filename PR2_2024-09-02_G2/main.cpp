@@ -483,15 +483,15 @@ public:
 	[[nodiscard]] bool daLiJePogodakDodan(const Pogodak& pogodakZaPronaci) {
 		auto pronadeniPogodak{
 			std::find_if(
-				std::begin(getPogoci()),
-				std::end(getPogoci()),
+				std::cbegin(getPogoci()),
+				std::cend(getPogoci()),
 				[&](const Pogodak* const pogodak) {
 						return *pogodak == pogodakZaPronaci;
 				}
 			)
 		};
 
-		return pronadeniPogodak != std::end(getPogoci());
+		return pronadeniPogodak != std::cend(getPogoci());
 	}
 
 	void AddPogodak(const Pogodak& pogodak) {
@@ -554,13 +554,13 @@ public:
 	[[nodiscard]] bool daLiIgracPostojiUDrzavaTim(const Igrac& igracZaPronaci) const noexcept {
 		auto pronadeniIgrac{
 			std::find(
-				std::begin(getIgraci()),
-				std::end(getIgraci()),
+				std::cbegin(getIgraci()),
+				std::cend(getIgraci()),
 				igracZaPronaci
 			)
 		};
 
-		return pronadeniIgrac != std::end(getIgraci());
+		return pronadeniIgrac != std::cend(getIgraci());
 	}
 
 	void AddIgrac(const Igrac& igrac) {
@@ -582,8 +582,8 @@ public:
 
 	[[nodiscard]] std::size_t getBrojPogodaka() const noexcept {
 		return std::accumulate(
-			std::begin(_igraci),
-			std::end(_igraci),
+			std::cbegin(_igraci),
+			std::cend(_igraci),
 			std::size_t{},
 			[](const std::size_t sum, const Igrac& igrac) {
 				return sum + igrac.getBrojPogodaka();
@@ -773,10 +773,10 @@ public:
 	) {
 		std::string playerNamesSideBySide{};
 
-		auto igrac1It{ std::begin(igraci1) };
-		auto igrac2It{ std::begin(igraci2) };
-		bool anyIgraci1Left{ igrac1It != std::end(igraci1) };
-		bool anyIgraci2Left{ igrac2It != std::end(igraci2) };
+		auto igrac1It{ std::cbegin(igraci1) };
+		auto igrac2It{ std::cbegin(igraci2) };
+		bool anyIgraci1Left{ igrac1It != std::cend(igraci1) };
+		bool anyIgraci2Left{ igrac2It != std::cend(igraci2) };
 
 		while (anyIgraci1Left || anyIgraci2Left) {
 			if (anyIgraci1Left) {
@@ -792,8 +792,8 @@ public:
 
 			playerNamesSideBySide += '\n';
 
-			anyIgraci1Left = igrac1It != std::end(igraci1);
-			anyIgraci2Left = igrac2It != std::end(igraci2);
+			anyIgraci1Left = igrac1It != std::cend(igraci1);
+			anyIgraci2Left = igrac2It != std::cend(igraci2);
 		}
 
 
@@ -833,15 +833,15 @@ public:
 			auto igraciDrzaveTim2{ drzavaTim2(brojPogodaka) };
 
 			temp.insert(
-				std::end(temp),
-				std::begin(igraciDrzaveTim1),
-				std::end(igraciDrzaveTim1)
+				std::cend(temp),
+				std::cbegin(igraciDrzaveTim1),
+				std::cend(igraciDrzaveTim1)
 			);
 
 			temp.insert(
-				std::end(temp),
-				std::begin(igraciDrzaveTim2),
-				std::end(igraciDrzaveTim2)
+				std::cend(temp),
+				std::cbegin(igraciDrzaveTim2),
+				std::cend(igraciDrzaveTim2)
 			);
 		}
 

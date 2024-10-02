@@ -447,7 +447,11 @@ public:
 	}
 
 	[[nodiscard]] int getBodoviUkupno() const noexcept {
-		return std::accumulate(std::begin(_bodovi), std::end(_bodovi), 0);
+		return std::accumulate(
+			std::cbegin(_bodovi), 
+			std::cend(_bodovi), 
+			0
+		);
 	}
 
 	void DodajKupovinu(const float cijena, const ZadovoljstvoKupca& zadovoljstvoKupca) {

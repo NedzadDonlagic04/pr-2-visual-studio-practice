@@ -521,9 +521,15 @@ public:
     }
 
     [[nodiscard]] bool daLiGostPostoji(const Gost& gost) const noexcept {
-        auto gostZaPronaci{ std::find(std::begin(_gosti), std::end(_gosti), gost) };
+        auto gostZaPronaci{ 
+            std::find(
+                std::cbegin(_gosti), 
+                std::cend(_gosti), 
+                gost
+            ) 
+        };
 
-        return gostZaPronaci != std::end(_gosti);
+        return gostZaPronaci != std::cend(_gosti);
     }
 
     bool AddGost(const Gost& gost) {
@@ -562,8 +568,8 @@ public:
 
     [[nodiscard]] std::string getAllMailsConcated(const std::string& delimiter = ";") const noexcept {
         return std::accumulate(
-            std::begin(_gosti),
-            std::end(_gosti),
+            std::cbegin(_gosti),
+            std::cend(_gosti),
             std::string(),
             [&](const std::string& concatedMails, const Gost& gost) {
                 return concatedMails + gost.getEmail() + delimiter;

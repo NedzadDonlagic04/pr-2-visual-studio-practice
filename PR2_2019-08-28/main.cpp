@@ -308,8 +308,8 @@ public:
 			constexpr std::array<int, 12> daysPerMonth{ 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
 			
 			return std::accumulate(
-				std::begin(daysPerMonth),
-				std::begin(daysPerMonth) + mjesec - 1,
+				std::cbegin(daysPerMonth),
+				std::cbegin(daysPerMonth) + mjesec - 1,
 				0
 			);
 		}();
@@ -548,7 +548,7 @@ public:
 	friend ostream& operator<< (ostream& COUT, Kandidat& obj) {
 		COUT << obj._imePrezime << " " << obj._emailAdresa << " " << obj._brojTelefona << endl;
 		std::ostream_iterator<Uspjeh> outputUspjehIterator{ std::cout, " "};
-		std::copy(std::begin(obj._uspjeh), std::end(obj._uspjeh), outputUspjehIterator);
+		std::copy(std::cbegin(obj._uspjeh), std::cend(obj._uspjeh), outputUspjehIterator);
 
 		return COUT;
 	}

@@ -272,8 +272,8 @@ public:
             constexpr std::array<int, 12> daysPerMonth{ 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
 
             return std::accumulate(
-                std::begin(daysPerMonth),
-                std::begin(daysPerMonth) + mjesec - 1,
+                std::cbegin(daysPerMonth),
+                std::cbegin(daysPerMonth) + mjesec - 1,
                 0
             );
         }();
@@ -701,8 +701,8 @@ public:
         }
 
         return std::accumulate(
-            std::begin(_polozeniPredmeti),
-            std::end(_polozeniPredmeti),
+            std::cbegin(_polozeniPredmeti),
+            std::cend(_polozeniPredmeti),
             0.0,
             [](const double sum, const Ispit* const ispit) {
                 return sum + ispit->getAverage();

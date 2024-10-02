@@ -372,8 +372,8 @@ public:
 				std::begin(_poglavljaRada),
 				std::end(_poglavljaRada),
 				[&](const Poglavlje& poglavlje) {
-						return naziv == poglavlje.getNaslov();
-					}
+					return naziv == poglavlje.getNaslov();
+				}
 			)
 		};
 
@@ -417,8 +417,8 @@ public:
 	[[nodiscard]] bool daLiSvakoPoglavljeImaMinBrojKaraktera() const noexcept {
 		auto poglavljeZaPronaci{
 			std::find_if(
-				std::begin(_poglavljaRada),
-				std::end(_poglavljaRada),
+				std::cbegin(_poglavljaRada),
+				std::cend(_poglavljaRada),
 				[&](const Poglavlje& poglavlje) {
 						return poglavlje.getDuzinaSadrzaja() < min_karaktera_po_poglavlju;
 					}

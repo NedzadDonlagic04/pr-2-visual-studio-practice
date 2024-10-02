@@ -463,10 +463,10 @@ public:
 
     [[nodiscard]] bool daLiKupacPostoji(const Kupac& kupac) const noexcept {
         auto kupacZaPronaci{ 
-            std::find(std::begin(_kupaci), std::end(_kupaci), kupac) 
+            std::find(std::cbegin(_kupaci), std::cend(_kupaci), kupac) 
         };
 
-        return kupacZaPronaci != std::end(_kupaci);
+        return kupacZaPronaci != std::cend(_kupaci);
     }
 
     bool AddKupca(const Kupac& kupac) {

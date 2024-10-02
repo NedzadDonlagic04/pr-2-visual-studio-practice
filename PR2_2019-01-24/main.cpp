@@ -34,7 +34,7 @@ const std::string defaultMail{ "notSet@fit.ba" };
     std::regex strToFindRegex{ strToFind };
     
     auto begin{ 
-        std::sregex_iterator(std::begin(src), std::end(src), strToFindRegex) 
+        std::sregex_iterator(std::cbegin(src), std::cend(src), strToFindRegex) 
     };
     auto end{ std::sregex_iterator{} };
     
@@ -267,8 +267,8 @@ public:
             constexpr std::array<int, 12> daysPerMonth{ 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
 
             return std::accumulate(
-                std::begin(daysPerMonth),
-                std::begin(daysPerMonth) + mjesec - 1,
+                std::cbegin(daysPerMonth),
+                std::cbegin(daysPerMonth) + mjesec - 1,
                 0
             );
         }();
@@ -486,7 +486,7 @@ public:
     friend ostream& operator<< (ostream& COUT, const Student& obj) {
         COUT << obj._imePrezime << " " << obj._emailAdresa << " " << obj._brojTelefona << endl;
         std::ostream_iterator<Uspjeh> uspjehIterator{ std::cout, " " };
-        std::copy(std::begin(obj.getUspjeh()), std::end(obj.getUspjeh()), uspjehIterator);
+        std::copy(std::cbegin(obj.getUspjeh()), std::cend(obj.getUspjeh()), uspjehIterator);
         return COUT;
     }
     vector<Uspjeh>* GetUspjeh() { return &_uspjeh; }

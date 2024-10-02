@@ -522,15 +522,15 @@ public:
 	) const noexcept {
 		auto ucenikZaPronaci{
 			std::find_if(
-				std::begin(_ucenici),
-				std::end(_ucenici),
+				std::cbegin(_ucenici),
+				std::cend(_ucenici),
 				[&](const Ucenik& ucenik) {
 					return ucenik.getImePrezime() == imePrezime || ucenik.getTelefon() == brojTelefona;
 				}
 			)
 		};
 
-		return ucenikZaPronaci != std::end(_ucenici);
+		return ucenikZaPronaci != std::cend(_ucenici);
 	}
 
 	void operator()(const std::string& imePrezime, const std::string& brojTelefona) {
