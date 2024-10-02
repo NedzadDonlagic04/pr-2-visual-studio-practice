@@ -535,7 +535,7 @@ public:
         return true;
     }
 
-    [[nodiscard]] bool daLiPostojeMakar2OcjeneKriterijaSaOcjenomManjomod5() const noexcept {
+    [[nodiscard]] bool daLiPostojeMakar2OcjeneKriterijaSaOcjenomManjomOd5() const noexcept {
         short counter{ 0 };
 
         const auto& ocjene{ _komentar.getOcjeneKriterija() };
@@ -555,7 +555,7 @@ public:
     void SetKomentar(const Komentar& komentar) {
         _komentar = komentar;
 
-        if (daLiPostojeMakar2OcjeneKriterijaSaOcjenomManjomod5()) {
+        if (daLiPostojeMakar2OcjeneKriterijaSaOcjenomManjomOd5()) {
             sendMail();
         }
     }
