@@ -1,5 +1,5 @@
-#ifndef _TETRIS_TERMINAL_COLORS_HPP
-#define _TETRIS_TERMINAL_COLORS_HPP
+#ifndef TETRIS_TERMINAL_COLORS_HPP
+#define TETRIS_TERMINAL_COLORS_HPP
 
 #include<unordered_map>
 #include<string_view>
@@ -74,4 +74,4 @@ namespace terminalColors {
 		{ ForegroundColors::Default     , "\033[39m"sv       },
 	};
 }
-#endif
+#endif	// TETRIS_TERMINAL_COLORS_HPP

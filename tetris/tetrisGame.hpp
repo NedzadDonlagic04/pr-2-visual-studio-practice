@@ -1,5 +1,5 @@
-#ifndef _TETRIS_TETRIS_GAME_HPP
-#define _TETRIS_TETRIS_GAME_HPP
+#ifndef TETRIS_TETRIS_GAME_HPP
+#define TETRIS_TETRIS_GAME_HPP
 
 #include"terminalColors.hpp"
 #include"tetromino.hpp"
@@ -171,4 +171,4 @@ namespace tetris {
 	};
 }
 
-#endif
+#endif	// TETRIS_TETRIS_GAME_HPP

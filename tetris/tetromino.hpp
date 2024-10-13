@@ -1,5 +1,5 @@
-#ifndef _TETRIS_TETROMINO_HPP
-#define _TETRIS_TETROMINO_HPP
+#ifndef TETRIS_TETROMINO_HPP
+#define TETRIS_TETROMINO_HPP
 
 #include"terminalColors.hpp"
 
@@ -146,4 +146,4 @@ namespace tetromino {
 	};
 }
 
-#endif
+#endif	// TETRIS_TETROMINO_HPP

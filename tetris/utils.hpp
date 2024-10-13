@@ -1,5 +1,5 @@
-#ifndef _TETRIS_UTILS_HPP
-#define _TETRIS_UTILS_HPP
+#ifndef TETRIS_UTILS_HPP
+#define TETRIS_UTILS_HPP
 
 /*
 	A lot of the ANSI related stuff I found was from the link below
@@ -32,4 +32,4 @@ namespace utils {
 	void turnOnCursor() noexcept;
 }
 
-#endif
+#endif	// TETRIS_UTILS_HPP
