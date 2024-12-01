@@ -319,13 +319,17 @@ public:
             return false;
         }
 
-        for (int i = 0; i < komentariKarakteristika.getTrenutno(); ++i) {
-            if (*komentariKarakteristika.getElement1(i) != *getKomentareKarakteristika().getElement1(i)) {
-                return false;
-            } else if (std::strcmp(komentariKarakteristika.getElement2(i), getKomentareKarakteristika().getElement2(i)) != 0) {
-                return false;
-            }
-        }
+		for (int i = 0; i < komentariKarakteristika.getTrenutno(); ++i) {
+			const char* const komentar1{ komentariKarakteristika.getElement2(i) };
+			const char* const komentar2{ getKomentareKarakteristika().getElement2(i) };
+
+			if (*komentariKarakteristika.getElement1(i) != *getKomentareKarakteristika().getElement1(i)) {
+				return false;
+			}
+			else if (std::strcmp(komentar1, komentar2) != 0) {
+				return false;
+			}
+		}
 
         return true;
     }
