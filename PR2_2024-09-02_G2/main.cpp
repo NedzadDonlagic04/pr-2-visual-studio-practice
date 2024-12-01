@@ -120,7 +120,7 @@ std::ostream& operator<<(std::ostream& os, Drzava drzava) {
 	return std::regex_match(id, idValidation);
 }
 
-[[nodiscard]] std::string addFrontBackPaddingToText(const std::string& str, const std::size_t width) {
+[[nodiscard]] std::string addPaddingToText(const std::string& str, const std::size_t width) {
 	if (str.size() > width) {
 		return str;
 	}
@@ -760,9 +760,9 @@ public:
 		formattedResult += drzava2Str;
 		formattedResult += '\n';
 
-		formattedResult += addFrontBackPaddingToText(drzava1Pogoci, drzava1Str.size());
+		formattedResult += addPaddingToText(drzava1Pogoci, drzava1Str.size());
 		formattedResult += "   ";
-		formattedResult += addFrontBackPaddingToText(drzava2Pogoci, drzava2Str.size());
+		formattedResult += addPaddingToText(drzava2Pogoci, drzava2Str.size());
 
 		return formattedResult;
 	}
