@@ -189,8 +189,8 @@ public:
 			_elementi2[i] = _elementi2[i - 1];
 		}
 
-		_elementi1[getTrenutno()] = element1;
-		_elementi2[getTrenutno()] = element2;
+		_elementi1[index] = element1;
+		_elementi2[index] = element2;
 
 		++(*_trenutno);
 
