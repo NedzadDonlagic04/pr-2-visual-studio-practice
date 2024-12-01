@@ -179,7 +179,7 @@ public:
 		++(*_trenutno);
 	}
 
-	Kolekcija InsertAt(const int index, const T1& element1, const T2& element2) {
+	Kolekcija InsertAt(const T1& element1, const T2& element2, const int index) {
 		if (getTrenutno() == max || index < 0 || index > getTrenutno()) {
 			return *this;
 		}
